@@ -48,3 +48,6 @@ class MultipleTabsChromeDriver:
 
     async def execute_script_async(self, script):
         await asyncio.to_thread(self.driver.driver.execute_script, script)
+
+    def get_driver(self):
+        return self.driver
