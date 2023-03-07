@@ -43,8 +43,3 @@ class FootballMenuButtons:
         buttons = WebDriverWait(self.browser, 10).until(
             EC.visibility_of_all_elements_located((By.XPATH, selector)))
         return buttons
-
-class Buttons(LanguageButtons, FootballMenuButtons):
-    def __init__(self, browser):
-        super().__init__()
-        self.browser = browser
