@@ -1,10 +1,10 @@
 import time
 
-from live.control_units.async_manager.tasks.async_tab_opener import MultipleTabsOpener
-from browser import HeadlessChromeDriver
-from live.control_units.async_manager.tasks.main_operations import BrowserPreparer, FootballMenuHandler
+from live.control_units.manager.tasks.async_tab_opener import MultipleTabsOpener
+from browser.browser import HeadlessChromeDriver
+from live.control_units.manager.tasks.main_operations import BrowserPreparer, FootballMenuHandler
 from live.control_units.scripers.schedule_data_collector import ScheduleScraper
-from live.control_units.async_manager.tasks.team_browser_list_collector import MatchCollector
+from live.control_units.manager.tasks.team_browser_list_collector import MatchCollector
 from toolz.pickle_manager import PickleHandler
 
 class ScheduleManager:
@@ -36,11 +36,12 @@ class TabSwitcher:
         self.driver = driver
 
     def switch_tabs(self):
-        n = 1
         for handle in self.driver.driver.window_handles:
             self.driver.driver.switch_to.window(handle)
-            print(n)
-            n += 1
+            match_button = self.driver.buttons.get_match_button()
+            match_button.click()
+            stats_button = self.driver.buttons.get_stats_button()
+            stats_button.click()
             time.sleep(4)
 
 
