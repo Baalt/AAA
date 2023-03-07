@@ -1,15 +1,15 @@
-import asyncio
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
-from live.control_units.browser.buttons.menu_buttons import Buttons
+from browser.live_buttons.button_box import Buttons
 
 
 class HeadlessChromeDriver:
     def __init__(self, driver_path: str = '/usr/local/bin/chromedriver', headless: bool = True):
         options = Options()
-        options.headless = headless
+        if headless:
+            options.add_argument('--headless')
         service = Service(executable_path=driver_path)
         self.driver = webdriver.Chrome(service=service, options=options)
         self.buttons = Buttons(browser=self.driver)
