@@ -1,6 +1,6 @@
 import asyncio
 
-from live.control_units.browser.browser import HeadlessChromeDriver
+from browser.browser import HeadlessChromeDriver
 
 
 class MultipleTabsOpener:
