@@ -1,4 +1,4 @@
-from live.control_units.manager.tasks.command_matcher import FootballTeamsComparison
+from live.control_units.managers.tasks.command_matcher import FootballTeamsComparison
 
 from typing import Tuple
 
