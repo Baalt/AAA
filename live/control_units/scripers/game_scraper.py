@@ -1,13 +1,19 @@
+from typing import List
 from bs4 import BeautifulSoup
 
 
 class RealTimeGameScraper:
     def __init__(self):
-        self.game_info = {'goals': {}}
+        self.game_info = {'goals': {}, 'match_stats': {}}
 
     def print_game_info(self):
         from pprint import pprint
         pprint(self.game_info)
+
+    def scrape_league(self, soup: BeautifulSoup):
+        # Get league information from the last element with the specified class
+        league_info = soup.select('.ev-header__caption--1nhETX:last-of-type')[-1].text
+        self.game_info['league'] = league_info
 
     def scrape_team_names(self, soup: BeautifulSoup):
         # Get team names
@@ -21,10 +27,29 @@ class RealTimeGameScraper:
         match_time = soup.select_one('.ev-live-time__timer--6XZjl4').text
         self.game_info['match_time'] = match_time
 
-    def scrape_league(self, soup: BeautifulSoup):
-        # Get league information from the last element with the specified class
-        league_info = soup.select('.ev-header__caption--1nhETX:last-of-type')[-1].text
-        self.game_info['league'] = league_info
+    def scrape_match_score(self, soup: BeautifulSoup):
+        scores: List[int] = [int(score.text) for score in soup.select('.ev-score--4dG0AR._main--1NGLZW')]
+        if len(scores) == 2:
+            score_str = f"{scores[0]} : {scores[1]}"
+            self.game_info['match_score'] = score_str
+
+    def scrape_red_cards(self, soup: BeautifulSoup):
+        # Find the first element that matches the specified selector
+        red_card_elem = soup.select_one('div.ev-comment__tail--5ILNNG._style_red--3JeHeN[title="Sending off"]')
+        red_card_text = red_card_elem.text if red_card_elem else '0-0'
+        self.game_info['match_stats']['Red Cards'] = red_card_text
+
+    def scrape_match_stats(self, soup: BeautifulSoup):
+        match_stats = {}
+        stat_elements = soup.select('div.title--1ynOw7')
+        for stat_element in stat_elements:
+            stat_name = stat_element.find('span', {'class': 'caption-new--IGcNO4'}).text
+            score_element = stat_element.find_next('div', {'class': 'score--6jKiQM'})
+            score = score_element.text.strip()
+            team1_score, team2_score = score.split(':')
+            match_stats[stat_name] = {'team1': int(team1_score), 'team2': int(team2_score)}
+        self.game_info['match_stats'] = match_stats
+
 
     def collect_stats(self, soup, match_stat, total_text, team_total_text, handicap_text):
         # Find all market-group-box elements and loop through each one
@@ -140,12 +165,9 @@ class RealTimeGameScraper:
                         total = '-' + total.lstrip('‑')
                     elif total.startswith('+'):
                         total = total.lstrip('+')
-                    # total = float(total)
-                    # print('handicap_total_1: ', total)
 
                 else:
                     coeff = cell.text.strip()
-                    # print('handicap_1_coeff: ', coeff)
 
                 if total != None and coeff != None:
                     coeff_set: dict = {'total_number': total,
