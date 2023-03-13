@@ -37,7 +37,13 @@ class MatchCollector:
                     self.matches[live_key] = match_data
 
     def _split_command_names(self, command_names: str, commands_separator=' — ') -> Tuple[str, str]:
-        home_team, away_team = command_names.split(commands_separator)
+        try:
+            home_team, away_team = command_names.split(commands_separator)
+        except ValueError:
+            # If there are more than two values, return the first and last values
+            teams = command_names.split(commands_separator)
+            home_team = teams[0]
+            away_team = teams[-1]
         return home_team, away_team
 
     def get_matches(self) -> dict:
