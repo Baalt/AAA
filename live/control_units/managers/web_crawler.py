@@ -1,3 +1,5 @@
+import time
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,6 +15,16 @@ class WebCrawler:
     def __init__(self, driver: HeadlessChromeDriver, smart_data: dict):
         self.driver = driver
         self.smart_data = smart_data
+
+    def run_crawler(self):
+        start_time = time.time()
+        self.click_filter_games()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        if elapsed_time < 30:
+            time.sleep(30 - elapsed_time)
+        elif elapsed_time >= 30:
+            print(f"click_filter_games took {elapsed_time} seconds to complete")
 
     def click_filter_games(self):
         for key in self.smart_data:
