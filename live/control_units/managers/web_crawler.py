@@ -30,18 +30,7 @@ class WebCrawler:
     def click_filter_games(self):
         for key in self.smart_data:
             xpath = f'//a[contains(@class, "filter-item-event--20qx1S") and starts-with(normalize-space(), "{key}")]'
-            try:
-                element = self.driver.driver.find_element(By.XPATH, xpath)
-                try:
-                    element.click()
-                except ElementClickInterceptedException:
-                    # Scroll to the element before clicking
-                    self.driver.driver.execute_script("arguments[0].scrollIntoView();", element)
-                    # Click on the element using an offset position
-                    actions = ActionChains(self.driver.driver)
-                    actions.move_to_element(element).move_by_offset(10, 10).click().perform()
-                    element.click()
-            except NoSuchElementException:
+            if not self.click_element_by_xpath(xpath):
                 continue
 
             self.wait_for_elements()
@@ -75,6 +64,22 @@ class WebCrawler:
                 self.scraper.scrape_match_stats(soup=soup)
                 self.collect_game_info(soup)
                 self.scraper.print_game_info()
+
+    def click_element_by_xpath(self, xpath):
+        try:
+            element = self.driver.driver.find_element(By.XPATH, xpath)
+            try:
+                element.click()
+            except ElementClickInterceptedException:
+                # Scroll to the element before clicking
+                self.driver.driver.execute_script("arguments[0].scrollIntoView();", element)
+                # Click on the element using an offset position
+                actions = ActionChains(self.driver.driver)
+                actions.move_to_element(element).move_by_offset(10, 10).click().perform()
+                element.click()
+        except NoSuchElementException:
+            return False
+        return True
 
     def collect_game_info(self, soup):
         self.scraper.scrape_league(soup=soup)
