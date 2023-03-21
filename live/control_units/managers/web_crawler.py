@@ -31,7 +31,6 @@ class WebCrawler:
             xpath = f'//a[contains(@class, "filter-item-event--20qx1S") and starts-with(normalize-space(), "{key}")]'
             try:
                 element = self.driver.driver.find_element(By.XPATH, xpath)
-                print(f"{key} = {element.text}")
                 try:
                     element.click()
                 except ElementClickInterceptedException:
@@ -47,13 +46,11 @@ class WebCrawler:
             WebDriverWait(self.driver.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
             self.scraper = RealTimeGameScraper()
             if self.driver.buttons.is_match_button_clicked():
-                print('Кнопка Матч уже была нажата, я просто скрмыш')
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                 self.scraper.collect_stats(soup=soup, match_stat='goals', **RealTimeGameScraper.keys['goals'])
             else:
                 try:
                     if self.driver.buttons.get_match_button():
-                        print('Кнопка не была нажата, но существует, я её нажимаю и скрмыш')
                         self.driver.buttons.get_match_button().click()
                         WebDriverWait(self.driver.driver, 10).until(
                             EC.presence_of_all_elements_located((By.XPATH, '//*')))
@@ -67,11 +64,9 @@ class WebCrawler:
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                 self.collect_game_info(soup)
                 self.scraper.print_game_info()
-                print('кнопка статистики не существуют')
                 continue
 
             if stats_button:
-                print('cуществует кнопка cтатистики и я её нажимаю')
                 stats_button.click()
                 WebDriverWait(self.driver.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')

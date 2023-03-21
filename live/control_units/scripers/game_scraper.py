@@ -3,29 +3,79 @@ from bs4 import BeautifulSoup
 
 
 class RealTimeGameScraper:
+    keys = {
+        'goals': {
+            'total_text': 'Total goals',
+            'team_total_text': 'Team totals goals',
+            'handicap_text': 'Handicap',
+        },
+        'corners': {
+            'total_text': 'Total corners',
+            'team_total_text': 'Team totals corners',
+            'handicap_text': 'Сorners handicap',
+        },
+        'yellow cards': {
+            'total_text': 'Total yellow cards',
+            'team_total_text': 'Team totals yellow cards',
+            'handicap_text': 'Yellow cards handicap',
+        },
+        'fouls': {
+            'total_text': 'Total fouls',
+            'team_total_text': 'Team totals fouls',
+            'handicap_text': 'Fouls handicap',
+        },
+        'shots on goal': {
+            'total_text': 'Total shots on goal',
+            'team_total_text': 'Team totals shots on goal',
+            'handicap_text': 'Shots on goal handicap',
+        },
+        'offsides': {
+            'total_text': 'Total offsides',
+            'team_total_text': 'Team totals offsides',
+            'handicap_text': 'Offsides handicap',
+        },
+        'throw-ins': {
+            'total_text': 'Total throw-ins',
+            'team_total_text': 'Team totals throw-ins',
+            'handicap_text': 'Throw-ins handicap',
+        },
+        'goal kicks': {
+            'total_text': 'Total goal kicks',
+            'team_total_text': 'Team totals goal kicks',
+            'handicap_text': 'Goal kicks handicap',
+        },
+    }
+
     def __init__(self):
-        self.game_info = {'goals': {}, 'match_stats': {}}
+        self.game_info = {'match_stats': {}}
 
     def print_game_info(self):
         from pprint import pprint
         pprint(self.game_info)
+
+    def get_game_info(self):
+        return self.game_info
 
     def scrape_league(self, soup: BeautifulSoup):
         # Get league information from the last element with the specified class
         league_info = soup.select('.ev-header__caption--1nhETX:last-of-type')[-1].text
         self.game_info['league'] = league_info
 
-    def scrape_team_names(self, soup: BeautifulSoup):
+    def scrape_team_names(self, soup: BeautifulSoup, separator=' — '):
         # Get team names
         team1_name = soup.select_one('.team1--3LWqC1 .ev-team__name--6W4ZZS').text
         team2_name = soup.select_one('.team2--4SM4BI .ev-team__name--6W4ZZS').text
         self.game_info['team1_name'] = team1_name
         self.game_info['team2_name'] = team2_name
+        return f"{team1_name}{separator}{team2_name}"
 
     def scrape_match_time(self, soup: BeautifulSoup):
         # Get match time
-        match_time = soup.select_one('.ev-live-time__timer--6XZjl4').text
-        self.game_info['match_time'] = match_time
+        try:
+            match_time = soup.select_one('.ev-live-time__timer--6XZjl4').text
+            self.game_info['match_time'] = match_time
+        except AttributeError:
+            raise ValueError("Match time element not found in the page HTML.")
 
     def scrape_match_score(self, soup: BeautifulSoup):
         scores: List[int] = [int(score.text) for score in soup.select('.ev-score--4dG0AR._main--1NGLZW')]
@@ -50,7 +100,6 @@ class RealTimeGameScraper:
             match_stats[stat_name] = {'team1': int(team1_score), 'team2': int(team2_score)}
         self.game_info['match_stats'] = match_stats
 
-
     def collect_stats(self, soup, match_stat, total_text, team_total_text, handicap_text):
         # Find all market-group-box elements and loop through each one
         market_boxes = soup.select('.market-group-box--z23Vvd')
@@ -60,79 +109,81 @@ class RealTimeGameScraper:
             if scoring_category:
                 category = scoring_category.text
                 if category == total_text:
-                    self.add_totals_info(info_box=box,
-                                         match_stat=match_stat,
-                                         key='totals')
-                elif category == team_total_text:
-                    self.add_teams_totals_info(info_box=box,
-                                               match_stat=match_stat,
-                                               key_1='team1_totals',
-                                               key_2='team2_totals')
-                elif category == handicap_text:
-                    self.add_handicaps_info(info_box=box,
-                                            match_stat=match_stat,
-                                            key_1='team1_handicaps',
-                                            key_2='team2_handicaps')
+                    self.__add_totals_info(info_box=box,
+                                           match_stat=match_stat,
+                                           key='totals')
 
-    def add_totals_info(self, info_box, match_stat, key):
+                elif category == team_total_text:
+                    self.__add_teams_totals_info(info_box=box,
+                                                 match_stat=match_stat,
+                                                 key_1='team1_totals',
+                                                 key_2='team2_totals')
+
+                elif category == handicap_text:
+                    self.__add_handicaps_info(info_box=box,
+                                              match_stat=match_stat,
+                                              key_1='team1_handicaps',
+                                              key_2='team2_handicaps')
+
+    def __add_totals_info(self, info_box, match_stat, key):
         statistic_key_dict = []
 
         for row in info_box.find_all('div', {'class': 'row-common--33mLED'}):
-            self.extract_total_sets(row, statistic_key_dict)
+            self.__extract_total_sets(row, statistic_key_dict)
 
         if statistic_key_dict:
-            self.game_info[match_stat].update({key: statistic_key_dict})
+            self.game_info.setdefault(match_stat, {}).update({key: statistic_key_dict})
 
-    def add_teams_totals_info(self, info_box, match_stat, key_1, key_2):
+    def __add_teams_totals_info(self, info_box, match_stat, key_1, key_2):
         statistic_dict_1, statistic_dict_2 = [], []
-        command_1_box, command_2_box = self.get_command_boxes(info_box)
+        command_1_box, command_2_box = self.__get_command_boxes(info_box)
 
         if command_1_box:
             for box in command_1_box:
-                self.extract_total_sets(box, statistic_dict_1)
+                self.__extract_total_sets(box, statistic_dict_1)
 
         if command_2_box:
             for box in command_2_box:
-                self.extract_total_sets(box, statistic_dict_2)
+                self.__extract_total_sets(box, statistic_dict_2)
 
         if statistic_dict_1:
-            self.game_info[match_stat].update({key_1: statistic_dict_1})
+            self.game_info.setdefault(match_stat, {}).update({key_1: statistic_dict_1})
         if statistic_dict_2:
-            self.game_info[match_stat].update({key_2: statistic_dict_2})
+            self.game_info.setdefault(match_stat, {}).update({key_2: statistic_dict_2})
 
-    def add_handicaps_info(self, info_box, match_stat, key_1, key_2):
+    def __add_handicaps_info(self, info_box, match_stat, key_1, key_2):
         statistic_dict_1, statistic_dict_2 = [], []
-        command_1_box, command_2_box = self.get_command_boxes(info_box)
+        command_1_box, command_2_box = self.__get_command_boxes(info_box)
 
         if command_1_box:
             for box in command_1_box:
-                self.extract_handicap_sets(box, statistic_dict_1)
+                self.__extract_handicap_sets(box, statistic_dict_1)
 
         if command_2_box:
             for box in command_2_box:
-                self.extract_handicap_sets(box, statistic_dict_2)
+                self.__extract_handicap_sets(box, statistic_dict_2)
 
         if statistic_dict_1:
-            self.game_info[match_stat].update({key_1: statistic_dict_1})
+            self.game_info.setdefault(match_stat, {}).update({key_1: statistic_dict_1})
         if statistic_dict_2:
-            self.game_info[match_stat].update({key_2: statistic_dict_2})
+            self.game_info.setdefault(match_stat, {}).update({key_2: statistic_dict_2})
 
-    def get_command_boxes(self, info_box):
+    def __get_command_boxes(self, info_box):
         command_boxes = []
-        box_team_names = self.get_box_command_names(info_box=info_box)
+        box_team_names = self.__get_box_command_names(info_box=info_box)
         if box_team_names:
             if len(box_team_names) == 2:
-                command_boxes = [self.get_team_box(info_box, 0), self.get_team_box(info_box, 1)]
+                command_boxes = [self.__get_team_box(info_box, 0), self.__get_team_box(info_box, 1)]
             elif len(box_team_names) == 1:
-                box_team_names = self.replace_nbsp_with_space(lst=box_team_names)
+                box_team_names = self.__replace_nbsp_with_space(lst=box_team_names)
                 if self.game_info['team1_name'] == box_team_names[0]:
-                    command_boxes = [self.get_team_box(info_box, 0), None]
+                    command_boxes = [self.__get_team_box(info_box, 0), None]
                 elif self.game_info['team2_name'] == box_team_names[0]:
-                    command_boxes = [None, self.get_team_box(info_box, 1)]
+                    command_boxes = [None, self.__get_team_box(info_box, 1)]
 
         return command_boxes
 
-    def extract_total_sets(self, info_box, statistic_key_dict, total_text='Total'):
+    def __extract_total_sets(self, info_box, statistic_key_dict, total_text='Total'):
         over_under, total, over, under = None, None, None, None
         for cell in info_box.select('div[class*="cell-wrap--LHnTwg"]'):
             cell_text = cell.text.strip()
@@ -154,7 +205,7 @@ class RealTimeGameScraper:
                 statistic_key_dict.append(bet_set)
                 total, over, under = None, None, None
 
-    def extract_handicap_sets(self, info_box, statistic_key_dict, handicap_text='Hcap'):
+    def __extract_handicap_sets(self, info_box, statistic_key_dict, handicap_text='Hcap'):
         cells = info_box.select('div[class*="cell-wrap--LHnTwg"]')
         if len(cells) % 2 == 0:
             total, coeff = None, None
@@ -175,15 +226,15 @@ class RealTimeGameScraper:
                     statistic_key_dict.append(coeff_set)
                     total, coeff = None, None
 
-    def get_box_command_names(self, info_box):
+    def __get_box_command_names(self, info_box):
         divs = info_box.find_all('div', {'class': 'header-text--5VlC6H'})
         return [div.text for div in divs if div.text not in ['Over', 'Under', '']]
 
-    def replace_nbsp_with_space(self, lst):
+    def __replace_nbsp_with_space(self, lst):
         """Replace all occurrences of \xa0 character with a space in the given list of strings."""
         return [name.replace('\xa0', ' ') for name in lst]
 
-    def get_team_box(self, info_box, index):
+    def __get_team_box(self, info_box, index):
         try:
             command_box = info_box.find_all(
                 'div', {'class': "section--5JAm4a _horizontal--18WrKP"})[index].find_all(

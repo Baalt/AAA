@@ -27,3 +27,6 @@ class ScheduleManager:
         controller_4.collect_matches(schedule_dict=controller_3.extract_commands_to_dict(),
                                      smart_dict=self.smart_dict)
         return controller_4.get_matches()
+
+    def get_driver(self):
+        return self.driver

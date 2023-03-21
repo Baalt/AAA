@@ -29,9 +29,9 @@ class FootballTeamsComparison:
 
             # Split the team names into words
             smart_words = [word for word in smart_team.split() if
-                           len(word) > 3 and word.lower() not in self.exclude_list]
+                           len(word) > 4 and word.lower() not in self.exclude_list]
             live_words = [word for word in live_team.split() if
-                          len(word) > 3 and word.lower() not in self.exclude_list]
+                          len(word) > 4 and word.lower() not in self.exclude_list]
 
             # Compare the teams based on their names
             if any((word.lower() in live_team.lower()) for word in smart_words) or \
