@@ -26,6 +26,7 @@ class WebCrawler:
         elif elapsed_time >= 30:
             print(f"click_filter_games took {elapsed_time} seconds to complete")
 
+
     def click_filter_games(self):
         for key in self.smart_data:
             xpath = f'//a[contains(@class, "filter-item-event--20qx1S") and starts-with(normalize-space(), "{key}")]'
@@ -43,7 +44,7 @@ class WebCrawler:
             except NoSuchElementException:
                 continue
 
-            WebDriverWait(self.driver.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
+            self.wait_for_elements()
             self.scraper = RealTimeGameScraper()
             if self.driver.buttons.is_match_button_clicked():
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
@@ -52,8 +53,7 @@ class WebCrawler:
                 try:
                     if self.driver.buttons.get_match_button():
                         self.driver.buttons.get_match_button().click()
-                        WebDriverWait(self.driver.driver, 10).until(
-                            EC.presence_of_all_elements_located((By.XPATH, '//*')))
+                        self.wait_for_elements()
                         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                         self.scraper.collect_stats(soup=soup, match_stat='goals', **RealTimeGameScraper.keys['goals'])
                 except NoSuchElementException:
@@ -68,7 +68,7 @@ class WebCrawler:
 
             if stats_button:
                 stats_button.click()
-                WebDriverWait(self.driver.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
+                self.wait_for_elements()
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                 for stat_key in RealTimeGameScraper.keys:
                     self.scraper.collect_stats(soup=soup, match_stat=stat_key, **RealTimeGameScraper.keys[stat_key])
@@ -82,6 +82,9 @@ class WebCrawler:
         self.scraper.scrape_match_score(soup=soup)
         self.scraper.scrape_match_time(soup=soup)
         self.scraper.scrape_red_cards(soup=soup)
+
+    def wait_for_elements(self):
+        WebDriverWait(self.driver.driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
 
     def get_live_data(self):
         self.scraper.get_game_info()
