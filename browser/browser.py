@@ -1,12 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from browser.live_buttons.button_box import Buttons
+from browser.smart_buttons.smart_buttons import SmartStatButtons
 
 
-class HeadlessChromeDriver:
-    def __init__(self, driver_path: str = '/usr/local/bin/chromedriver', headless: bool = True):
+
+
+class LiveChromeDriver:
+    def __init__(self, driver_path: str = '/usr/local/bin/chromedriver', headless: bool = False):
         options = Options()
         if headless:
             options.add_argument('--headless')
@@ -26,3 +32,21 @@ class HeadlessChromeDriver:
 
     def close(self):
         self.driver.quit()
+
+
+class SmartChromeDriver(LiveChromeDriver):
+    def login(self, username, password):
+        # Wait up to 10 seconds for the email and password input fields to appear
+        wait = WebDriverWait(self.driver, 10)
+        email_field = wait.until(EC.presence_of_element_located((By.NAME, 'email')))
+        password_field = wait.until(EC.presence_of_element_located((By.NAME, 'password')))
+
+        # Fill in the email and password fields
+        email_field.send_keys(username)
+        password_field.send_keys(password)
+
+        # Find and click the login button
+        login_button = wait.until(EC.element_to_be_clickable((
+            By.XPATH,
+            '//button[normalize-space(text())="Войти"]')))
+        login_button.click()
