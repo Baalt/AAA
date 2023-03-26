@@ -1,10 +1,10 @@
 from selenium.common import StaleElementReferenceException
 
-from browser.browser import HeadlessChromeDriver
+from browser.browser import LiveChromeDriver
 
 
 class BrowserPreparer:
-    def __init__(self, driver: HeadlessChromeDriver):
+    def __init__(self, driver: LiveChromeDriver):
         self.browser = driver
 
     def open_page(self, url='https://www.fon.bet/live/football/'):

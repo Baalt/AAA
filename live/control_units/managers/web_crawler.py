@@ -7,12 +7,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
 from bs4 import BeautifulSoup
 
-from browser.browser import HeadlessChromeDriver
+from browser.browser import LiveChromeDriver
 from live.control_units.scripers.game_scraper import RealTimeGameScraper
 
 
 class WebCrawler:
-    def __init__(self, driver: HeadlessChromeDriver, smart_data: dict):
+    def __init__(self, driver: LiveChromeDriver, smart_data: dict):
         self.driver = driver
         self.smart_data = smart_data
 

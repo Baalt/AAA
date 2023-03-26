@@ -1,4 +1,4 @@
-from browser.browser import HeadlessChromeDriver
+from browser.browser import LiveChromeDriver
 from live.control_units.managers.tasks.main_operations import BrowserPreparer, FootballMenuHandler
 from live.control_units.managers.tasks.team_browser_list_collector import MatchCollector
 from live.control_units.scripers.schedule_data_collector import ScheduleScraper
@@ -6,7 +6,7 @@ from live.control_units.scripers.schedule_data_collector import ScheduleScraper
 
 class ScheduleManager:
     def __init__(self, smart_dict: dict):
-        self.driver = HeadlessChromeDriver(headless=False)
+        self.driver = LiveChromeDriver(headless=False)
         self.driver.maximize_window()
         self.matches = {}
         self.smart_dict = smart_dict

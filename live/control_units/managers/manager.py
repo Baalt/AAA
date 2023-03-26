@@ -9,5 +9,3 @@ if __name__ == '__main__':
     full_smart_dict = browser.run()
     operator = WebCrawler(driver=browser.get_driver(), smart_data=full_smart_dict)
     operator.run_crawler()
-
-
