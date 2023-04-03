@@ -20,6 +20,9 @@ class LeagueDataCollector:
         from pprint import pprint
         pprint(self.data)
 
+    def get_data(self):
+        return self.data
+
     def scrape_data(self) -> None:
         self.scrape_season('current_season')
         self.driver.driver.refresh()
