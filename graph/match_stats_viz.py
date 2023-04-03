@@ -75,4 +75,5 @@ class MatchStatisticsGraph:
         ax.xaxis.labelpad = max_count * 2
         ax.yaxis.labelpad = 20
 
-        plt.show()
+        # Save the graph as an image
+        plt.savefig(f"graph/data/live_stats.png")

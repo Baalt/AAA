@@ -42,8 +42,6 @@ class FootballStatsVisualizer:
         plt.title(f'Points - {season}')
         plt.xlabel('Team')
         plt.ylabel('Points')
-        plt.gcf().set_size_inches(24, 12)
-
         plt.savefig(f"graph/data/{season}_points.png")
 
 
@@ -99,7 +97,6 @@ class FootballStatsVisualizer:
         plt.title(f'{stat_key.capitalize()} - {season}')
         plt.xlabel('Team')
         plt.ylabel('Total')
-        plt.gcf().set_size_inches(24, 12)
 
         # Save the graph as an image
         plt.savefig(f"graph/data/{season}_stat.png")
