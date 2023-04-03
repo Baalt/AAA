@@ -1,4 +1,4 @@
-key_dict = {
+stats_dict = {
     'Голы': 'goals',
     'Угловые': 'corners',
     'ЖК': 'yellow cards',
@@ -7,5 +7,4 @@ key_dict = {
     'Офсайды': 'offsides',
     'Ауты': 'throw-ins',
     'Удары от ворот': 'goal kicks',
-    'Удары': 'shots'
 }
