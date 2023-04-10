@@ -6,9 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from browser.live_buttons.button_box import Buttons
-from browser.smart_buttons.smart_buttons import SmartStatButtons
-
-
 
 
 class LiveChromeDriver:

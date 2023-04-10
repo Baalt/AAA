@@ -127,5 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-live/control_units/managers/smart_data.pkl
+data
 .idea
+graph/data
+telega/info.py

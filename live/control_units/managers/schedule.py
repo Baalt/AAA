@@ -1,7 +1,7 @@
 from browser.browser import LiveChromeDriver
 from live.control_units.managers.tasks.main_operations import BrowserPreparer, FootballMenuHandler
 from live.control_units.managers.tasks.team_browser_list_collector import MatchCollector
-from live.control_units.scripers.schedule_data_collector import ScheduleScraper
+from live.control_units.scrapers.schedule_data_collector import ScheduleScraper
 
 
 class ScheduleManager:

@@ -21,7 +21,7 @@ class LeagueScraper:
         for data in commands_data:
             cells = data.find_all('td')
             team_position = cells[0].text.strip()
-            team_name = cells[1].text.strip()
+            team_name = cells[1].find('a').text.strip().replace('\n', '').replace('\r', '')
             games_played = cells[2].text.strip()
             avg_overall_total = cells[11 if key == 'goals' else 9].text.strip()
             avg_individual_team = cells[12 if key == 'goals' else 6].text.strip()

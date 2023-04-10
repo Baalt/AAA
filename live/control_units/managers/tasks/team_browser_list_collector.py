@@ -18,8 +18,8 @@ class MatchCollector:
             if live_key in self.matches:
                 continue
             live_home_name, live_away_name = self._split_command_names(command_names=live_key)
-            for smart_data in smart_dict['list']:
-                smart_home_name, smart_away_name = smart_data['home_command_name'], smart_data['away_command_name']
+            for smart_data in smart_dict['lst']:
+                smart_home_name, smart_away_name = smart_data['team1_name'], smart_data['team2_name']
                 match = self.filter.compare_teams(
                     live_team_1=live_home_name,
                     live_team_2=live_away_name,

@@ -45,10 +45,14 @@ class ScheduleScraper:
 if __name__ == '__main__':
     driver = SmartChromeDriver()
     driver.maximize_window()
-    driver.open_page(url='https://smart-tables.ru/')
+    driver.open_page(url='https://smart-tables.ru/login')
+    driver.login(username='enjoylifebalt@gmail.com', password='astraSTb00rato')
 
     soup = BeautifulSoup(driver.get_page_html(), 'lxml')
     scraper = ScheduleScraper()
     scraper.scrape_date_data(soup=soup)
     scraper.scrape_schedule_data(soup=soup)
-    scraper.show_schedule_data()
+
+    from live.control_units.scrapers.schedule_data_collector import schedule_data_collector
+
+
