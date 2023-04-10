@@ -49,7 +49,7 @@ class RealTimeGameScraper:
     def __init__(self):
         self.game_info = {'match_stats': {}}
 
-    def print_game_info(self):
+    def show_game_info(self):
         from pprint import pprint
         pprint(self.game_info)
 

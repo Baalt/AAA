@@ -5,7 +5,7 @@ matplotlib.use('Qt5Agg')
 plt.ioff()
 
 
-class MatchStatisticsGraph:
+class MatchStatsVisualizer:
     def __init__(self, data):
         self.data = data
         self.sorted_keys = ['Fouls', 'Yellow cards', 'Throw-ins', 'Offsides', 'Goal kicks', 'Shots on goal', 'Corners']

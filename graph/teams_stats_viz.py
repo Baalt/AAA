@@ -6,7 +6,7 @@ matplotlib.use('Qt5Agg')
 plt.ioff()
 
 
-class FootballStatsVisualizer:
+class TeamsStatsVisualizer:
     def __init__(self, data, team_name_1, team_name_2):
         self.data = data
         self.team_name_1 = team_name_1
@@ -31,19 +31,24 @@ class FootballStatsVisualizer:
         values = np.array(values)
         num_bars = values.shape[1]
 
-        plt.figure()
-        plt.bar(np.arange(len(team_names)), values[:, 0], color='black')
+        plt.figure(figsize=(10, 6))  # Set the figure size to 10 inches wide by 6 inches tall
 
-        for i, value in enumerate(values):
-            plt.text(i, value[0] + 2, f"{value[0]} / {value[1]}", ha='center', fontsize=13,
+        for i in range(len(team_names)):
+            alpha = 1.0
+            if not team_names[i].endswith(("_1", "_2")):
+                alpha = 0.6
+            plt.bar(i, values[i, 0], color='black', width=0.4, alpha=alpha)  # Use alpha to set transparency
+
+            plt.text(i, values[i, 0] + 1.5, f"{values[i, 0]} / {values[i, 1]}", ha='center', fontsize=10,
+                     # Reduce the font size to 10
                      bbox=dict(facecolor='white', edgecolor='white', alpha=0.5, pad=1))
 
         plt.xticks(np.arange(len(team_names)), team_names, rotation=90, fontsize=10)
         plt.title(f'Points - {season}')
         plt.xlabel('Team')
         plt.ylabel('Points')
-        plt.savefig(f"graph/data/{season}_points.png")
-
+        plt.tight_layout()  # Use tight_layout to optimize spacing
+        plt.savefig(f"graph/data/{season}_points.png", dpi=300)
 
     def plot_team_stats(self, stat_key, season, sort_by=None):
         team_names = []
@@ -72,31 +77,25 @@ class FootballStatsVisualizer:
 
         colors = ['b', 'g', 'r']
 
-        plt.figure()
+        plt.figure(figsize=(10, 6))
         for i in range(num_bars):
-            if i == 0:
-                plt.bar(np.arange(len(team_names)) + i * 0.2, values[:, i], width=0.2, label='avg_overall_total',
-                        color=colors[0], edgecolor='white')
-            elif i == 1:
-                plt.bar(np.arange(len(team_names)) + i * 0.2, values[:, i], width=0.2, label='avg_individual_team',
-                        color=colors[1], edgecolor='white')
-            elif i == 2:
-                plt.bar(np.arange(len(team_names)) + i * 0.2, values[:, i], width=0.2, label='avg_individual_team_against',
-                        color=colors[2], edgecolor='white')
+            for j, team_name in enumerate(team_names):
+                alpha = 1.0
+                if not team_name.endswith(("_1", "_2")):
+                    alpha = 0.5
+                bar = plt.bar(j + i * 0.2, values[j, i], width=0.2, color=colors[i],
+                              alpha=alpha,
+                              edgecolor='white')
 
-            # Add bar labels above each bar with a white border
-            plt.bar_label(
-                plt.bar(np.arange(len(team_names)) + i * 0.2, values[:, i], width=0.2, color=colors[i], edgecolor='white'),
-                labels=values[:, i], label_type='edge', fontsize=10, padding=3, color='black',
-                bbox=dict(facecolor='white', edgecolor='white', alpha=0.5, pad=1)
-            )
+                plt.gca().text(bar.patches[0].get_x() + bar.patches[0].get_width() / 2, bar.patches[0].get_height(), f"{values[j, i]:.1f}",
+                               ha='center', va='bottom', fontsize=8,
+                               bbox=dict(facecolor='white', edgecolor='white', alpha=0.5, pad=1))
 
-        # Set the axis labels, title, and legend
-        plt.legend()
-        plt.xticks(np.arange(len(team_names)), team_names, rotation=90, fontsize=10)  # Reduce tick label font size
-        plt.title(f'{stat_key.capitalize()} - {season}')
+        plt.xticks(np.arange(len(team_names)), team_names, rotation=90, fontsize=10)
+        plt.title(f'Stats - {season}')
         plt.xlabel('Team')
-        plt.ylabel('Total')
+        plt.ylabel(stat_key)
+        plt.tight_layout()
 
         # Save the graph as an image
-        plt.savefig(f"graph/data/{season}_stat.png")
+        plt.savefig(f"graph/data/{season}_stat.png", dpi=300)
