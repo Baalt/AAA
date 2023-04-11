@@ -130,4 +130,4 @@ dmypy.json
 data
 .idea
 graph/data
-telega/info.py
+telega/config.py

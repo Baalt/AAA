@@ -1,26 +1,20 @@
-import asyncio
-import telegram
-from telega import info
-
 import os
 import telegram
+from telega import config
+
 
 class TelegramBot:
     def __init__(self, token, chat_id):
         self.bot = telegram.Bot(token=token)
         self.chat_id = chat_id
 
-    def send_images(self):
-        image_dir = 'graph/data'
-        image_files = [f for f in os.listdir(image_dir) if os.path.isfile(os.path.join(image_dir, f)) and f.endswith('.png')]
-        if not image_files:
-            return
-        for image_file in image_files:
-            with open(os.path.join(image_dir, image_file), 'rb') as f:
-                self.bot.send_photo(chat_id=self.chat_id, photo=f)
-
-
-if __name__ == '__main__':
-    bot = TelegramBot(token=info.token, chat_id=info.chat_id)
-    bot.send_images()
+    async def send_message_with_files(self, message, *files):
+        media = []
+        for file in files:
+            if os.path.isfile(file):
+                media.append(telegram.InputMediaPhoto(open(file, 'rb')))
+        if not media:
+            await self.bot.send_message(chat_id=self.chat_id, text=message)
+        else:
+            await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
 

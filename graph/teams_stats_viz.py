@@ -39,7 +39,7 @@ class TeamsStatsVisualizer:
                 alpha = 0.6
             plt.bar(i, values[i, 0], color='black', width=0.4, alpha=alpha)  # Use alpha to set transparency
 
-            plt.text(i, values[i, 0] + 1.5, f"{values[i, 0]} / {values[i, 1]}", ha='center', fontsize=10,
+            plt.text(i, values[i, 0] + 1.5, f"{values[i, 0]} / {values[i, 1]}", ha='center', fontsize=7,
                      # Reduce the font size to 10
                      bbox=dict(facecolor='white', edgecolor='white', alpha=0.5, pad=1))
 
