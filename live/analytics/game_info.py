@@ -13,8 +13,7 @@ class GameInfo:
         self.key = key
 
     def get_correction_key(self):
-        return f"""
-    Correction Key: {self.smart_data['smart_data']['game_number']}_{self.statistic_name}_{self.key}_"""
+        return f"\n{self.smart_data['smart_data']['game_number']}➠{self.statistic_name}➠{self.key}➠"
 
     def get_game_info(self):
         try:
