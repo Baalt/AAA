@@ -81,7 +81,7 @@ class SmartLiveCompare():
         try:
             coeff_box = self.live_data[statistic][statistic_key]
         except KeyError as e:
-            print('SmartLiveCompare.search_total_engine coeff_box error: ', e)
+            # print('SmartLiveCompare.search_total_coeff_box error: ', e)
             return
 
         for coeff_set in coeff_box:
@@ -92,6 +92,8 @@ class SmartLiveCompare():
                 print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
                 continue
             if total_under:
+                if not isinstance(total_under, float):
+                    total_under = float(total_under)
                 if live_total >= total_under and coeff_under > 1.65:
                     full_rate_direction = rate_direction + '_under'
                     info = GameInfo(
@@ -115,6 +117,8 @@ class SmartLiveCompare():
                     continue
 
                 if total_over:
+                    if not isinstance(total_over, float):
+                        total_under = float(total_over)
                     if live_total <= total_over and coeff_over > 1.7:
                         full_rate_direction = rate_direction + '_over'
                         info = GameInfo(
@@ -135,7 +139,7 @@ class SmartLiveCompare():
         try:
             coeff_box = self.live_data[statistic][statistic_key]
         except KeyError as e:
-            print('SmartLiveCompare.search_handicap_engine coeff_box error: ', e)
+            # print('SmartLiveCompare.search_handicap_engine coeff_box error: ', e)
             return
 
         for coeff_set in coeff_box:
@@ -147,6 +151,8 @@ class SmartLiveCompare():
                 continue
 
             if handicap:
+                if not isinstance(handicap, float):
+                    handicap = float(handicap)
                 if live_handicap >= handicap and coeff > 1.65:
                     info = GameInfo(
                         live_data=self.live_data,

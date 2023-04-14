@@ -5,28 +5,23 @@ from live.control_units.scrapers.schedule_data_collector import ScheduleScraper
 
 
 class ScheduleManager:
-    def __init__(self, smart_dict: dict):
-        self.driver = LiveChromeDriver(headless=False)
-        self.driver.maximize_window()
+    def __init__(self, driver, smart_dict: dict):
+        self.driver = driver
         self.matches = {}
         self.smart_dict = smart_dict
 
     def run(self):
-        controller_1 = BrowserPreparer(driver=self.driver)
-        controller_1.open_page()
-        controller_1.switch_language()
+        controller = FootballMenuHandler(driver=self.driver)
+        controller.open_main_football_menu()
+        controller.open_full_leagues_list()
+        controller.open_all_football_leagues()
 
-        controller_2 = FootballMenuHandler(driver=self.driver)
-        controller_2.open_main_football_menu()
-        controller_2.open_full_leagues_list()
-        controller_2.open_all_football_leagues()
+        controller_1 = ScheduleScraper(html=self.driver.get_page_html())
 
-        controller_3 = ScheduleScraper(html=self.driver.get_page_html())
-
-        controller_4 = MatchCollector(matches=self.matches)
-        controller_4.collect_matches(schedule_dict=controller_3.extract_commands_to_dict(),
+        controller_2 = MatchCollector(matches=self.matches)
+        controller_2.collect_matches(schedule_dict=controller_1.extract_commands_to_dict(),
                                      smart_dict=self.smart_dict)
-        return controller_4.get_matches()
+        return controller_2.get_matches()
 
     def get_driver(self):
         return self.driver

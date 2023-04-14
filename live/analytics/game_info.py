@@ -17,12 +17,14 @@ class GameInfo:
 
     def get_game_info(self):
         try:
-            return f"""########## LIVE ##########
-          Live League: {self.live_data['league']}
-      Smart League: {self.smart_data['smart_data']['league']}
+            return f"""
+########## LIVE ##########  
+          
+LL: {self.live_data['league']}
+SL: {self.smart_data['smart_data']['league']}
 
-           Live Teams: {self.live_data['team1_name']} - {self.live_data['team2_name']}
-       Smart Teams: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data']['team2_name']}
+LT: {self.live_data['team1_name']} - {self.live_data['team2_name']}
+ST: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data']['team2_name']}
 
                       TIME: {self.live_data['match_time']}
                   SCORE: {self.live_data['match_score']}

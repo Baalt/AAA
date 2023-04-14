@@ -75,7 +75,7 @@ class RealTimeGameScraper:
             match_time = soup.select_one('.ev-live-time__timer--6XZjl4').text
             self.game_info['match_time'] = match_time
         except AttributeError:
-            raise ValueError("Match time element not found in the page HTML.")
+            self.game_info['match_time'] = 'Match has not started'
 
     def scrape_match_score(self, soup: BeautifulSoup):
         scores: List[int] = [int(score.text) for score in soup.select('.ev-score--4dG0AR._main--1NGLZW')]

@@ -126,6 +126,7 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
+config_smrt.py
 .pyre/
 data
 .idea

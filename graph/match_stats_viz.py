@@ -59,8 +59,10 @@ class MatchStatsVisualizer:
         ax.set_yticks(y)
         ax.set_yticklabels(categories, fontsize=12)
         ax.set_title('Match Statistics', fontsize=16)
-
-        max_count = max(max(team1_data), max(team2_data)) + 1
+        try:
+            max_count = max(max(team1_data), max(team2_data)) + 1
+        except ValueError:
+            max_count = 1
         ax.set_xlim(-max_count, max_count)
         ax.set_xticks([0])
         ax.set_xticklabels([0])

@@ -1,5 +1,6 @@
 import os
 import telegram
+from telegram.error import TimedOut
 from toolz.func import get_today_date
 from toolz.pickle_manager import PickleHandler
 
@@ -17,9 +18,12 @@ class TelegramBot:
         if not media:
             await self.bot.send_message(chat_id=self.chat_id, text=message)
         else:
-            await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
+            try:
+                await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
+            except TimedOut:
+                pass
 
-    async def change_data_and_delete_messages(self):
+    async def change_data_and_delete_messages(self, lv_smrt_data):
         try:
             updates = await self.bot.get_updates()
         except telegram.error.BadRequest:
@@ -35,13 +39,18 @@ class TelegramBot:
                     full_smart_data = handler.read_data(file_path)
                     for dct in full_smart_data['lst']:
                         if dct['game_number'] == parts[0]:
-                            dct[parts[1]][parts[2]] = parts[3]
+                            dct[parts[1]][parts[2]] = float(parts[3])
                             handler.write_data(full_smart_data, file_path)
-
+                            self.change_data_from_lv_smrt_dct(lv_smrt_data=lv_smrt_data, parts=parts)
                 try:
                     await self.bot.delete_message(chat_id=self.chat_id, message_id=message.message_id)
                 except telegram.error.BadRequest:
                     pass
+
+    def change_data_from_lv_smrt_dct(self, lv_smrt_data, parts):
+        for key in lv_smrt_data:
+            if lv_smrt_data[key]['smart_data']['game_number'] == parts[0]:
+                lv_smrt_data[key]['smart_data'][parts[1]][parts[2]] = parts[3]
 
     async def delete_all_messages(self):
         try:

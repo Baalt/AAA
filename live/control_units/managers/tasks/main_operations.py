@@ -1,13 +1,15 @@
-from selenium.common import StaleElementReferenceException
+from selenium.common import StaleElementReferenceException, ElementClickInterceptedException
 
 from browser.browser import LiveChromeDriver
+from config_smrt import LIVE_SOURCE
 
 
 class BrowserPreparer:
     def __init__(self, driver: LiveChromeDriver):
         self.browser = driver
+        self.browser.maximize_window()
 
-    def open_page(self, url='https://www.fon.bet/live/football/'):
+    def open_page(self, url=LIVE_SOURCE):
         self.browser.open_page(url=url)
 
     def switch_language(self):
@@ -34,5 +36,5 @@ class FootballMenuHandler:
         for button in select_all_leagues_buttons[1:]:
             try:
                 button.click()
-            except StaleElementReferenceException:
+            except (StaleElementReferenceException, ElementClickInterceptedException):
                 continue
