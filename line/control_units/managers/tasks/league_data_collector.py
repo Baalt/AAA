@@ -26,9 +26,12 @@ class LeagueDataCollector:
     def scrape_data(self) -> None:
         self.scrape_season('current_season')
         self.driver.driver.refresh()
-        self.driver.buttons.get_previous_season_buttons()[-2].click()
-        self.driver.buttons.get_previous_season_buttons()[-1].click()
-        self.scrape_season('previous_season')
+        try:
+            self.driver.buttons.get_previous_season_buttons()[-2].click()
+            self.driver.buttons.get_previous_season_buttons()[-1].click()
+            self.scrape_season('previous_season')
+        except IndexError:
+            pass
 
     def scrape_season(self, season_key: str) -> None:
         self.data[season_key] = {}

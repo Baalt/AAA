@@ -95,7 +95,10 @@ class RealTimeGameScraper:
         for stat_element in stat_elements:
             stat_name = stat_element.find('span', {'class': 'caption-new--IGcNO4'}).text
             score_element = stat_element.find_next('div', {'class': 'score--6jKiQM'})
-            score = score_element.text.strip()
+            try:
+                score = score_element.text.strip()
+            except AttributeError:
+                score = '0:0'
             team1_score, team2_score = score.split(':')
             match_stats[stat_name] = {'team1': int(team1_score), 'team2': int(team2_score)}
         self.game_info['match_stats'] = match_stats
@@ -136,7 +139,11 @@ class RealTimeGameScraper:
 
     def __add_teams_totals_info(self, info_box, match_stat, key_1, key_2):
         statistic_dict_1, statistic_dict_2 = [], []
-        command_1_box, command_2_box = self.__get_command_boxes(info_box)
+        try:
+            command_1_box, command_2_box = self.__get_command_boxes(info_box)
+        except ValueError as e:
+            print('__add_teams_totals_info.__get_command_boxes(info_box) error: ', e)
+            return
 
         if command_1_box:
             for box in command_1_box:
@@ -153,7 +160,11 @@ class RealTimeGameScraper:
 
     def __add_handicaps_info(self, info_box, match_stat, key_1, key_2):
         statistic_dict_1, statistic_dict_2 = [], []
-        command_1_box, command_2_box = self.__get_command_boxes(info_box)
+        try:
+            command_1_box, command_2_box = self.__get_command_boxes(info_box)
+        except ValueError as e:
+            print('__add_handicaps_info.__get_command_boxes(info_box) error: ', e)
+            return
 
         if command_1_box:
             for box in command_1_box:

@@ -79,3 +79,4 @@ class MatchStatsVisualizer:
 
         # Save the graph as an image
         plt.savefig(f"graph/data/live_stats.png")
+        plt.close()

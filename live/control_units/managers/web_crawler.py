@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, \
-    StaleElementReferenceException
+    StaleElementReferenceException, TimeoutException
 from bs4 import BeautifulSoup
 
 from browser.browser import LiveChromeDriver
@@ -138,8 +138,12 @@ class WebCrawler:
             self.scraper.scrape_red_cards(soup=soup)
 
     def wait_for_elements(self):
-        WebDriverWait(self.driver.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//div[contains(@class, "event-view-control--64c7OE")]')))
+        try:
+            WebDriverWait(self.driver.driver, 10).until(
+                EC.presence_of_all_elements_located(
+                    (By.XPATH, '//div[contains(@class, "event-view-control--64c7OE")]')))
+        except TimeoutException:
+            pass
 
     def get_live_data(self):
         self.scraper.get_game_info()

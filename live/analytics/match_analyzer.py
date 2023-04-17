@@ -118,7 +118,7 @@ class SmartLiveCompare():
 
                 if total_over:
                     if not isinstance(total_over, float):
-                        total_under = float(total_over)
+                        total_over = float(total_over)
                     if live_total <= total_over and coeff_over > 1.7:
                         full_rate_direction = rate_direction + '_over'
                         info = GameInfo(
@@ -185,12 +185,8 @@ class SmartLiveCompare():
         previous_viz.plot_points(
             data_lst=self.league_data[self.smart_data['smart_data']['league']]['previous_season']['goals'],
             season='previous_season')
-        if key == 'TU' or key == 'TO':
-            current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_overall_total')
-            previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_overall_total')
-        else:
-            current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_individual_team')
-            previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
+        current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_individual_team')
+        previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
         time.sleep(3)
 
     def delete_files_in_folder(self, folder_path):

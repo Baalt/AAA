@@ -20,13 +20,14 @@ class TelegramBot:
         else:
             try:
                 await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
-            except TimedOut:
-                pass
+            except TimedOut as e:
+                print('send_message_with_files', e)
 
     async def change_data_and_delete_messages(self, lv_smrt_data):
         try:
             updates = await self.bot.get_updates()
-        except telegram.error.BadRequest:
+        except (telegram.error.BadRequest, TimedOut) as e:
+            print('change_data_and_delete_messages error', e)
             return
 
         for update in updates:
@@ -62,5 +63,6 @@ class TelegramBot:
                 for update in updates:
                     if update.message:
                         offset = updates[-1].update_id + 1
-        except telegram.error.TelegramError:
+        except telegram.error.TelegramError as e:
+            print('delete_all_messages error: ', e)
             pass

@@ -73,7 +73,11 @@ class TeamsStatsVisualizer:
             team_names.append(team_name)
 
         values = np.array(values)
-        num_bars = values.shape[1]
+        try:
+            num_bars = values.shape[1]
+        except IndexError:
+            print('plot_team_stats num_bars shape error')
+            num_bars=''
 
         colors = ['b', 'g', 'r']
 
@@ -99,3 +103,4 @@ class TeamsStatsVisualizer:
 
         # Save the graph as an image
         plt.savefig(f"graph/data/{season}_stat.png", dpi=300)
+        plt.close()
