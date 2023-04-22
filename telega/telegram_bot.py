@@ -1,8 +1,8 @@
 import os
 import telegram
 from telegram.error import TimedOut
-from toolz.func import get_today_date
-from toolz.pickle_manager import PickleHandler
+from utils.func import get_today_date
+from utils.pickle_manager import PickleHandler
 
 
 class TelegramBot:
@@ -29,29 +29,32 @@ class TelegramBot:
         except (telegram.error.BadRequest, TimedOut) as e:
             print('change_data_and_delete_messages error', e)
             return
-
-        for update in updates:
-            message = update.message
-            if message is not None:
-                parts = message.text.rstrip('➠').split('➠')
-                file_path = os.path.join("data", f"{get_today_date()}_AllTeamsData.pkl")
-                handler = PickleHandler()
-                if len(parts) == 4 and os.path.exists(file_path):
-                    full_smart_data = handler.read_data(file_path)
-                    for dct in full_smart_data['lst']:
-                        if dct['game_number'] == parts[0]:
-                            dct[parts[1]][parts[2]] = float(parts[3])
-                            handler.write_data(full_smart_data, file_path)
-                            self.change_data_from_lv_smrt_dct(lv_smrt_data=lv_smrt_data, parts=parts)
-                try:
-                    await self.bot.delete_message(chat_id=self.chat_id, message_id=message.message_id)
-                except telegram.error.BadRequest:
-                    pass
+        if updates:
+            for update in updates:
+                message = update.message
+                if message is not None:
+                    parts = message.text.rstrip('➠').split('➠')
+                    file_path = os.path.join("data", f"{get_today_date()}_AllGamesData.pkl")
+                    handler = PickleHandler()
+                    if len(parts) == 4 and os.path.exists(file_path):
+                        full_smart_data = handler.read_data(file_path)
+                        for dct in full_smart_data['lst']:
+                            if dct['game_number'] == parts[0]:
+                                dct[parts[1]][parts[2]] = float(parts[3])
+                                print('big data: ', dct[parts[1]][parts[2]])
+                                handler.write_data(full_smart_data, file_path)
+                                self.change_data_from_lv_smrt_dct(lv_smrt_data=lv_smrt_data, parts=parts)
+                    try:
+                        await self.bot.delete_message(chat_id=self.chat_id, message_id=message.message_id)
+                    except telegram.error.BadRequest:
+                        pass
+            await self.delete_all_messages()
 
     def change_data_from_lv_smrt_dct(self, lv_smrt_data, parts):
         for key in lv_smrt_data:
             if lv_smrt_data[key]['smart_data']['game_number'] == parts[0]:
                 lv_smrt_data[key]['smart_data'][parts[1]][parts[2]] = parts[3]
+                print('small_data :', lv_smrt_data[key]['smart_data'][parts[1]][parts[2]])
 
     async def delete_all_messages(self):
         try:

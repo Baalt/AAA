@@ -8,8 +8,8 @@ class ScheduleScraper:
     def __init__(self, soup: Optional[BeautifulSoup] = None):
         self.schedule = {}
         if soup:
-            self.scrape_schedule_data(soup)
-            self.scrape_date_data(soup)
+            self.scrape_schedule(soup)
+            self.scrape_date(soup)
 
     def show_schedule_data(self):
         from pprint import pprint
@@ -18,7 +18,7 @@ class ScheduleScraper:
     def get_schedule_data(self):
         return self.schedule
 
-    def scrape_schedule_data(self, soup: BeautifulSoup) -> None:
+    def scrape_schedule(self, soup: BeautifulSoup) -> None:
         table_rows = soup.find('table').find_all('tr')
         league_name = None  # Initialize league_name to None
         for row in table_rows:
@@ -36,7 +36,7 @@ class ScheduleScraper:
             except (AttributeError, TypeError):
                 pass
 
-    def scrape_date_data(self, soup: BeautifulSoup) -> None:
+    def scrape_date(self, soup: BeautifulSoup) -> None:
         date_button = soup.find('button', attrs={'class': 'datepicker-day btn btn-sm btn-light active'})
         self.schedule['date'] = date_button.find('span', attrs={'class': 'date-short'}).get_text(
             strip=True) if date_button else None
@@ -50,8 +50,8 @@ if __name__ == '__main__':
 
     soup = BeautifulSoup(driver.get_page_html(), 'lxml')
     scraper = ScheduleScraper()
-    scraper.scrape_date_data(soup=soup)
-    scraper.scrape_schedule_data(soup=soup)
+    scraper.scrape_date(soup=soup)
+    scraper.scrape_schedule(soup=soup)
 
     from live.control_units.scrapers.schedule_data_collector import schedule_data_collector
 

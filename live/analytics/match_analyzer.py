@@ -3,8 +3,8 @@ import time
 
 from live.analytics.game_info import GameInfo
 from telega.telegram_bot import TelegramBot
-from toolz.pickle_manager import PickleHandler
-from toolz.func import get_today_date
+from utils.pickle_manager import PickleHandler
+from utils.func import get_today_date
 from data import football_statistics_translation
 
 from graph.match_stats_viz import MatchStatsVisualizer
@@ -210,7 +210,7 @@ class SmartLiveCompare():
             except KeyError as e:
                 print('change smart_data error: ', e)
 
-            file_path = os.path.join("data", f"{get_today_date()}_AllTeamsData.pkl")
+            file_path = os.path.join("data", f"{get_today_date()}_AllGamesData.pkl")
             handler = PickleHandler()
             if os.path.exists(file_path):
                 full_smart_data = handler.read_data(file_path)

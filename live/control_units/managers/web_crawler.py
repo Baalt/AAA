@@ -11,7 +11,6 @@ from bs4 import BeautifulSoup
 from browser.browser import LiveChromeDriver
 from live.control_units.scrapers.game_scraper import RealTimeGameScraper
 from live.analytics.match_analyzer import SmartLiveCompare
-from pprint import pprint
 
 
 class WebCrawler:

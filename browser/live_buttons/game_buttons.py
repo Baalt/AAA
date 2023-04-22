@@ -2,7 +2,7 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 
-class GameButtons:
+class LiveGameButtons:
     def __init__(self):
         self.browser = None
 
