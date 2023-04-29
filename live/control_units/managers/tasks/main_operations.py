@@ -29,7 +29,8 @@ class FootballMenuHandler:
 
     def open_full_leagues_list(self):
         select_show_all_button = self.browser.buttons.get_show_all_button()
-        select_show_all_button.click()
+        if select_show_all_button:
+            select_show_all_button.click()
 
     def open_all_football_leagues(self):
         select_all_leagues_buttons = self.browser.buttons.get_all_leagues_buttons()

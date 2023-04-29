@@ -31,10 +31,8 @@ class FootballMenuButtons:
         return button
 
     def get_show_all_button(self, selector='//span[text()="Show all"]'):
-        button = WebDriverWait(self.browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, selector)))
+        button = self.browser.find_element(By.XPATH, selector)
         return button
-
     def get_all_leagues_buttons(
             self,
             selector='//div[contains(@class, "vertical-panel__grow")]'

@@ -1,7 +1,8 @@
-from line.analytics.calc_utils.total import LiveTotalCalculation
-from line.analytics.calc_utils.ind_total import LiveIndividualCalculation
-from line.analytics.calc_utils.handicap import LiveHandicapCalculation
+from line.analytics.live_utils.total import LiveTotalCalculation
+from line.analytics.live_utils.ind_total import LiveIndividualCalculation
+from line.analytics.live_utils.handicap import LiveHandicapCalculation
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
+
 
 class FromStructureToLiveDict(LiveTotalCalculation,
                               LiveIndividualCalculation,
@@ -77,6 +78,6 @@ class FromStructureToLiveDict(LiveTotalCalculation,
             return True
 
     def percent_define(self, statistic_name):
-        if statistic_name in ['throw-ins', 'fouls']:
-            return 98
-        return 96
+        if statistic_name in ['goals', 'corners']:
+            return 97
+        return 90

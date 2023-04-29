@@ -1,12 +1,8 @@
 import os.path
 
-from bs4 import BeautifulSoup
-
 from browser.browser import SmartChromeDriver
 from line.control_units.managers.tasks.league_data_collector import LeagueDataCollector
-from line.control_units.scrapers.schedule_scraper import ScheduleScraper
 from utils.pickle_manager import PickleHandler
-from config_smrt import SOURCE, LOGIN, PASSWORD
 
 
 class AllLeaguesCollector:
@@ -50,22 +46,3 @@ class AllLeaguesCollector:
             if league_key != 'date':
                 url = address + league_data['league_url']
                 self.scrape_league_data(league_key, url)
-        self.driver.close()
-
-
-if __name__ == '__main__':
-    # Collect league data
-    driver = SmartChromeDriver()
-    driver.maximize_window()
-    login_page = SOURCE + '/login'
-    driver.open_page(url=login_page)
-    input('close add and choose the day')
-    driver.login(username=LOGIN, password=PASSWORD)
-    input('close add and choose the day')
-    soup = BeautifulSoup(driver.get_page_html(), 'lxml')
-    scraper = ScheduleScraper(soup=soup)
-    scraper.scrape_date(soup=soup)
-    scraper.scrape_schedule(soup=soup)
-
-    collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
-    collector.run(address=SOURCE)

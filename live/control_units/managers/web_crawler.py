@@ -112,14 +112,16 @@ class WebCrawler:
             element = self.driver.driver.find_element(By.XPATH, xpath)
             try:
                 element.click()
-            except ElementClickInterceptedException:
+            except StaleElementReferenceException:
+                return False
+            except ElementClickInterceptedException :
                 # Scroll to the element before clicking
                 self.driver.driver.execute_script("arguments[0].scrollIntoView();", element)
                 # Click on the element using an offset position
                 actions = ActionChains(self.driver.driver)
                 actions.move_to_element(element).move_by_offset(10, 10).click().perform()
                 element.click()
-        except NoSuchElementException:
+        except (NoSuchElementException, StaleElementReferenceException):
             return False
         return True
 

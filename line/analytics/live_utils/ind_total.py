@@ -1,4 +1,4 @@
-from line.analytics.calc_utils.core import BoundaryLiveValues
+from line.analytics.live_utils.core import BoundaryLiveValues
 
 
 class LiveIndividualCalculation(BoundaryLiveValues):
