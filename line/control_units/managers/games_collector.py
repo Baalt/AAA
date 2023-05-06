@@ -3,7 +3,10 @@ import copy
 from browser.browser import SmartChromeDriver
 from line.analytics.live_dict_builder import LiveDictBuilder
 from line.control_units.managers.tasks.game_data_collector import GameCollector
+from line.control_units.managers.tasks.coeff_data_collector import CoefficientDataManager
 from line.control_units.filters.last_year_filter import LastYearFilter
+from telega.telegram_bot import TelegramBot
+from telega import config
 from utils.error import LiveDictBuilderError
 
 
@@ -14,17 +17,19 @@ class AllGamesCollector:
                  all_league_data: dict):
 
         self.driver = driver
+        self.telegram = TelegramBot(token=config.token, chat_id=config.chat_id)
         self.schedule_data = schedule_data
         self.all_league_data = all_league_data
         self.game_number = 0
         self.smart_live_data = {'lst': []}
 
-    def run(self):
-        # flag = False
+
+    async def run(self):
+        flag = False
         for full_league_name in self.schedule_data:
-            # if 'Australia: FFA Cup' in full_league_name:
-            #     flag = True
-            if ':' in full_league_name:
+            if 'Norway: Division 1' in full_league_name:
+                flag = True
+            if ':' in full_league_name and flag:
                 league = full_league_name.split(':')[-1].strip()
                 full_league_name = full_league_name.strip()
                 # country_league = full_league_name.split(':')[0].strip()
@@ -47,16 +52,26 @@ class AllGamesCollector:
                         last_year_data.filter_home_away_collections('home_collections')
                         last_year_data.filter_home_away_collections('away_collections')
 
+                        coeff_manager = CoefficientDataManager(driver=self.driver)
+                        coeff_manager.get_coefficients_data()
+
                         self.game_number += 1
+                        try:
+                            league_data = self.all_league_data[full_league_name]
+                        except KeyError as e:
+                            print('league_data error:', e)
+                            continue
                         math_collector = LiveDictBuilder(
+                            telegram=self.telegram,
                             big_match_data=game_manager.get_data,
                             last_year_data=last_year_data.all_match_data,
-                            all_league_data=self.all_league_data[full_league_name],
+                            all_league_data=league_data,
                             schedule_data=self.schedule_data,
+                            coefficients = coeff_manager.get_data,
                             league_name=full_league_name,
                             game_number=f"{self.game_number:04d}")
                         try:
-                            math_collector.run()
+                            await math_collector.run()
                         except LiveDictBuilderError as e:
                             print('LiveDictBuilderError: ', e)
                             continue

@@ -1,5 +1,6 @@
 import os
 
+from line.analytics.coefficient_analyzer import DataMetrics
 from line.analytics.structures import FromDictToStructure
 from line.analytics.struct2live import FromStructureToLiveDict
 from line.control_units.filters.structure_valid import ValidStructureFilter
@@ -8,14 +9,14 @@ from utils.error import LiveDictBuilderError, ValidStructureError
 
 
 class LiveDictBuilder(FromDictToStructure):
-    def __init__(self, big_match_data: dict, last_year_data: dict, schedule_data: dict,
-                 all_league_data: dict, game_number: str, league_name: str):
+    def __init__(self, telegram, big_match_data: dict, last_year_data: dict, schedule_data: dict,
+                 all_league_data: dict, coefficients, game_number: str, league_name: str):
+        self.telegram = telegram
         self.big_match_data = big_match_data
         self.last_year_data = last_year_data
-
         self.all_league_data = all_league_data
+        self.coefficients = coefficients
         self.league_name = league_name
-
         self.game_number = game_number
         self.data_file_name = f"data/{schedule_data['date']}_AllGamesData.pkl"
         self.data = {'lst': []}
@@ -81,7 +82,7 @@ class LiveDictBuilder(FromDictToStructure):
         self.similar_away_commands_list_high = similar_away_commands_list_high
         self.similar_away_commands_list_low = similar_away_commands_list_low
 
-    def run(self):
+    async def run(self):
         main_home_command_name = self.big_match_data['home_command_name']
         main_away_command_name = self.big_match_data['away_command_name']
 
@@ -135,15 +136,22 @@ class LiveDictBuilder(FromDictToStructure):
                                         away_structure=away_structure,
                                         statistic_name=statistic_name)
 
+                                compare = DataMetrics(
+                                    telegram=self.telegram,
+                                    home_structure=structures.home_structure,
+                                    away_structure=structures.away_structure,
+                                    big_match_data=self.big_match_data,
+                                    coefficients=self.coefficients,
+                                    statistic_name=statistic_name,
+                                    all_league_data=self.all_league_data)
+                                await compare.search(statistic_name=statistic_name, full_league_name=self.league_name)
+
+
                         except ValidStructureError as err:
                             print('ValidStructureError: ', err)
                             continue
 
                         except KeyError as err:
-                            print('FromHistoryToRate.run.ERROR: ', err)
-                            continue
-
-                        except TypeError as err:
                             print('FromHistoryToRate.run.ERROR: ', err)
                             continue
 

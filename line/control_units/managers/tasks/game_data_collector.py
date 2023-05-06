@@ -63,6 +63,14 @@ class GameCollector:
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.scrap_accordion_table_data(soup=soup)
 
+        self.driver.buttons.get_other_button().click()
+        self.driver.buttons.get_drop_down_button(button_text='Удары').click()
+        self.refresh_page()
+        time.sleep(1)
+
+        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+        self.scraper.scrap_accordion_table_data(soup=soup)
+
     def get_match_data(self):
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.scrap_commands_name(soup)

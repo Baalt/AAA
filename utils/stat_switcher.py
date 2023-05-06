@@ -7,4 +7,5 @@ stats_dict = {
     'Офсайды': 'offsides',
     'Ауты': 'throw-ins',
     'Удары от ворот': 'goal kicks',
+    'Удары': 'shots',
 }

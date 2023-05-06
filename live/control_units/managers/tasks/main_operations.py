@@ -1,4 +1,4 @@
-from selenium.common import StaleElementReferenceException, ElementClickInterceptedException
+from selenium.common import StaleElementReferenceException, ElementClickInterceptedException, NoSuchElementException
 
 from browser.browser import LiveChromeDriver
 from config_smrt import LIVE_SOURCE
@@ -28,9 +28,11 @@ class FootballMenuHandler:
         select_football_menu.click()
 
     def open_full_leagues_list(self):
-        select_show_all_button = self.browser.buttons.get_show_all_button()
-        if select_show_all_button:
+        try:
+            select_show_all_button = self.browser.buttons.get_show_all_button()
             select_show_all_button.click()
+        except NoSuchElementException:
+            pass
 
     def open_all_football_leagues(self):
         select_all_leagues_buttons = self.browser.buttons.get_all_leagues_buttons()

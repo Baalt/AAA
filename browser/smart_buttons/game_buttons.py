@@ -63,7 +63,6 @@ class SmartGameButtons:
             except:
                 raise AttributeError
 
-    @property
     def open_coefficient_button(self):
         XPATH = '//a[@class="nav-link accent-hvr cursor-pointer"]' \
                 '/span[normalize-space(text())="Коэффициенты"]'
@@ -71,7 +70,6 @@ class SmartGameButtons:
                                            value=XPATH)
         return button
 
-    @property
     def coefficient_handicap_button(self):
         XPATH = '//div[contains(@class, "stat_format-picker")]' \
                 '/button[normalize-space(text())="Исходы и форы"]'

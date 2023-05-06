@@ -5,7 +5,7 @@ from live.analytics.game_info import GameInfo
 from telega.telegram_bot import TelegramBot
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
-from data import football_statistics_translation
+from utils.stat_switcher import stats_dict
 
 from graph.match_stats_viz import MatchStatsVisualizer
 from graph.teams_stats_viz import TeamsStatsVisualizer
@@ -27,7 +27,7 @@ class SmartLiveCompare():
 
     async def compare(self):
         for statistic in self.live_data:
-            if statistic in football_statistics_translation.stats_dict.values():
+            if statistic in stats_dict.values():
                 try:
                     smart_dct = self.smart_data['smart_data'][statistic]
                     total_under = smart_dct['TU']

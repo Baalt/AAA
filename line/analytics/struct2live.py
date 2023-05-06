@@ -2,7 +2,7 @@ from line.analytics.live_utils.total import LiveTotalCalculation
 from line.analytics.live_utils.ind_total import LiveIndividualCalculation
 from line.analytics.live_utils.handicap import LiveHandicapCalculation
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
-
+from utils.stat_switcher import stats_dict
 
 class FromStructureToLiveDict(LiveTotalCalculation,
                               LiveIndividualCalculation,
@@ -10,17 +10,6 @@ class FromStructureToLiveDict(LiveTotalCalculation,
     def calculate(self, home_structure: HomeDataStructure,
                   away_structure: AwayDataStructure,
                   statistic_name: str):
-        stats_dict = {
-            'Голы': 'goals',
-            'Угловые': 'corners',
-            'ЖК': 'yellow cards',
-            'Фолы': 'fouls',
-            'Уд. в створ': 'shots on goal',
-            'Офсайды': 'offsides',
-            'Ауты': 'throw-ins',
-            'Удары от ворот': 'goal kicks',
-            'Удары': 'shots',
-        }
         if statistic_name in stats_dict.keys():
             statistic_name = stats_dict[statistic_name]
 

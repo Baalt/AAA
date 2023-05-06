@@ -28,18 +28,18 @@ class ValidStructureFilter:
             self.home_structure.last_12_games_individual_total_opposing_teams_current_home_by_year_in_away_games[:12]
         # last8 home-away games
         self.home_structure.last_8_games_total_current_home_by_year_in_home_away_games = \
-            self.home_structure.last_year_total_current_home_command_in_home_away_games[:8]
+            self.home_structure.last_year_total_current_home_command_in_home_away_games[:10]
         self.home_structure.last_8_games_individual_total_current_home_by_year_in_home_away_games = \
-            self.home_structure.last_year_individual_total_current_home_command_in_home_away_games[:8]
+            self.home_structure.last_year_individual_total_current_home_command_in_home_away_games[:10]
         self.home_structure.last_8_games_individual_total_opposing_teams_current_home_by_year_in_home_away_games = \
-            self.home_structure.last_year_individual_total_opposing_teams_current_home_in_home_away_games[:8]
+            self.home_structure.last_year_individual_total_opposing_teams_current_home_in_home_away_games[:10]
         # last4 home-away games
         self.home_structure.last_4_games_total_current_home_by_year_in_home_away_games = \
-            self.home_structure.last_year_total_current_home_command_in_home_away_games[:4]
+            self.home_structure.last_year_total_current_home_command_in_home_away_games[:5]
         self.home_structure.last_4_games_individual_total_current_home_by_year_in_home_away_games = \
-            self.home_structure.last_year_individual_total_current_home_command_in_home_away_games[:4]
+            self.home_structure.last_year_individual_total_current_home_command_in_home_away_games[:5]
         self.home_structure.last_4_games_individual_total_opposing_teams_current_home_by_year_in_home_away_games = \
-            self.home_structure.last_year_individual_total_opposing_teams_current_home_in_home_away_games[:4]
+            self.home_structure.last_year_individual_total_opposing_teams_current_home_in_home_away_games[:5]
 
     def adding_away_structures_for_the_latest_games(self):
         # last20 home-away games
@@ -59,18 +59,18 @@ class ValidStructureFilter:
             self.away_structure.last_12_games_individual_total_opposing_teams_current_away_by_year_in_home_games[:12]
         # last8 home-away games
         self.away_structure.last_8_games_total_current_away_by_year_in_home_away_games = \
-            self.away_structure.last_year_total_current_away_command_in_home_away_games[:8]
+            self.away_structure.last_year_total_current_away_command_in_home_away_games[:10]
         self.away_structure.last_8_games_individual_total_current_away_by_year_in_home_away_games = \
-            self.away_structure.last_year_individual_total_current_away_command_in_home_away_games[:8]
+            self.away_structure.last_year_individual_total_current_away_command_in_home_away_games[:10]
         self.away_structure.last_8_games_individual_total_opposing_teams_current_away_by_year_in_home_away_games = \
-            self.away_structure.last_year_individual_total_opposing_teams_current_away_in_home_away_games[:8]
+            self.away_structure.last_year_individual_total_opposing_teams_current_away_in_home_away_games[:10]
         # last4 home-away games
         self.away_structure.last_4_games_total_current_away_by_year_in_home_away_games = \
-            self.away_structure.last_year_total_current_away_command_in_home_away_games[:4]
+            self.away_structure.last_year_total_current_away_command_in_home_away_games[:5]
         self.away_structure.last_4_games_individual_total_current_away_by_year_in_home_away_games = \
-            self.away_structure.last_year_individual_total_current_away_command_in_home_away_games[:4]
+            self.away_structure.last_year_individual_total_current_away_command_in_home_away_games[:5]
         self.away_structure.last_4_games_individual_total_opposing_teams_current_away_by_year_in_home_away_games = \
-            self.away_structure.last_year_individual_total_opposing_teams_current_away_in_home_away_games[:4]
+            self.away_structure.last_year_individual_total_opposing_teams_current_away_in_home_away_games[:5]
 
     def is_home_structure_valid(self):
         if self.home_structure:

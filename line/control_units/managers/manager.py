@@ -20,15 +20,14 @@ if __name__ == '__main__':
     scraper.scrape_schedule(soup=soup)
     schedule_data = scraper.get_schedule_data()
 
-    collector = AllLeaguesCollector(driver=driver,
-                                    schedule_data=scraper.get_schedule_data())
+    collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
     collector.run(address=SOURCE)
 
     all_league_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesData.pkl")
     collector = AllGamesCollector(driver=driver,
                                   schedule_data=scraper.get_schedule_data(),
                                   all_league_data=all_league_data)
-    collector.run()
+    await collector.run()
     driver.close()
     all_games_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllGamesData.pkl")
     print('count of preparing game - ', len(all_games_data['lst']))
