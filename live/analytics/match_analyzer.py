@@ -168,6 +168,21 @@ class SmartLiveCompare():
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_the_bet(key=info.get_correction_key())
 
+                elif statistic == 'yellow cards' and live_handicap > 3 and coeff > 1.65:
+                    info = GameInfo(
+                        live_data=self.live_data,
+                        smart_data=self.smart_data,
+                        statistic_name=statistic,
+                        live_total=live_handicap,
+                        live_coeff=coeff,
+                        smart_total=handicap,
+                        rate_direction=rate_direction,
+                        key=key_handicap)
+                    self.__plot_graphs(statistic=statistic, key=key_handicap)
+                    message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                    await self.telegram.send_message_with_files(message, *self.files)
+                    self.close_the_bet(key=info.get_correction_key())
+
     def __plot_graphs(self, statistic, key):
         self.delete_files_in_folder(folder_path='graph/data')
         MatchStatsVisualizer(data=self.live_data['match_stats']).plot_bar_chart()

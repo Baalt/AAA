@@ -12,6 +12,7 @@ if __name__ == '__main__':
     driver.maximize_window()
     login_page = SOURCE + '/login'
     driver.open_page(url=login_page)
+    input('close add and choose the day')
     driver.login(username=LOGIN, password=PASSWORD)
     input('close add and choose the day')
     soup = BeautifulSoup(driver.get_page_html(), 'lxml')

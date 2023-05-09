@@ -175,7 +175,6 @@ class Catcher:
                                                 last_8_opposing_percent=last_8_opposing_percent,
                                                 last_4_current_percent=last_4_current_percent,
                                                 last_4_opposing_percent=last_4_opposing_percent)
-                print(message.get_express_rate_message())
                 self.__plot_graphs(statistic=self.statistic_name)
                 await self.telegram.send_message_with_files(message.get_express_rate_message(), *self.files)
 
@@ -242,10 +241,8 @@ class Catcher:
                                          last_8_opposing_percent=last_8_opposing_percent,
                                          last_4_current_percent=last_4_current_percent,
                                          last_4_opposing_percent=last_4_opposing_percent)
-            msg = message.get_kush_rate_message()
-            print(msg)
             self.__plot_graphs(statistic=self.statistic_name)
-            await self.telegram.send_message_with_files(msg, *self.files)
+            await self.telegram.send_message_with_files(message.get_kush_rate_message(), *self.files)
 
     def kush_calculate(self, percent, coefficient):
         if not isinstance(percent, float):

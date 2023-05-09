@@ -26,6 +26,7 @@ class TelegramBot:
     async def change_data_and_delete_messages(self, lv_smrt_data):
         try:
             updates = await self.bot.get_updates()
+
         except (telegram.error.BadRequest, TimedOut) as e:
             print('change_data_and_delete_messages error', e)
             return
@@ -40,8 +41,12 @@ class TelegramBot:
                         full_smart_data = handler.read_data(file_path)
                         for dct in full_smart_data['lst']:
                             if dct['game_number'] == parts[0]:
-                                dct[parts[1]][parts[2]] = float(parts[3])
-                                print('big data: ', dct[parts[1]][parts[2]])
+                                try:
+                                    dct[parts[1]][parts[2]] = float(parts[3])
+                                    print('big data: ', dct[parts[1]][parts[2]])
+                                except KeyError as e:
+                                    print('change_data_and_delete_messages error', e)
+
                                 handler.write_data(full_smart_data, file_path)
                                 self.change_data_from_lv_smrt_dct(lv_smrt_data=lv_smrt_data, parts=parts)
                     try:

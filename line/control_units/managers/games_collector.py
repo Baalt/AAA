@@ -27,9 +27,9 @@ class AllGamesCollector:
     async def run(self):
         flag = False
         for full_league_name in self.schedule_data:
-            if 'Norway: Division 1' in full_league_name:
-                flag = True
-            if ':' in full_league_name and flag:
+            # if 'Croatia: 1. HNL' in full_league_name:
+            #     flag = True
+            if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()
                 full_league_name = full_league_name.strip()
                 # country_league = full_league_name.split(':')[0].strip()

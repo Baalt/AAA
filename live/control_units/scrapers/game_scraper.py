@@ -86,7 +86,7 @@ class RealTimeGameScraper:
     def scrape_red_cards(self, soup: BeautifulSoup):
         # Find the first element that matches the specified selector
         red_card_elem = soup.select_one('div.ev-comment__tail--5ILNNG._style_red--3JeHeN[title="Sending off"]')
-        red_card_text = red_card_elem.text if red_card_elem else '0-0'
+        red_card_text = red_card_elem.text if red_card_elem else '0:0'
         self.game_info['red cards'] = red_card_text
 
     def scrape_match_stats(self, soup: BeautifulSoup):
