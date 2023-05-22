@@ -22,10 +22,18 @@ class FootballMenuButtons:
     def __init__(self):
         self.browser = None
 
-    def get_football_category_button(self,
-                                     selector='//div[contains(@class, "vertical-panel__grow")]'
-                                              '//div[contains(@class, "filter-component-row-container")][1]'
-                                              '//span[contains(@class, "filter-component-expander__arrow--5izki")]'):
+    def get_pre_match_button(
+            self,
+            selector='//div[@class="filter-component-sport-mode__item--6QIgTS"]//span[text()="Pre-match"]'):
+        button = WebDriverWait(self.browser, 20).until(
+            EC.element_to_be_clickable((By.XPATH, selector)))
+        return button
+
+    def get_football_category_button(
+            self,
+            selector='//div[contains(@class, "vertical-panel__grow")]'
+                     '//div[contains(@class, "filter-component-row-container")][1]'
+                     '//span[contains(@class, "filter-component-expander__arrow--5izki")]'):
         button = WebDriverWait(self.browser, 20).until(
             EC.element_to_be_clickable((By.XPATH, selector)))
         return button
@@ -33,6 +41,7 @@ class FootballMenuButtons:
     def get_show_all_button(self, selector='//span[text()="Show all"]'):
         button = self.browser.find_element(By.XPATH, selector)
         return button
+
     def get_all_leagues_buttons(
             self,
             selector='//div[contains(@class, "vertical-panel__grow")]'

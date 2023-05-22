@@ -25,14 +25,13 @@ class AllGamesCollector:
 
 
     async def run(self):
-        flag = False
+        # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Croatia: 1. HNL' in full_league_name:
+            # if 'Japan: J2-League' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()
                 full_league_name = full_league_name.strip()
-                # country_league = full_league_name.split(':')[0].strip()
                 for game_url in self.schedule_data[full_league_name]['match_url']:
                     self.driver.open_page(game_url)
                     try:

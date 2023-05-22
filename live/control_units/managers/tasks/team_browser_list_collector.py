@@ -48,3 +48,41 @@ class MatchCollector:
 
     def get_matches(self) -> dict:
         return self.matches
+
+
+class LineMatchCollector:
+    def __init__(self, smart_schedule, live_schedule):
+        self.smart_schedule = smart_schedule
+        self.live_schedule = live_schedule
+        self.filter = FootballTeamsComparison()
+
+    def compare(self):
+        for live_key, live_value in self.live_schedule.items():
+            live_home_name, live_away_name = self._split_command_names(command_names=live_key)
+            for smart_data in smart_dict['lst']:
+                smart_home_name, smart_away_name = smart_data['team1_name'], smart_data['team2_name']
+                match = self.filter.compare_teams(
+                    live_team_1=live_home_name,
+                    live_team_2=live_away_name,
+                    smart_team_1=smart_home_name,
+                    smart_team_2=smart_away_name
+                )
+                if match:
+                    url = 'https://www.fon.bet' + live_value
+                    match_data = {
+                        'url': url,
+                        'live_team_1': live_home_name,
+                        'live_team_2': live_away_name,
+                        'smart_data': smart_data
+                    }
+                    self.matches[live_key] = match_data
+
+    def _split_command_names(self, command_names: str, commands_separator=' — ') -> Tuple[str, str]:
+        try:
+            home_team, away_team = command_names.split(commands_separator)
+        except ValueError:
+            # If there are more than two values, return the first and last values
+            teams = command_names.split(commands_separator)
+            home_team = teams[0]
+            away_team = teams[-1]
+        return home_team, away_team

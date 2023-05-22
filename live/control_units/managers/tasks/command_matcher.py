@@ -20,7 +20,9 @@ class FootballTeamsComparison:
             'kings',
             'borac',
             'south',
-            'atletico'
+            'atletico',
+            'saint',
+            'moscow'
         ]
 
     def compare_teams(self, live_team_1, live_team_2, smart_team_1, smart_team_2):

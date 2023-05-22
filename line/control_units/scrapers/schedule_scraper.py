@@ -1,10 +1,8 @@
 from typing import Optional
 from bs4 import BeautifulSoup
 
-from browser.browser import SmartChromeDriver
 
-
-class ScheduleScraper:
+class SmartScheduleScraper:
     def __init__(self, soup: Optional[BeautifulSoup] = None):
         self.schedule = {}
         if soup:
@@ -40,19 +38,3 @@ class ScheduleScraper:
         date_button = soup.find('button', attrs={'class': 'datepicker-day btn btn-sm btn-light active'})
         self.schedule['date'] = date_button.find('span', attrs={'class': 'date-short'}).get_text(
             strip=True) if date_button else None
-
-
-if __name__ == '__main__':
-    driver = SmartChromeDriver()
-    driver.maximize_window()
-    driver.open_page(url='https://smart-tables.ru/login')
-    driver.login(username='enjoylifebalt@gmail.com', password='astraSTb00rato')
-
-    soup = BeautifulSoup(driver.get_page_html(), 'lxml')
-    scraper = ScheduleScraper()
-    scraper.scrape_date(soup=soup)
-    scraper.scrape_schedule(soup=soup)
-
-    from live.control_units.scrapers.schedule_data_collector import schedule_data_collector
-
-

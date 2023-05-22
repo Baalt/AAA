@@ -19,9 +19,9 @@ class GameCollector:
 
         self.scraper = GameScraper(all_match_data=self.all_match_data)
         # buttons
-        self.quantity_of_matches_input, \
-            self.quantity_of_matches_fix_input_clicker = self.driver.buttons.quantity_of_matches_buttons
         try:
+            self.quantity_of_matches_input, \
+                self.quantity_of_matches_fix_input_clicker = self.driver.buttons.quantity_of_matches_buttons
             self.season_home_button_all, \
                 self.season_away_button_all = self.driver.buttons.teams_season_buttons_all
         except NoSuchElementException:

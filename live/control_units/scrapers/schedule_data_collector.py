@@ -2,7 +2,7 @@ import re
 from bs4 import BeautifulSoup
 
 
-class ScheduleScraper:
+class LiveScheduleScraper:
     def __init__(self, html):
         self.soup = BeautifulSoup(html, 'lxml')
 

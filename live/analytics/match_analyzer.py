@@ -107,6 +107,7 @@ class SmartLiveCompare():
                         key=key_under)
                     self.__plot_graphs(statistic=statistic, key=key_under)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                    print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_the_bet(key=info.get_correction_key())
 
@@ -132,6 +133,7 @@ class SmartLiveCompare():
                             key=key_over)
                         self.__plot_graphs(statistic=statistic, key=key_over)
                         message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                        print(message)
                         await self.telegram.send_message_with_files(message, *self.files)
                         self.close_the_bet(key=info.get_correction_key())
 
@@ -165,6 +167,7 @@ class SmartLiveCompare():
                         key=key_handicap)
                     self.__plot_graphs(statistic=statistic, key=key_handicap)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                    print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_the_bet(key=info.get_correction_key())
 
@@ -180,6 +183,7 @@ class SmartLiveCompare():
                         key=key_handicap)
                     self.__plot_graphs(statistic=statistic, key=key_handicap)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                    print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_the_bet(key=info.get_correction_key())
 

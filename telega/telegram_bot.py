@@ -26,7 +26,6 @@ class TelegramBot:
     async def change_data_and_delete_messages(self, lv_smrt_data):
         try:
             updates = await self.bot.get_updates()
-
         except (telegram.error.BadRequest, TimedOut) as e:
             print('change_data_and_delete_messages error', e)
             return

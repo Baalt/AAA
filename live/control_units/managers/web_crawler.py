@@ -121,7 +121,7 @@ class WebCrawler:
                 actions = ActionChains(self.driver.driver)
                 actions.move_to_element(element).move_by_offset(10, 10).click().perform()
                 element.click()
-        except (NoSuchElementException, StaleElementReferenceException):
+        except (NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException):
             return False
         return True
 

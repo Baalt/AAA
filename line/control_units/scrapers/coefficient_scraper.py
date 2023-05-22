@@ -51,12 +51,15 @@ class CoefficientsScraper(ScraperMethods):
                     coefficient_under = coefficient_data_row_list[-2]
 
                     statistic_name = self.get_statistic_name(soup=soup, tooltip=tooltip)
-                    if f'total_{home_or_away_number}_&coefficient' not in coefficient_data[statistic_name]:
-                        coefficient_data[statistic_name][f'total_{home_or_away_number}_&coefficient'] = []
-                    coefficient_data[statistic_name][f'total_{home_or_away_number}_&coefficient'].append(
-                        {'total_number': total_number,
-                         'coefficient_under': coefficient_under,
-                         'coefficient_over': coefficient_over})
+                    try:
+                        if f'total_{home_or_away_number}_&coefficient' not in coefficient_data[statistic_name]:
+                            coefficient_data[statistic_name][f'total_{home_or_away_number}_&coefficient'] = []
+                        coefficient_data[statistic_name][f'total_{home_or_away_number}_&coefficient'].append(
+                            {'total_number': total_number,
+                             'coefficient_under': coefficient_under,
+                             'coefficient_over': coefficient_over})
+                    except KeyError as e:
+                        print('CoefficientsScraper.get_totals_dataError', e)
 
 
     def get_handicap_data(self, soup: BeautifulSoup, coefficient_data: dict, tooltip=False):
