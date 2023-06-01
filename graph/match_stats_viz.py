@@ -1,8 +1,4 @@
-import matplotlib
 import matplotlib.pyplot as plt
-
-matplotlib.use('Qt5Agg')
-plt.ioff()
 
 
 class MatchStatsVisualizer:
@@ -31,7 +27,10 @@ class MatchStatsVisualizer:
                 team2_data.append(0)
         y = range(len(categories))
 
-        fig, ax = plt.subplots()
+        fig = plt.figure()  # Create a Figure object
+
+        ax = fig.add_subplot(111)
+
         for i, (team1_val, team2_val) in enumerate(zip(team1_data, team2_data)):
             if team1_val > team2_val:
                 team1_color = 'green'
@@ -46,7 +45,6 @@ class MatchStatsVisualizer:
             ax.barh(i, -team1_val, height=0.3, label='Team 1', color=team1_color)
             ax.barh(i, team2_val, height=0.3, label='Team 2', color=team2_color)
 
-            # Add bar labels above each bar with a white frame
             if team1_val > 0:
                 ax.text(-team1_val - max(team1_data) * 0.05, i, str(team1_val), ha='right', va='center', color='black',
                         fontsize=10,
@@ -70,13 +68,11 @@ class MatchStatsVisualizer:
         ax.spines['left'].set_position('zero')
         ax.spines['right'].set_color('none')
         ax.spines['bottom'].set_position('zero')
-        ax.spines['bottom'].set_color('none')  # remove x-axis strip
+        ax.spines['bottom'].set_color('none')
 
         ax.spines['top'].set_color('none')
 
         ax.xaxis.labelpad = max_count * 2
         ax.yaxis.labelpad = 20
 
-        # Save the graph as an image
-        plt.savefig(f"graph/data/live_stats.png")
-        plt.close()
+        fig.savefig("data/live_stats.png")
