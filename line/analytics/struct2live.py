@@ -67,6 +67,6 @@ class FromStructureToLiveDict(LiveTotalCalculation,
             return True
 
     def percent_define(self, statistic_name):
-        if statistic_name in ['goals', 'corners']:
-            return 97
-        return 90
+        # if statistic_name in ['yellow cards']:
+        #     return 96
+        return 98

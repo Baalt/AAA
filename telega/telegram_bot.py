@@ -18,10 +18,18 @@ class TelegramBot:
         if not media:
             await self.bot.send_message(chat_id=self.chat_id, text=message)
         else:
-            try:
-                await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
-            except TimedOut as e:
-                print('send_message_with_files', e)
+            attempt = 0
+            while attempt < 6:
+                try:
+                    await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
+                    break  # Остановить цикл, если отправка успешна
+                except TimedOut as e:
+                    attempt += 1
+                    print('attempt №', attempt)
+                    if attempt == 6:
+                        print('send_message_with_files', e)
+                    else:
+                        continue
 
     async def change_data_and_delete_messages(self, lv_smrt_data):
         try:
@@ -72,4 +80,3 @@ class TelegramBot:
                         offset = updates[-1].update_id + 1
         except telegram.error.TelegramError as e:
             print('delete_all_messages error: ', e)
-            pass

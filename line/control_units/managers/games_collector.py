@@ -1,5 +1,7 @@
 import copy
 
+from selenium.common import ElementClickInterceptedException
+
 from browser.browser import SmartChromeDriver
 from line.analytics.live_dict_builder import LiveDictBuilder
 from line.control_units.managers.tasks.game_data_collector import GameCollector
@@ -27,7 +29,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Japan: J2-League' in full_league_name:
+            # if 'Germany: Bundesliga' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()
@@ -38,7 +40,10 @@ class AllGamesCollector:
                         game_manager = GameCollector(driver=self.driver, league=league)
                     except AttributeError:
                         continue
-                    game_manager.filter_out()
+                    try:
+                        game_manager.filter_out()
+                    except ElementClickInterceptedException:
+                        game_manager.filter_out()
 
                     try:
                         is_match_data = game_manager.get_match_data()

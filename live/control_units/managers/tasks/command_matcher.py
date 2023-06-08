@@ -1,6 +1,7 @@
 class FootballTeamsComparison:
     def __init__(self):
         self.exclude_list = [
+            'union'
             'united',
             'town',
             'hapoel',

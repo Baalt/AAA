@@ -1,5 +1,9 @@
+import matplotlib
+
+matplotlib.use('Agg')
 import numpy as np
 import matplotlib.pyplot as plt
+plt.ioff()
 
 
 class TeamsStatsVisualizer:
@@ -46,7 +50,7 @@ class TeamsStatsVisualizer:
         ax.set_ylabel('Points')
         fig.tight_layout()
 
-        fig.savefig(f"data/{season}_points.png", dpi=300)
+        fig.savefig(f"graph/data/{season}_points.png", dpi=300)
         plt.close(fig)
 
     def plot_team_stats(self, stat_key, season, sort_by=None):
@@ -104,5 +108,5 @@ class TeamsStatsVisualizer:
         ax.set_ylabel(stat_key)
         fig.tight_layout()
 
-        fig.savefig(f"data/{season}_stat.png", dpi=300)
+        fig.savefig(f"graph/data/{season}_stat.png", dpi=300)
         plt.close(fig)

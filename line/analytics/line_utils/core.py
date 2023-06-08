@@ -5,7 +5,6 @@ from graph.teams_stats_viz import TeamsStatsVisualizer
 from line.analytics.message_builder import RateMessageBuilder, ExpressMessageBuilder
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
 from utils.stat_switcher import stats_dict
-from utils.error import HandicapNotMatchSeqError
 
 
 class Catcher:
@@ -37,68 +36,55 @@ class Catcher:
         else:
             self.statistic_name = statistic_name
 
-    def total_calculation(self, coeff_set, seq: list):
-        over_list = []
-        under_list = []
+    def calculate_percentage(self, coeff_set, seq):
+        try:
+            total = float(coeff_set['total_number'])
+        except ValueError:
+            print("Invalid total value. Conversion to float failed.")
+            return
+
+        less_than_total = 0
+        greater_than_total = 0
+
+        for number in seq:
+            if number < total:
+                less_than_total += 1
+            elif number > total:
+                greater_than_total += 1
+
+        total_count = len(seq)
+        less_than_percentage = round((less_than_total / total_count) * 100, 2)
+        greater_than_percentage = round((greater_than_total / total_count) * 100, 2)
+
+        return less_than_percentage, greater_than_percentage
+
+    def handicap_percentage_calculate(self, coeff_set: dict, current_seq: list, opposing_seq: list):
         try:
             coeff_total = float(coeff_set['total_number'])
-            for total in seq:
-                if total > coeff_total:
-                    over_list.append(total)
-                elif total < coeff_total:
-                    under_list.append(total)
+        except ValueError:
+            print("Invalid total value. Conversion to float failed.")
+            return
 
-            count_under = len(under_list)
-            count_over = len(over_list)
-            try:
-                under_percent = (count_under * 100) / (count_over + count_under)
-            except ZeroDivisionError:
-                under_percent = None
+        if len(current_seq) != len(opposing_seq):
+            print("Length of current_seq is not equal to the length of opposing_seq.")
+            return
 
-            try:
-                over_percent = (count_over * 100) / (count_over + count_under)
-            except ZeroDivisionError:
-                over_percent = None
+        count_current_seq_greater = 0
+        count_current_seq_less = 0
 
-            return under_percent, over_percent
+        idx = 0
+        for total in current_seq:
+            total_plus_handicap = (total + coeff_total) - opposing_seq[idx]
+            idx += 1
 
-        except Exception as err:
-            raise err
-        #     print('Catcher.total_calculation Error: ', err)
-        #     return None
+            if total_plus_handicap > 0:
+                count_current_seq_greater += 1
+            elif total_plus_handicap < 0:
+                count_current_seq_less += 1
 
-    def handicap_calculation(self, coeff_set: dict, current_seq: list, opposing_seq: list):
-        if len(current_seq) == len(opposing_seq):
-            win_list = []
-            lose_list = []
-            try:
-                coeff_total = float(coeff_set['total_number'])
-                idx = 0
-                for total in current_seq:
-                    total_plus_handicap = (total + coeff_total) - opposing_seq[idx]
-                    idx += 1
-
-                    if total_plus_handicap > 0:
-                        win_list.append(total)
-                    elif total_plus_handicap < 0:
-                        lose_list.append(total)
-
-                count_win = len(win_list)
-                count_lose = len(lose_list)
-
-                denominator = count_win + count_lose
-                if denominator:
-                    win_percent = (count_win * 100) / denominator
-                    return win_percent
-
-                raise ZeroDivisionError
-
-            except Exception as err:
-                print('rate_search Error: ', err)
-                raise err
-
-        raise HandicapNotMatchSeqError(
-            f'Do not match current and opposing seqs {len(current_seq)} - {len(opposing_seq)}')
+        total_count = len(current_seq)
+        percent_list1_greater = round((count_current_seq_greater / total_count) * 100, 2)
+        return percent_list1_greater
 
     async def search_kush_rate(self,
                                statistic_name: str,
@@ -124,21 +110,19 @@ class Catcher:
                                last_4_current_percent: float,
                                last_4_opposing_percent: float):
         self.league_name = league_name
-        try:
-            last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
-            last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
-            last_8_percent = (last_8_current_percent + last_8_opposing_percent) / 2
-            last_4_percent = (last_4_current_percent + last_4_opposing_percent) / 2
-            similar_percent_low = (similar_current_percent_low + similar_opposing_percent_low) / 2
-            similar_percent_high = (similar_current_percent_high + similar_opposing_percent_high) / 2
-            big_data_percent = (big_data_current_percent + big_data_opposing_percent) / 2
-            last_year_percent = (last_year_current_percent + last_year_opposing_percent) / 2
-        except TypeError:
-            return
-        high_percent_1, high_percent_2, average_percent = 90, 85, 66.6
-        percent_1 = min(last_12_percent, last_8_percent, last_4_percent)
-        percent_2 = min(similar_percent_low, similar_percent_high, last_20_percent)
-        if percent_1 >= high_percent_1 and percent_2 >= high_percent_2:
+
+        last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
+        last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
+        last_8_percent = (last_8_current_percent + last_8_opposing_percent) / 2
+        last_4_percent = (last_4_current_percent + last_4_opposing_percent) / 2
+        similar_percent_low = (similar_current_percent_low + similar_opposing_percent_low) / 2
+        similar_percent_high = (similar_current_percent_high + similar_opposing_percent_high) / 2
+        big_data_percent = (big_data_current_percent + big_data_opposing_percent) / 2
+        last_year_percent = (last_year_current_percent + last_year_opposing_percent) / 2
+
+        high_percent_1, low_percent = 90, 66.6
+        percent_1 = min(last_20_percent, last_12_percent, last_8_percent, last_4_percent)
+        if percent_1 >= high_percent_1:
             coefficient = coeff_set[coeff_under_over_key]
             if not isinstance(coefficient, float):
                 coefficient = float(coefficient)
@@ -195,13 +179,9 @@ class Catcher:
                                                   coefficient=coeff_set[coeff_under_over_key])
         last_4_kush_by_rate = self.kush_calculate(percent=last_4_percent,
                                                   coefficient=coeff_set[coeff_under_over_key])
-        try:
-            min_kush = min(similar_kush_by_rate_low, similar_kush_by_rate_high,
-                           last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate, last_4_kush_by_rate)
-        except TypeError:
-            return
 
-        if percent_1 > average_percent and percent_2 > average_percent and min_kush >= 0.3:
+        min_kush = min(last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate, last_4_kush_by_rate)
+        if percent_1 > low_percent and min_kush >= 0.3 :
             message = RateMessageBuilder(statistic_name=statistic_name,
                                          league_name=self.league_name,
                                          big_data_percent=big_data_percent,
@@ -251,10 +231,8 @@ class Catcher:
             percent = float(percent)
         if not isinstance(coefficient, float):
             coefficient = float(coefficient)
-        if percent > 0 and percent <= 100:
-            kush = ((percent * (coefficient - 1)) - (100 - percent)) / 100
-            return kush
-        return None
+        kush = ((percent * (coefficient - 1)) - (100 - percent)) / 100
+        return kush
 
     def __plot_graphs(self, statistic):
         self.delete_files_in_folder(folder_path='graph/data')

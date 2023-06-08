@@ -1,3 +1,5 @@
+import time
+
 from selenium.webdriver.common.by import By
 from selenium.common import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
@@ -40,21 +42,27 @@ class LeagueDataCollector:
             button.click()
             self.refresh_page()
             self.wait_for_elements()
+            time.sleep(1)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
 
-        self.driver.buttons.get_other_button().click()
+        other_button = self.driver.buttons.get_other_button()
+        other_button.click()
+        time.sleep(0.5)
         self.driver.buttons.get_drop_down_button(button_text='Удары от ворот').click()
         self.refresh_page()
         self.wait_for_elements()
+        time.sleep(0.3)
         button = self.driver.buttons.get_other_button()
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
 
-        self.driver.buttons.get_other_button().click()
+        other_button.click()
+        time.sleep(0.5)
         self.driver.buttons.get_drop_down_button(button_text='Удары').click()
         self.refresh_page()
         self.wait_for_elements()
+        time.sleep(0.3)
         button = self.driver.buttons.get_other_button()
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])

@@ -9,7 +9,9 @@ from browser.button_box import Buttons
 
 
 class LiveChromeDriver:
-    def __init__(self, driver_path: str = '/usr/local/bin/chromedriver', headless: bool = False):
+    def __init__(self,
+                 driver_path: str = '/Users/olegschukin/PycharmProjects/AAA/browser/driver/chromedriver',
+                 headless: bool = False):
         options = Options()
         if headless:
             options.add_argument('--headless')

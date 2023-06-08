@@ -132,3 +132,4 @@ data
 .idea
 graph/data
 telega/config.py
+browser/driver

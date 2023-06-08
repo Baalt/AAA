@@ -37,7 +37,7 @@ class WebCrawler:
                 continue
 
             self.wait_for_elements()
-            # time.sleep(1)
+            # time.sleep(0.5)
             self.scraper = RealTimeGameScraper()
             if self.driver.buttons.is_match_button_clicked():
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
@@ -56,7 +56,7 @@ class WebCrawler:
                 try:
                     self.driver.buttons.get_match_button().click()
                     self.wait_for_elements()
-                    # time.sleep(1)
+                    # time.sleep(0.5)
                     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                     try:
                         self.scraper.scrape_team_names(soup=soup)

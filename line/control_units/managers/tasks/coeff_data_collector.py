@@ -1,3 +1,5 @@
+import time
+
 from bs4 import BeautifulSoup
 
 from selenium.webdriver.common.by import By
@@ -32,6 +34,7 @@ class CoefficientDataManager:
         self.driver.buttons.open_coefficient_button().click()
         try:
             self._wait_for_elements("//table[@class='table-sm table table-bordered matches betting-table text-center']")
+            time.sleep(0.5)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             self._create_dict_structure(soup=soup)
             self.scraper.get_totals_data(soup=soup, coefficient_data=self.coefficients_data, tooltip=True)
@@ -45,6 +48,7 @@ class CoefficientDataManager:
             self.driver.buttons.get_refresh_button().click()
             try:
                 self._wait_for_elements()
+                time.sleep(0.5)
             except TimeoutException:
                 continue
 
@@ -58,6 +62,7 @@ class CoefficientDataManager:
             self.driver.buttons.get_refresh_button().click()
             try:
                 self._wait_for_elements()
+                time.sleep(0.5)
             except TimeoutException:
                 continue
 

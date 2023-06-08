@@ -56,22 +56,28 @@ class GameCollector:
 
     def scrap_accordion_data(self):
         self.driver.buttons.get_other_button().click()
+        time.sleep(0.5)
         self.driver.buttons.get_drop_down_button(button_text='Удары от ворот').click()
         self.refresh_page()
-        time.sleep(1)
+        self.wait_for_elements()
+        time.sleep(2)
 
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.scrap_accordion_table_data(soup=soup)
 
         self.driver.buttons.get_other_button().click()
+        time.sleep(0.5)
         self.driver.buttons.get_drop_down_button(button_text='Удары').click()
         self.refresh_page()
-        time.sleep(1)
+        self.wait_for_elements()
+        time.sleep(2)
 
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.scrap_accordion_table_data(soup=soup)
 
     def get_match_data(self):
+        self.wait_for_elements()
+        time.sleep(2)
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.scrap_commands_name(soup)
         try:
@@ -83,8 +89,8 @@ class GameCollector:
             for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
                 button.click()
                 self.refresh_page()
-                # self.wait_for_elements()
-                time.sleep(1)
+                self.wait_for_elements()
+                time.sleep(2)
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                 self.scraper.scrap_match_table_data(soup=soup)
 
@@ -115,4 +121,4 @@ class GameCollector:
 
     def wait_for_elements(self) -> None:
         WebDriverWait(self.driver.driver, 5).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//div[@class="card"]')))
+            EC.presence_of_all_elements_located((By.XPATH, '//*')))

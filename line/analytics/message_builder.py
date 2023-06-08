@@ -18,14 +18,14 @@ class RateMessageBuilder:
         self.statistic_name = statistic_name or ''
         self.league_name = league_name or ''
 
-        self.big_data_percent = big_data_percent or 0
-        self.last_year_percent = last_year_percent or 0
-        self.similar_percent_low = similar_percent_low or 0
-        self.similar_percent_high = similar_percent_high or 0
-        self.last_20_percent = last_20_percent or 0
-        self.last_12_home_away_percent = last_12_percent or 0
-        self.last_8_percent = last_8_percent or 0
-        self.last_4_percent = last_4_percent or 0
+        self.big_data_percent = big_data_percent
+        self.last_year_percent = last_year_percent
+        self.similar_percent_low = similar_percent_low
+        self.similar_percent_high = similar_percent_high
+        self.last_20_percent = last_20_percent
+        self.last_12_home_away_percent = last_12_percent
+        self.last_8_percent = last_8_percent
+        self.last_4_percent = last_4_percent
 
         self.big_match_data = big_match_data or {}
         self.coeff_total = coeff_total or 0
@@ -43,22 +43,22 @@ class RateMessageBuilder:
         self.last_8_kush_by_rate = last_8_kush_by_rate or 0
         self.last_4_kush_by_rate = last_4_kush_by_rate or 0
 
-        self.big_data_current = big_data_current_percent or 0
-        self.big_data_opposing = big_data_opposing_percent or 0
-        self.last_year_current = last_year_current_percent or 0
-        self.last_year_opposing = last_year_opposing_percent or 0
-        self.similar_current_low = similar_current_percent_low or 0
-        self.similar_opposing_low = similar_opposing_percent_low or 0
-        self.similar_current_high = similar_current_percent_high or 0
-        self.similar_opposing_high = similar_opposing_percent_high or 0
-        self.last_20_current = last_20_current_percent or 0
-        self.last_20_opposing = last_20_opposing_percent or 0
-        self.last_12_current = last_12_current_percent or 0
-        self.last_12_opposing = last_12_opposing_percent or 0
-        self.last_8_current = last_8_current_percent or 0
-        self.last_8_opposing = last_8_opposing_percent or 0
-        self.last_4_current = last_4_current_percent or 0
-        self.last_4_opposing = last_4_opposing_percent or 0
+        self.big_data_current = big_data_current_percent
+        self.big_data_opposing = big_data_opposing_percent
+        self.last_year_current = last_year_current_percent
+        self.last_year_opposing = last_year_opposing_percent
+        self.similar_current_low = similar_current_percent_low
+        self.similar_opposing_low = similar_opposing_percent_low
+        self.similar_current_high = similar_current_percent_high
+        self.similar_opposing_high = similar_opposing_percent_high
+        self.last_20_current = last_20_current_percent
+        self.last_20_opposing = last_20_opposing_percent
+        self.last_12_current = last_12_current_percent
+        self.last_12_opposing = last_12_opposing_percent
+        self.last_8_current = last_8_current_percent
+        self.last_8_opposing = last_8_opposing_percent
+        self.last_4_current = last_4_current_percent
+        self.last_4_opposing = last_4_opposing_percent
 
     def get_kush_rate_message(self):
         return f"""         
@@ -86,8 +86,8 @@ Big Data: {self.big_data_current:3.2f} __ {self.big_data_opposing:3.2f} __ {self
 LastYear: {self.last_year_current:3.2f} __ {self.last_year_opposing:3.2f} __ {self.last_year_percent:3.2f}%
 SimlLow: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
 SimiHigh: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-_____L20: {self.last_20_current:3.2f} ___ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
-L12__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
+_____L18: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
+L10__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
 _____L10: {self.last_8_current:3.2f} __ {self.last_8_opposing:3.2f} __ {self.last_8_percent:3.2f}%
 ______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.last_4_percent:3.2f}%"""
 
@@ -110,14 +110,14 @@ class ExpressMessageBuilder:
         self.statistic_name = statistic_name or ''
         self.league_name = league_name or ''
 
-        self.big_data_percent = big_data_percent or 0
-        self.last_year_percent = last_year_percent or 0
-        self.similar_percent_low = similar_percent_low or 0
-        self.similar_percent_high = similar_percent_high or 0
-        self.last_20_percent = last_20_percent or 0
-        self.last_12_home_away_percent = last_12_percent or 0
-        self.last_8_percent = last_8_percent or 0
-        self.last_4_percent = last_4_percent or 0
+        self.big_data_percent = big_data_percent
+        self.last_year_percent = last_year_percent
+        self.similar_percent_low = similar_percent_low
+        self.similar_percent_high = similar_percent_high
+        self.last_20_percent = last_20_percent
+        self.last_12_home_away_percent = last_12_percent
+        self.last_8_percent = last_8_percent
+        self.last_4_percent = last_4_percent
 
         self.big_match_data = big_match_data or {}
         self.coeff_total = coeff_total or 0
@@ -126,22 +126,22 @@ class ExpressMessageBuilder:
         self.category = category or ''
         self.coefficients = coefficients or {}
 
-        self.big_data_current = big_data_current_percent or 0
-        self.big_data_opposing = big_data_opposing_percent or 0
-        self.last_year_current = last_year_current_percent or 0
-        self.last_year_opposing = last_year_opposing_percent or 0
-        self.similar_current_low = similar_current_percent_low or 0
-        self.similar_opposing_low = similar_opposing_percent_low or 0
-        self.similar_current_high = similar_current_percent_high or 0
-        self.similar_opposing_high = similar_opposing_percent_high or 0
-        self.last_20_current = last_20_current_percent or 0
-        self.last_20_opposing = last_20_opposing_percent or 0
-        self.last_12_current = last_12_current_percent or 0
-        self.last_12_opposing = last_12_opposing_percent or 0
-        self.last_8_current = last_8_current_percent or 0
-        self.last_8_opposing = last_8_opposing_percent or 0
-        self.last_4_current = last_4_current_percent or 0
-        self.last_4_opposing = last_4_opposing_percent or 0
+        self.big_data_current = big_data_current_percent
+        self.big_data_opposing = big_data_opposing_percent
+        self.last_year_current = last_year_current_percent
+        self.last_year_opposing = last_year_opposing_percent
+        self.similar_current_low = similar_current_percent_low
+        self.similar_opposing_low = similar_opposing_percent_low
+        self.similar_current_high = similar_current_percent_high
+        self.similar_opposing_high = similar_opposing_percent_high
+        self.last_20_current = last_20_current_percent
+        self.last_20_opposing = last_20_opposing_percent
+        self.last_12_current = last_12_current_percent
+        self.last_12_opposing = last_12_opposing_percent
+        self.last_8_current = last_8_current_percent
+        self.last_8_opposing = last_8_opposing_percent
+        self.last_4_current = last_4_current_percent
+        self.last_4_opposing = last_4_opposing_percent
     def get_express_rate_message(self):
         return f"""         
 ########## LINE ##########
@@ -158,7 +158,7 @@ Big Data: {self.big_data_current:3.2f} __ {self.big_data_opposing:3.2f} __ {self
 LastYear: {self.last_year_current:3.2f} __ {self.last_year_opposing:3.2f} __ {self.last_year_percent:3.2f}%
 SimilLow: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
 SimiHigh: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-_____L20: {self.last_20_current:3.2f} ___ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
-L12__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
+_____L18: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
+L10__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
 _____L10: {self.last_8_current:3.2f} __ {self.last_8_opposing:3.2f} __ {self.last_8_percent:3.2f}%
 ______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.last_4_percent:3.2f}%"""

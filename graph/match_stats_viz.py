@@ -1,4 +1,9 @@
+import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+plt.ioff()
 
 
 class MatchStatsVisualizer:
@@ -75,4 +80,4 @@ class MatchStatsVisualizer:
         ax.xaxis.labelpad = max_count * 2
         ax.yaxis.labelpad = 20
 
-        fig.savefig("data/live_stats.png")
+        fig.savefig("graph/data/live_stats.png")
