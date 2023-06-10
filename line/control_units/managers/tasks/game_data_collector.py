@@ -104,7 +104,7 @@ class GameCollector:
                 'line/control_units/managers/games_collector/GameCollector.get_match_data()')
             return None
 
-    def validation_goal_data(self, statistics_name, threshold=26):
+    def validation_goal_data(self, statistics_name, threshold=20):
         if not (len(self.all_match_data[statistics_name]['home_collections']) > threshold and len(
                 self.all_match_data[statistics_name]['away_collections']) > threshold):
             print(f"MatchManagerValidError: managers.match.MatchManager.get_match_data()")
