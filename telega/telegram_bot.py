@@ -19,14 +19,14 @@ class TelegramBot:
             await self.bot.send_message(chat_id=self.chat_id, text=message)
         else:
             attempt = 0
-            while attempt < 6:
+            while attempt < 12:
                 try:
-                    await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message)
-                    break  # Остановить цикл, если отправка успешна
+                    await self.bot.send_media_group(chat_id=self.chat_id, media=media, caption=message, connect_timeout=120)
+                    break
                 except TimedOut as e:
                     attempt += 1
                     print('attempt №', attempt)
-                    if attempt == 6:
+                    if attempt == 12:
                         print('send_message_with_files', e)
                     else:
                         continue

@@ -17,21 +17,21 @@ class RefereeCollector:
         is_referee_button = self.driver.buttons.check_and_press_referee_button()
         if is_referee_button:
             try:
-                collector.filter_out()
+                self.filter_out()
             except ElementClickInterceptedException:
-                collector.filter_out()
+                self.filter_out()
 
             self.driver.buttons.get_smart_stats_buttons()[0].click()
             self.driver.buttons.get_refresh_button().click()
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.scrape_table(soup, 'yellow cards')
+            self.scraper.scrape_table(soup, 'ЖК')
 
             self.driver.buttons.get_smart_stats_buttons()[4].click()
             self.driver.buttons.get_refresh_button().click()
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.scrape_table(soup, 'fouls')
+            self.scraper.scrape_table(soup, 'Фолы')
 
     def filter_out(self):
         self.driver.buttons.filter_table_by_matches()

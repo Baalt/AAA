@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import statistics
 
 
 class RefereeScraper:
@@ -19,10 +20,12 @@ class RefereeScraper:
             except ValueError:
                 continue
 
+        values15 =  values[:15] if len(values) >= 15 else values
         self.data[key] = {
             'all': values,
             'count': len(values),
-            'first_15_elements': values[:15] if len(values) >= 15 else values
+            'first_15_elements': values15,
+            'avg': statistics.mean(values15)
         }
 
     def get_data(self):

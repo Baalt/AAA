@@ -19,18 +19,6 @@ class LiveHandicapCalculation(BoundaryLiveValues):
             current_seq=away_structure.last_year_individual_total_opposing_teams_current_away_in_home_away_games,
             opposing_seq=away_structure.last_year_individual_total_current_away_command_in_home_away_games,
             percent=percent)
-        similar_current_smart_handicap = self.handicap_calculation(
-            current_seq=home_structure.similar_command_individual_total_current_home_command_in_home_away_games_low,
-            opposing_seq=home_structure.similar_command_individual_total_opposing_teams_current_home_in_home_away_games_low,
-            percent=percent)
-        high_similar_opposing_smart_handicap = self.handicap_calculation(
-            current_seq=away_structure.similar_command_individual_total_opposing_teams_current_away_in_home_away_games_high,
-            opposing_seq=away_structure.similar_command_individual_total_current_away_command_in_home_away_games_low,
-            percent=percent)
-        low_similar_opposing_smart_handicap = self.handicap_calculation(
-            current_seq=away_structure.similar_command_individual_total_opposing_teams_current_away_in_home_away_games_high,
-            opposing_seq=away_structure.similar_command_individual_total_current_away_command_in_home_away_games_low,
-            percent=percent)
         last_20_current_smart_handicap = self.handicap_calculation(
             current_seq=home_structure.last_20_games_individual_total_current_home_by_year_in_home_away_games,
             opposing_seq=home_structure.last_20_games_individual_total_opposing_teams_current_home_by_year_in_home_away_games,
@@ -69,9 +57,6 @@ class LiveHandicapCalculation(BoundaryLiveValues):
             big_data_opposing_smart_handicap,
             last_year_current_smart_handicap,
             last_year_opposing_smart_handicap,
-            similar_current_smart_handicap,
-            high_similar_opposing_smart_handicap,
-            low_similar_opposing_smart_handicap,
             last_20_current_smart_handicap,
             last_20_opposing_smart_handicap,
             last_12_current_smart_handicap,
@@ -99,18 +84,6 @@ class LiveHandicapCalculation(BoundaryLiveValues):
         last_year_opposing_smart_handicap = self.handicap_calculation(
             current_seq=home_structure.last_year_individual_total_opposing_teams_current_home_in_home_away_games,
             opposing_seq=home_structure.last_year_individual_total_current_home_command_in_home_away_games,
-            percent=percent)
-        high_similar_current_smart_handicap = self.handicap_calculation(
-            current_seq=away_structure.similar_command_individual_total_current_away_command_in_home_away_games_high,
-            opposing_seq=away_structure.similar_command_individual_total_opposing_teams_current_away_in_home_away_games_high,
-            percent=percent)
-        low_similar_current_smart_handicap = self.handicap_calculation(
-            current_seq=away_structure.similar_command_individual_total_current_away_command_in_home_away_games_low,
-            opposing_seq=away_structure.similar_command_individual_total_opposing_teams_current_away_in_home_away_games_low,
-            percent=percent)
-        similar_opposing_smart_handicap = self.handicap_calculation(
-            current_seq=home_structure.similar_command_individual_total_opposing_teams_current_home_in_home_away_games_low,
-            opposing_seq=home_structure.similar_command_individual_total_current_home_command_in_home_away_games_low,
             percent=percent)
         last_20_current_smart_handicap = self.handicap_calculation(
             current_seq=away_structure.last_20_games_individual_total_current_away_by_year_in_home_away_games,
@@ -150,9 +123,6 @@ class LiveHandicapCalculation(BoundaryLiveValues):
             big_data_opposing_smart_handicap,
             last_year_current_smart_handicap,
             last_year_opposing_smart_handicap,
-            high_similar_current_smart_handicap,
-            low_similar_current_smart_handicap,
-            similar_opposing_smart_handicap,
             last_20_current_smart_handicap,
             last_20_opposing_smart_handicap,
             last_12_current_smart_handicap,

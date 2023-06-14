@@ -4,6 +4,7 @@ from selenium.common import ElementClickInterceptedException
 
 from browser.browser import SmartChromeDriver
 from line.analytics.live_dict_builder import LiveDictBuilder
+from line.control_units.managers.referee_collector import RefereeCollector
 from line.control_units.managers.tasks.game_data_collector import GameCollector
 from line.control_units.managers.tasks.coeff_data_collector import CoefficientDataManager
 from line.control_units.filters.last_year_filter import LastYearFilter
@@ -24,7 +25,6 @@ class AllGamesCollector:
         self.all_league_data = all_league_data
         self.game_number = 0
         self.smart_live_data = {'lst': []}
-
 
     async def run(self):
         # flag = False
@@ -59,6 +59,9 @@ class AllGamesCollector:
                         coeff_manager = CoefficientDataManager(driver=self.driver)
                         coeff_manager.get_coefficients_data()
 
+                        referee_manager = RefereeCollector(driver=self.driver, league=league)
+                        referee_manager.collect_referee_data()
+
                         self.game_number += 1
                         try:
                             league_data = self.all_league_data[full_league_name]
@@ -71,8 +74,9 @@ class AllGamesCollector:
                             last_year_data=last_year_data.all_match_data,
                             all_league_data=league_data,
                             schedule_data=self.schedule_data,
-                            coefficients = coeff_manager.get_data,
+                            coefficients=coeff_manager.get_data,
                             league_name=full_league_name,
+                            referee_data=referee_manager.scraper.get_data(),
                             game_number=f"{self.game_number:04d}")
                         try:
                             await math_collector.run()

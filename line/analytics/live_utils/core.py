@@ -1,3 +1,4 @@
+from collections import Counter
 import numpy as np
 
 
@@ -17,51 +18,44 @@ class BoundaryLiveValues:
     def total_calculation(self, seq: list, percent: int):
         total_under = None
         total_over = None
+        total_count = len(seq)
+
+        # Calculation for totals under a certain threshold
         for search_total in np.arange(0.5, 70.5, 1):
-            win = []
-            lose = []
+            win_counter = Counter()
+
             for real_total in seq:
                 if search_total > real_total:
-                    win.append(real_total)
-                elif search_total < real_total:
-                    lose.append(real_total)
+                    win_counter[real_total] += 1
 
-            quantity_win = len(win)
-            quantity_lose = len(lose)
+            quantity_win = sum(win_counter.values())
 
-            denominator = quantity_win + quantity_lose
-            if denominator:
-                under_percent = (quantity_win * 100) / denominator
-                if under_percent >= percent:
-                    total_under = search_total
-                    break
+            under_percent = round((quantity_win / total_count) * 100, 2)
+            if under_percent >= percent:
+                total_under = search_total
+                break
 
+        # Calculation for totals over a certain threshold
         for search_total in np.arange(70.5, -0.5, -1):
-            win = []
-            lose = []
+            win_counter = Counter()
+
             for real_total in seq:
                 if search_total < real_total:
-                    win.append(real_total)
-                elif search_total > real_total:
-                    lose.append(real_total)
+                    win_counter[real_total] += 1
 
-            quantity_win = len(win)
-            quantity_lose = len(lose)
+            quantity_win = sum(win_counter.values())
 
-            denominator = quantity_win + quantity_lose
-            if denominator:
-                over_percent = (quantity_win * 100) / denominator
-                if over_percent >= percent:
-                    total_over = search_total
-                    break
+            over_percent = round((quantity_win / total_count) * 100, 2)
+            if over_percent >= percent:
+                total_over = search_total
+                break
 
         return total_under, total_over
 
     def handicap_calculation(self, current_seq, opposing_seq, percent):
         if len(current_seq) == len(opposing_seq):
             for search_total in np.arange(0.5, 70.5, 1):
-                win_list = []
-                lose_list = []
+                win_counter = Counter()
 
                 idx = 0
                 for total in current_seq:
@@ -69,19 +63,14 @@ class BoundaryLiveValues:
                     idx += 1
 
                     if total_plus_handicap > 0:
-                        win_list.append(total)
-                    elif total_plus_handicap < 0:
-                        lose_list.append(total)
+                        win_counter[total] += 1
 
-                quantity_win = len(win_list)
-                quantity_lose = len(lose_list)
+                quantity_win = sum(win_counter.values())
 
-                denominator = quantity_win + quantity_lose
-                if denominator:
-                    win_percent = (quantity_win * 100) / denominator
-                    if win_percent >= percent:
-                        return search_total
-        return None
+                total_count = len(current_seq)
+                percent_current_seq_greater = round((quantity_win / total_count) * 100, 2)
+                if percent_current_seq_greater >= percent:
+                    return search_total
 
     def over_under_define(self, seq: list, over_under: str):
         for _ in seq:

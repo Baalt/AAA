@@ -15,7 +15,8 @@ class Catcher:
                  big_match_data: dict,
                  coefficients: dict,
                  statistic_name: str,
-                 all_league_data: dict):
+                 all_league_data: dict,
+                 referee_data: dict):
 
         self.telegram = telegram
         self.home_structure = home_structure
@@ -24,6 +25,7 @@ class Catcher:
         self.coefficients = coefficients
 
         self.all_league_data = all_league_data
+        self.referee_data = referee_data
         self.files = [
             "graph/data/current_season_points.png",
             "graph/data/previous_season_points.png",
@@ -83,8 +85,8 @@ class Catcher:
                 count_current_seq_less += 1
 
         total_count = len(current_seq)
-        percent_list1_greater = round((count_current_seq_greater / total_count) * 100, 2)
-        return percent_list1_greater
+        percent_current_seq_greater = round((count_current_seq_greater / total_count) * 100, 2)
+        return percent_current_seq_greater
 
     async def search_kush_rate(self,
                                statistic_name: str,
@@ -109,7 +111,6 @@ class Catcher:
                                last_8_opposing_percent: float,
                                last_4_current_percent: float,
                                last_4_opposing_percent: float):
-        self.league_name = league_name
 
         last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
         last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
@@ -128,7 +129,7 @@ class Catcher:
                 coefficient = float(coefficient)
             if coefficient > 1.27:
                 message = ExpressMessageBuilder(statistic_name=statistic_name,
-                                                league_name=self.league_name,
+                                                league_name=league_name,
                                                 big_data_percent=big_data_percent,
                                                 last_year_percent=last_year_percent,
                                                 similar_percent_low=similar_percent_low,
@@ -181,9 +182,9 @@ class Catcher:
                                                   coefficient=coeff_set[coeff_under_over_key])
 
         min_kush = min(last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate, last_4_kush_by_rate)
-        if percent_1 > low_percent and min_kush >= 0.3 :
+        if percent_1 > low_percent and min_kush >= 0.3:
             message = RateMessageBuilder(statistic_name=statistic_name,
-                                         league_name=self.league_name,
+                                         league_name=league_name,
                                          big_data_percent=big_data_percent,
                                          last_year_percent=last_year_percent,
                                          similar_percent_low=similar_percent_low,
