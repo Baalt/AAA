@@ -113,6 +113,13 @@ class TotalCatcher(Catcher):
             last_4_home_under_percent, last_4_home_over_percent = last_4_home_result
             last_4_away_under_percent, last_4_away_over_percent = last_4_away_result
 
+            referee = self.referee_calculate(statistic_name=statistic_name,
+                                             coeff_set=coeff_set)
+            if referee:
+                under_all, over_all, under_15, over_15 = referee
+            else:
+                under_all, over_all, under_15, over_15 = None, None, None, None
+
             await self.search_kush_rate(statistic_name=statistic_name,
                                         league_name=league_name,
                                         coefficients=self.coefficients,
@@ -134,7 +141,9 @@ class TotalCatcher(Catcher):
                                         last_8_current_percent=last_8_home_under_percent,
                                         last_8_opposing_percent=last_8_away_under_percent,
                                         last_4_current_percent=last_4_home_under_percent,
-                                        last_4_opposing_percent=last_4_away_under_percent)
+                                        last_4_opposing_percent=last_4_away_under_percent,
+                                        referee_all=under_all,
+                                        referee_15=under_15)
 
             await self.search_kush_rate(statistic_name=statistic_name,
                                         league_name=league_name,
@@ -157,4 +166,6 @@ class TotalCatcher(Catcher):
                                         last_8_current_percent=last_8_home_over_percent,
                                         last_8_opposing_percent=last_8_away_over_percent,
                                         last_4_current_percent=last_4_home_over_percent,
-                                        last_4_opposing_percent=last_4_away_over_percent)
+                                        last_4_opposing_percent=last_4_away_over_percent,
+                                        referee_all=over_all,
+                                        referee_15=over_15)

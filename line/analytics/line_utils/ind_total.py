@@ -113,6 +113,14 @@ class IndividualTotalCatcher(Catcher):
             last_4_current_under_percent, last_4_current_over_percent = last_4_current_result
             last_4_opposing_under_percent, last_4_opposing_over_percent = last_4_opposing_result
 
+            referee = self.referee_calculate(statistic_name=statistic_name,
+                                             coeff_set=coeff_set,
+                                             double=True)
+            if referee:
+                under_all, over_all, under_15, over_15 = referee
+            else:
+                under_all, over_all, under_15, over_15 = None, None, None, None
+
             await self.search_kush_rate(statistic_name=statistic_name,
                                         league_name=league_name,
                                         coefficients=self.coefficients,
@@ -134,7 +142,9 @@ class IndividualTotalCatcher(Catcher):
                                         last_8_current_percent=last_8_current_under_percent,
                                         last_8_opposing_percent=last_8_opposing_under_percent,
                                         last_4_current_percent=last_4_current_under_percent,
-                                        last_4_opposing_percent=last_4_opposing_under_percent)
+                                        last_4_opposing_percent=last_4_opposing_under_percent,
+                                        referee_all=under_all,
+                                        referee_15=under_15)
 
             await self.search_kush_rate(statistic_name=statistic_name,
                                         league_name=league_name,
@@ -157,7 +167,9 @@ class IndividualTotalCatcher(Catcher):
                                         last_8_current_percent=last_8_current_over_percent,
                                         last_8_opposing_percent=last_8_opposing_over_percent,
                                         last_4_current_percent=last_4_current_over_percent,
-                                        last_4_opposing_percent=last_4_opposing_over_percent)
+                                        last_4_opposing_percent=last_4_opposing_over_percent,
+                                        referee_all=over_all,
+                                        referee_15=over_15)
 
     async def search_individual_2_total_rate(self, statistic_name: str, league_name: str):
         for coeff_set in self.coefficients[statistic_name]['total_2_&coefficient']:
@@ -270,6 +282,14 @@ class IndividualTotalCatcher(Catcher):
             last_4_current_under_percent, last_4_current_over_percent = last_4_current_result
             last_4_opposing_under_percent, last_4_opposing_over_percent = last_4_opposing_result
 
+            referee = self.referee_calculate(statistic_name=statistic_name,
+                                             coeff_set=coeff_set,
+                                             double=True)
+            if referee:
+                under_all, over_all, under_15, over_15 = referee
+            else:
+                under_all, over_all, under_15, over_15 = None, None, None, None
+
             await self.search_kush_rate(statistic_name=statistic_name,
                                         league_name=league_name,
                                         coefficients=self.coefficients,
@@ -291,7 +311,9 @@ class IndividualTotalCatcher(Catcher):
                                         last_8_current_percent=last_8_current_under_percent,
                                         last_8_opposing_percent=last_8_opposing_under_percent,
                                         last_4_current_percent=last_4_current_under_percent,
-                                        last_4_opposing_percent=last_4_opposing_under_percent)
+                                        last_4_opposing_percent=last_4_opposing_under_percent,
+                                        referee_all=under_all,
+                                        referee_15=under_15)
 
             await self.search_kush_rate(statistic_name=statistic_name,
                                         league_name=league_name,
@@ -314,4 +336,6 @@ class IndividualTotalCatcher(Catcher):
                                         last_8_current_percent=last_8_current_over_percent,
                                         last_8_opposing_percent=last_8_opposing_over_percent,
                                         last_4_current_percent=last_4_current_over_percent,
-                                        last_4_opposing_percent=last_4_opposing_over_percent)
+                                        last_4_opposing_percent=last_4_opposing_over_percent,
+                                        referee_all=over_all,
+                                        referee_15=over_15)

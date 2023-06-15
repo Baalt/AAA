@@ -1,4 +1,4 @@
-class RateMessageBuilder:
+class KushMessageBuilder:
     def __init__(self, statistic_name: str, league_name: str, big_match_data: dict, big_data_percent: float,
                  last_year_percent: float, similar_percent_low: float, similar_percent_high: float,
                  last_20_percent: float, last_12_percent: float, last_8_percent: float, last_4_percent: float,
@@ -60,7 +60,7 @@ class RateMessageBuilder:
         self.last_4_current = last_4_current_percent
         self.last_4_opposing = last_4_opposing_percent
 
-    def get_kush_rate_message(self):
+    def get_message(self):
         return f"""         
 ########## LINE ##########
 
@@ -77,21 +77,19 @@ Big Data: {self.big_data_kush_by_rate:3.2f} kush
 LastYear: {self.last_year_kush_by_rate:3.2f} kush
 SimlLow: {self.similar_kush_by_rate_low:3.2f} kush
 SimiHigh: {self.similar_kush_by_rate_high:3.2f} kush
-_____L20: {self.last_20_kush_by_rate:3.2f} kush
-L12__HA: {self.last_12_kush_by_rate:3.2f} kush
-______L8: {self.last_8_kush_by_rate:3.2f} kush
-______L4: {self.last_4_kush_by_rate:3.2f} kush 
+_____L15: {self.last_20_kush_by_rate:3.2f} kush
+L10___HA: {self.last_12_kush_by_rate:3.2f} kush
+_____L10: {self.last_8_kush_by_rate:3.2f} kush
+______L5: {self.last_4_kush_by_rate:3.2f} kush 
     
 Big Data: {self.big_data_current:3.2f} __ {self.big_data_opposing:3.2f} __ {self.big_data_percent:3.2f}%
 LastYear: {self.last_year_current:3.2f} __ {self.last_year_opposing:3.2f} __ {self.last_year_percent:3.2f}%
 SimlLow: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-SimiHigh: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-_____L18: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
+SimiHigh: {self.similar_current_high:3.2f} __ {self.similar_opposing_high:3.2f} __ {self.similar_percent_high:3.2f}%
+_____L15: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
 L10__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
 _____L10: {self.last_8_current:3.2f} __ {self.last_8_opposing:3.2f} __ {self.last_8_percent:3.2f}%
 ______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.last_4_percent:3.2f}%"""
-
-
 
 
 class ExpressMessageBuilder:
@@ -142,7 +140,8 @@ class ExpressMessageBuilder:
         self.last_8_opposing = last_8_opposing_percent
         self.last_4_current = last_4_current_percent
         self.last_4_opposing = last_4_opposing_percent
-    def get_express_rate_message(self):
+
+    def get_message(self):
         return f"""         
 ########## LINE ##########
 __League: {self.league_name}
@@ -157,8 +156,29 @@ ____Coeff: {self.coeff_value}
 Big Data: {self.big_data_current:3.2f} __ {self.big_data_opposing:3.2f} __ {self.big_data_percent:3.2f}%
 LastYear: {self.last_year_current:3.2f} __ {self.last_year_opposing:3.2f} __ {self.last_year_percent:3.2f}%
 SimilLow: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-SimiHigh: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-_____L18: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
+SimiHigh: {self.similar_current_high:3.2f} __ {self.similar_opposing_high:3.2f} __ {self.similar_percent_high:3.2f}%
+_____L15: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
 L10__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
 _____L10: {self.last_8_current:3.2f} __ {self.last_8_opposing:3.2f} __ {self.last_8_percent:3.2f}%
 ______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.last_4_percent:3.2f}%"""
+
+
+class RefereeMessageBuilder:
+    def __init__(self, all_data, last15, average, length, coeff_total, rate_direction):
+        self.all_data = all_data,
+        self.last15 = last15,
+        self.average = average,
+        self.length = length,
+        self.rate_direction = rate_direction
+        self.coeff_total = float(coeff_total) * 2 if self.rate_direction.startswith(
+            'Total_1') or self.rate_direction.startswith('Total_2') else coeff_total
+
+    def get_message(self):
+        return f"""         
+######## REFEREE ########
+______Bet: {self.coeff_total} {self.rate_direction} 
+Big Data: {self.all_data:3.2f} %
+_____L15: {self.last15:3.2f} %
+ 
+allcount: {self.length}
+__avg_15: {self.average}"""

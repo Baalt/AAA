@@ -2,7 +2,7 @@ import os
 import time
 
 from graph.teams_stats_viz import TeamsStatsVisualizer
-from line.analytics.message_builder import RateMessageBuilder, ExpressMessageBuilder
+from line.analytics.message_builder import KushMessageBuilder, ExpressMessageBuilder, RefereeMessageBuilder
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
 from utils.stat_switcher import stats_dict
 
@@ -38,12 +38,16 @@ class Catcher:
         else:
             self.statistic_name = statistic_name
 
-    def calculate_percentage(self, coeff_set, seq):
+    def calculate_percentage(self, coeff_set, seq, double=None):
         try:
             total = float(coeff_set['total_number'])
+            if double:
+                total *= 2
         except ValueError:
             print("Invalid total value. Conversion to float failed.")
-            return
+            return None, None
+        if not seq:
+            return None, None
 
         less_than_total = 0
         greater_than_total = 0
@@ -67,6 +71,10 @@ class Catcher:
             print("Invalid total value. Conversion to float failed.")
             return
 
+        if not current_seq:
+            print("Length of current_seq is zero.")
+            return
+
         if len(current_seq) != len(opposing_seq):
             print("Length of current_seq is not equal to the length of opposing_seq.")
             return
@@ -88,29 +96,30 @@ class Catcher:
         percent_current_seq_greater = round((count_current_seq_greater / total_count) * 100, 2)
         return percent_current_seq_greater
 
-    async def search_kush_rate(self,
-                               statistic_name: str,
-                               league_name: str,
-                               coefficients: dict,
-                               coeff_set: dict,
-                               rate_direction: str,
-                               coeff_under_over_key: str,
-                               big_data_current_percent: float,
-                               big_data_opposing_percent: float,
-                               last_year_current_percent: float,
-                               last_year_opposing_percent: float,
-                               similar_current_percent_low: float,
-                               similar_opposing_percent_low: float,
-                               similar_current_percent_high: float,
-                               similar_opposing_percent_high: float,
-                               last_20_current_percent: float,
-                               last_20_opposing_percent: float,
-                               last_12_current_percent: float,
-                               last_12_opposing_percent: float,
-                               last_8_current_percent: float,
-                               last_8_opposing_percent: float,
-                               last_4_current_percent: float,
-                               last_4_opposing_percent: float):
+    def referee_calculate(self, statistic_name, coeff_set, double=None):
+        try:
+            under_all, over_all = self.calculate_percentage(
+                coeff_set=coeff_set,
+                seq=self.referee_data[statistic_name]['all'],
+                double=double)
+            under_15, over_15 = self.calculate_percentage(
+                coeff_set=coeff_set,
+                seq=self.referee_data[statistic_name]['first_15_elements'],
+                double=double)
+            return under_all, over_all, under_15, over_15
+        except KeyError:
+            return None
+
+    async def search_kush_rate(self, statistic_name: str, league_name: str, coefficients: dict, coeff_set: dict,
+                               rate_direction: str, coeff_under_over_key: str, big_data_current_percent: float,
+                               big_data_opposing_percent: float, last_year_current_percent: float,
+                               last_year_opposing_percent: float, similar_current_percent_low: float,
+                               similar_opposing_percent_low: float, similar_current_percent_high: float,
+                               similar_opposing_percent_high: float, last_20_current_percent: float,
+                               last_20_opposing_percent: float, last_12_current_percent: float,
+                               last_12_opposing_percent: float, last_8_current_percent: float,
+                               last_8_opposing_percent: float, last_4_current_percent: float,
+                               last_4_opposing_percent: float, referee_all=None, referee_15=None):
 
         last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
         last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
@@ -122,110 +131,276 @@ class Catcher:
         last_year_percent = (last_year_current_percent + last_year_opposing_percent) / 2
 
         high_percent_1, low_percent = 90, 66.6
+
+        if referee_15:
+            coeff_total = float(coeff_set['total_number'])
+            if referee_15 >= high_percent_1 or (
+                    statistic_name == 'Фолы' and coeff_total > self.referee_data['avg'] + 7):
+                await self.process_high_percent_message(
+                    statistic_name=statistic_name,
+                    league_name=league_name,
+                    coefficients=coefficients,
+                    coeff_set=coeff_set,
+                    rate_direction=rate_direction,
+                    coeff_under_over_key=coeff_under_over_key,
+                    big_data_percent=big_data_percent,
+                    last_year_percent=last_year_percent,
+                    similar_percent_low=similar_percent_low,
+                    similar_percent_high=similar_percent_high,
+                    last_20_percent=last_20_percent,
+                    last_12_percent=last_12_percent,
+                    last_8_percent=last_8_percent,
+                    last_4_percent=last_4_percent,
+                    referee_all=referee_all,
+                    referee_15=referee_15,
+                    big_data_current_percent=big_data_current_percent,
+                    big_data_opposing_percent=big_data_opposing_percent,
+                    last_year_current_percent=last_year_current_percent,
+                    last_year_opposing_percent=last_year_opposing_percent,
+                    similar_current_percent_low=similar_current_percent_low,
+                    similar_opposing_percent_low=similar_opposing_percent_low,
+                    similar_current_percent_high=similar_current_percent_high,
+                    similar_opposing_percent_high=similar_opposing_percent_high,
+                    last_20_current_percent=last_20_current_percent,
+                    last_20_opposing_percent=last_20_opposing_percent,
+                    last_12_current_percent=last_12_current_percent,
+                    last_12_opposing_percent=last_12_opposing_percent,
+                    last_8_current_percent=last_8_current_percent,
+                    last_8_opposing_percent=last_8_opposing_percent,
+                    last_4_current_percent=last_4_current_percent,
+                    last_4_opposing_percent=last_4_opposing_percent)
+
         percent_1 = min(last_20_percent, last_12_percent, last_8_percent, last_4_percent)
         if percent_1 >= high_percent_1:
-            coefficient = coeff_set[coeff_under_over_key]
-            if not isinstance(coefficient, float):
-                coefficient = float(coefficient)
-            if coefficient > 1.27:
-                message = ExpressMessageBuilder(statistic_name=statistic_name,
-                                                league_name=league_name,
-                                                big_data_percent=big_data_percent,
-                                                last_year_percent=last_year_percent,
-                                                similar_percent_low=similar_percent_low,
-                                                similar_percent_high=similar_percent_high,
-                                                last_20_percent=last_20_percent,
-                                                last_12_percent=last_12_percent,
-                                                last_8_percent=last_8_percent,
-                                                last_4_percent=last_4_percent,
-                                                big_match_data=self.big_match_data,
-                                                coefficients=coefficients,
-                                                coeff_total=coeff_set['total_number'],
-                                                coeff_value=coeff_set[coeff_under_over_key],
-                                                rate_direction=rate_direction,
-                                                category='Kush+',
-                                                big_data_current_percent=big_data_current_percent,
-                                                big_data_opposing_percent=big_data_opposing_percent,
-                                                last_year_current_percent=last_year_current_percent,
-                                                last_year_opposing_percent=last_year_opposing_percent,
-                                                similar_current_percent_low=similar_current_percent_low,
-                                                similar_opposing_percent_low=similar_opposing_percent_low,
-                                                similar_current_percent_high=similar_current_percent_high,
-                                                similar_opposing_percent_high=similar_opposing_percent_high,
-                                                last_20_current_percent=last_20_current_percent,
-                                                last_20_opposing_percent=last_20_opposing_percent,
-                                                last_12_current_percent=last_12_current_percent,
-                                                last_12_opposing_percent=last_12_opposing_percent,
-                                                last_8_current_percent=last_8_current_percent,
-                                                last_8_opposing_percent=last_8_opposing_percent,
-                                                last_4_current_percent=last_4_current_percent,
-                                                last_4_opposing_percent=last_4_opposing_percent)
-                print(message.get_express_rate_message())
-                self.__plot_graphs(statistic=self.statistic_name)
-                await self.telegram.send_message_with_files(message.get_express_rate_message(), *self.files)
+            await self.process_high_percent_message(statistic_name=statistic_name,
+                                                    league_name=league_name,
+                                                    coefficients=coefficients,
+                                                    coeff_set=coeff_set,
+                                                    rate_direction=rate_direction,
+                                                    coeff_under_over_key=coeff_under_over_key,
+                                                    big_data_percent=big_data_percent,
+                                                    last_year_percent=last_year_percent,
+                                                    similar_percent_low=similar_percent_low,
+                                                    similar_percent_high=similar_percent_high,
+                                                    last_20_percent=last_20_percent,
+                                                    last_12_percent=last_12_percent,
+                                                    last_8_percent=last_8_percent,
+                                                    last_4_percent=last_4_percent,
+                                                    referee_all=referee_all,
+                                                    referee_15=referee_15,
+                                                    big_data_current_percent=big_data_current_percent,
+                                                    big_data_opposing_percent=big_data_opposing_percent,
+                                                    last_year_current_percent=last_year_current_percent,
+                                                    last_year_opposing_percent=last_year_opposing_percent,
+                                                    similar_current_percent_low=similar_current_percent_low,
+                                                    similar_opposing_percent_low=similar_opposing_percent_low,
+                                                    similar_current_percent_high=similar_current_percent_high,
+                                                    similar_opposing_percent_high=similar_opposing_percent_high,
+                                                    last_20_current_percent=last_20_current_percent,
+                                                    last_20_opposing_percent=last_20_opposing_percent,
+                                                    last_12_current_percent=last_12_current_percent,
+                                                    last_12_opposing_percent=last_12_opposing_percent,
+                                                    last_8_current_percent=last_8_current_percent,
+                                                    last_8_opposing_percent=last_8_opposing_percent,
+                                                    last_4_current_percent=last_4_current_percent,
+                                                    last_4_opposing_percent=last_4_opposing_percent)
 
-        big_data_kush_by_rate = self.kush_calculate(percent=big_data_percent,
-                                                    coefficient=coeff_set[coeff_under_over_key])
-        last_year_kush_by_rate = self.kush_calculate(percent=last_year_percent,
-                                                     coefficient=coeff_set[coeff_under_over_key])
-        similar_kush_by_rate_low = self.kush_calculate(percent=similar_percent_low,
-                                                       coefficient=coeff_set[coeff_under_over_key])
-        similar_kush_by_rate_high = self.kush_calculate(percent=similar_percent_high,
-                                                        coefficient=coeff_set[coeff_under_over_key])
-        last_20_kush_by_rate = self.kush_calculate(percent=last_20_percent,
-                                                   coefficient=coeff_set[coeff_under_over_key])
-        last_12_kush_by_rate = self.kush_calculate(percent=last_12_percent,
-                                                   coefficient=coeff_set[coeff_under_over_key])
-        last_8_kush_by_rate = self.kush_calculate(percent=last_8_percent,
-                                                  coefficient=coeff_set[coeff_under_over_key])
-        last_4_kush_by_rate = self.kush_calculate(percent=last_4_percent,
-                                                  coefficient=coeff_set[coeff_under_over_key])
+        last_20_kush_by_rate = self.kush_calculate(last_20_percent, coeff_set[coeff_under_over_key])
+        last_12_kush_by_rate = self.kush_calculate(last_12_percent, coeff_set[coeff_under_over_key])
+        last_8_kush_by_rate = self.kush_calculate(last_8_percent, coeff_set[coeff_under_over_key])
+        last_4_kush_by_rate = self.kush_calculate(last_4_percent, coeff_set[coeff_under_over_key])
 
         min_kush = min(last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate, last_4_kush_by_rate)
         if percent_1 > low_percent and min_kush >= 0.3:
-            message = RateMessageBuilder(statistic_name=statistic_name,
-                                         league_name=league_name,
-                                         big_data_percent=big_data_percent,
-                                         last_year_percent=last_year_percent,
-                                         similar_percent_low=similar_percent_low,
-                                         similar_percent_high=similar_percent_high,
-                                         last_20_percent=last_20_percent,
-                                         last_12_percent=last_12_percent,
-                                         last_8_percent=last_8_percent,
-                                         last_4_percent=last_4_percent,
-                                         big_match_data=self.big_match_data,
-                                         coefficients=coefficients,
-                                         coeff_total=coeff_set['total_number'],
-                                         coeff_value=coeff_set[coeff_under_over_key],
-                                         rate_direction=rate_direction,
-                                         category='Kush+',
-                                         big_data_kush_by_rate=big_data_kush_by_rate,
-                                         last_year_kush_by_rate=last_year_kush_by_rate,
-                                         similar_kush_by_rate_low=similar_kush_by_rate_low,
-                                         similar_kush_by_rate_high=similar_kush_by_rate_high,
-                                         last_20_kush_by_rate=last_20_kush_by_rate,
-                                         last_12_kush_by_rate=last_12_kush_by_rate,
-                                         last_8_kush_by_rate=last_8_kush_by_rate,
-                                         last_4_kush_by_rate=last_4_kush_by_rate,
-                                         big_data_current_percent=big_data_current_percent,
-                                         big_data_opposing_percent=big_data_opposing_percent,
-                                         last_year_current_percent=last_year_current_percent,
-                                         last_year_opposing_percent=last_year_opposing_percent,
-                                         similar_current_percent_low=similar_current_percent_low,
-                                         similar_opposing_percent_low=similar_opposing_percent_low,
-                                         similar_current_percent_high=similar_current_percent_high,
-                                         similar_opposing_percent_high=similar_opposing_percent_high,
-                                         last_20_current_percent=last_20_current_percent,
-                                         last_20_opposing_percent=last_20_opposing_percent,
-                                         last_12_current_percent=last_12_current_percent,
-                                         last_12_opposing_percent=last_12_opposing_percent,
-                                         last_8_current_percent=last_8_current_percent,
-                                         last_8_opposing_percent=last_8_opposing_percent,
-                                         last_4_current_percent=last_4_current_percent,
-                                         last_4_opposing_percent=last_4_opposing_percent)
-            print(message.get_kush_rate_message())
+            big_data_kush_by_rate = self.kush_calculate(big_data_percent, coeff_set[coeff_under_over_key])
+            last_year_kush_by_rate = self.kush_calculate(last_year_percent, coeff_set[coeff_under_over_key])
+            similar_kush_by_rate_low = self.kush_calculate(similar_percent_low, coeff_set[coeff_under_over_key])
+            similar_kush_by_rate_high = self.kush_calculate(similar_percent_high, coeff_set[coeff_under_over_key])
+
+            await self.process_kush_message(
+                statistic_name=statistic_name,
+                league_name=league_name,
+                coefficients=coefficients,
+                coeff_set=coeff_set,
+                rate_direction=rate_direction,
+                coeff_under_over_key=coeff_under_over_key,
+                big_data_percent=big_data_percent,
+                last_year_percent=last_year_percent,
+                similar_percent_low=similar_percent_low,
+                similar_percent_high=similar_percent_high,
+                last_20_percent=last_20_percent,
+                last_12_percent=last_12_percent,
+                last_8_percent=last_8_percent,
+                last_4_percent=last_4_percent,
+                referee_all=referee_all,
+                referee_15=referee_15,
+                big_data_current_percent=big_data_current_percent,
+                big_data_opposing_percent=big_data_opposing_percent,
+                last_year_current_percent=last_year_current_percent,
+                last_year_opposing_percent=last_year_opposing_percent,
+                similar_current_percent_low=similar_current_percent_low,
+                similar_opposing_percent_low=similar_opposing_percent_low,
+                similar_current_percent_high=similar_current_percent_high,
+                similar_opposing_percent_high=similar_opposing_percent_high,
+                last_20_current_percent=last_20_current_percent,
+                last_20_opposing_percent=last_20_opposing_percent,
+                last_12_current_percent=last_12_current_percent,
+                last_12_opposing_percent=last_12_opposing_percent,
+                last_8_current_percent=last_8_current_percent,
+                last_8_opposing_percent=last_8_opposing_percent,
+                last_4_current_percent=last_4_current_percent,
+                last_4_opposing_percent=last_4_opposing_percent,
+                big_data_kush_by_rate=big_data_kush_by_rate,
+                last_year_kush_by_rate=last_year_kush_by_rate,
+                similar_kush_by_rate_low=similar_kush_by_rate_low,
+                similar_kush_by_rate_high=similar_kush_by_rate_high,
+                last_20_kush_by_rate=last_20_kush_by_rate,
+                last_12_kush_by_rate=last_12_kush_by_rate,
+                last_8_kush_by_rate=last_8_kush_by_rate,
+                last_4_kush_by_rate=last_4_kush_by_rate)
+
+    async def process_high_percent_message(self, statistic_name, league_name, coefficients, coeff_set,
+                                           rate_direction, coeff_under_over_key, big_data_percent,
+                                           last_year_percent, similar_percent_low, similar_percent_high,
+                                           last_20_percent, last_12_percent, last_8_percent,
+                                           last_4_percent, referee_all, referee_15,
+                                           big_data_current_percent, big_data_opposing_percent,
+                                           last_year_current_percent, last_year_opposing_percent,
+                                           similar_current_percent_low, similar_opposing_percent_low,
+                                           similar_current_percent_high, similar_opposing_percent_high,
+                                           last_20_current_percent, last_20_opposing_percent,
+                                           last_12_current_percent, last_12_opposing_percent,
+                                           last_8_current_percent, last_8_opposing_percent,
+                                           last_4_current_percent, last_4_opposing_percent):
+        coefficient = coeff_set[coeff_under_over_key]
+        if not isinstance(coefficient, float):
+            coefficient = float(coefficient)
+        if coefficient > 1.27:
+            exp_message = ExpressMessageBuilder(
+                statistic_name=statistic_name,
+                league_name=league_name,
+                big_data_percent=big_data_percent,
+                last_year_percent=last_year_percent,
+                similar_percent_low=similar_percent_low,
+                similar_percent_high=similar_percent_high,
+                last_20_percent=last_20_percent,
+                last_12_percent=last_12_percent,
+                last_8_percent=last_8_percent,
+                last_4_percent=last_4_percent,
+                big_match_data=self.big_match_data,
+                coefficients=coefficients,
+                coeff_total=coeff_set['total_number'],
+                coeff_value=coeff_set[coeff_under_over_key],
+                rate_direction=rate_direction,
+                category='express 90+',
+                big_data_current_percent=big_data_current_percent,
+                big_data_opposing_percent=big_data_opposing_percent,
+                last_year_current_percent=last_year_current_percent,
+                last_year_opposing_percent=last_year_opposing_percent,
+                similar_current_percent_low=similar_current_percent_low,
+                similar_opposing_percent_low=similar_opposing_percent_low,
+                similar_current_percent_high=similar_current_percent_high,
+                similar_opposing_percent_high=similar_opposing_percent_high,
+                last_20_current_percent=last_20_current_percent,
+                last_20_opposing_percent=last_20_opposing_percent,
+                last_12_current_percent=last_12_current_percent,
+                last_12_opposing_percent=last_12_opposing_percent,
+                last_8_current_percent=last_8_current_percent,
+                last_8_opposing_percent=last_8_opposing_percent,
+                last_4_current_percent=last_4_current_percent,
+                last_4_opposing_percent=last_4_opposing_percent)
+            message = exp_message.get_message()
+            if referee_15:
+                referee_message = RefereeMessageBuilder(
+                    all_data=referee_all,
+                    last15=referee_15,
+                    average=self.referee_data['avg'],
+                    length=self.referee_data['count'],
+                    coeff_total=coeff_set['total_number'],
+                    rate_direction=rate_direction)
+                message = '\n'.join([message, referee_message.get_message()])
+
+            print(message)
             self.__plot_graphs(statistic=self.statistic_name)
-            await self.telegram.send_message_with_files(message.get_kush_rate_message(), *self.files)
+            await self.telegram.send_message_with_files(message, *self.files)
+
+    async def process_kush_message(self, statistic_name: str, league_name: str, coeff_set,
+                                   coeff_under_over_key, coefficients: dict, rate_direction: str,
+                                   big_data_percent: float, last_year_percent: float,
+                                   similar_percent_low: float, similar_percent_high: float,
+                                   last_20_percent: float, last_12_percent: float,
+                                   last_8_percent: float, last_4_percent: float,
+                                   big_data_kush_by_rate: float, last_year_kush_by_rate,
+                                   similar_kush_by_rate_low: float, similar_kush_by_rate_high: float,
+                                   last_20_kush_by_rate: float, last_12_kush_by_rate: float,
+                                   last_8_kush_by_rate: float, last_4_kush_by_rate: float,
+                                   big_data_current_percent: float, big_data_opposing_percent: float,
+                                   last_year_current_percent: float, last_year_opposing_percent: float,
+                                   similar_current_percent_low: float, similar_opposing_percent_low: float,
+                                   similar_current_percent_high: float, similar_opposing_percent_high: float,
+                                   last_20_current_percent: float, last_20_opposing_percent: float,
+                                   last_12_current_percent: float, last_12_opposing_percent: float,
+                                   last_8_current_percent: float, last_8_opposing_percent: float,
+                                   last_4_current_percent: float, last_4_opposing_percent: float,
+                                   referee_all, referee_15):
+
+        kush_message = KushMessageBuilder(
+            statistic_name=statistic_name,
+            league_name=league_name,
+            big_data_percent=big_data_percent,
+            last_year_percent=last_year_percent,
+            similar_percent_low=similar_percent_low,
+            similar_percent_high=similar_percent_high,
+            last_20_percent=last_20_percent,
+            last_12_percent=last_12_percent,
+            last_8_percent=last_8_percent,
+            last_4_percent=last_4_percent,
+            big_match_data=self.big_match_data,
+            coefficients=coefficients,
+            coeff_total=coeff_set['total_number'],
+            coeff_value=coeff_set[coeff_under_over_key],
+            rate_direction=rate_direction,
+            category='Kush+',
+            big_data_kush_by_rate=big_data_kush_by_rate,
+            last_year_kush_by_rate=last_year_kush_by_rate,
+            similar_kush_by_rate_low=similar_kush_by_rate_low,
+            similar_kush_by_rate_high=similar_kush_by_rate_high,
+            last_20_kush_by_rate=last_20_kush_by_rate,
+            last_12_kush_by_rate=last_12_kush_by_rate,
+            last_8_kush_by_rate=last_8_kush_by_rate,
+            last_4_kush_by_rate=last_4_kush_by_rate,
+            big_data_current_percent=big_data_current_percent,
+            big_data_opposing_percent=big_data_opposing_percent,
+            last_year_current_percent=last_year_current_percent,
+            last_year_opposing_percent=last_year_opposing_percent,
+            similar_current_percent_low=similar_current_percent_low,
+            similar_opposing_percent_low=similar_opposing_percent_low,
+            similar_current_percent_high=similar_current_percent_high,
+            similar_opposing_percent_high=similar_opposing_percent_high,
+            last_20_current_percent=last_20_current_percent,
+            last_20_opposing_percent=last_20_opposing_percent,
+            last_12_current_percent=last_12_current_percent,
+            last_12_opposing_percent=last_12_opposing_percent,
+            last_8_current_percent=last_8_current_percent,
+            last_8_opposing_percent=last_8_opposing_percent,
+            last_4_current_percent=last_4_current_percent,
+            last_4_opposing_percent=last_4_opposing_percent
+        )
+
+        message = kush_message.get_message()
+        if referee_15:
+            referee_message = RefereeMessageBuilder(
+                all_data=referee_all,
+                last15=referee_15,
+                average=self.referee_data['avg'],
+                length=self.referee_data['count'],
+                coeff_total=coeff_set['total_number'],
+                rate_direction=rate_direction)
+            message = '\n'.join([message, referee_message.get_message()])
+
+        print(message)
+        self.__plot_graphs(statistic=self.statistic_name)
+        await self.telegram.send_message_with_files(message, *self.files)
 
     def kush_calculate(self, percent, coefficient):
         if not isinstance(percent, float):
