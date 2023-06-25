@@ -25,13 +25,18 @@ class RefereeCollector:
             self.driver.buttons.get_refresh_button().click()
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.scrape_table(soup, 'ЖК')
-
+            try:
+                self.scraper.scrape_table(soup, 'ЖК')
+            except AttributeError:
+                pass
             self.driver.buttons.get_smart_stats_buttons()[4].click()
             self.driver.buttons.get_refresh_button().click()
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.scrape_table(soup, 'Фолы')
+            try:
+                self.scraper.scrape_table(soup, 'Фолы')
+            except AttributeError:
+                pass
 
     def filter_out(self):
         self.driver.buttons.filter_table_by_matches()

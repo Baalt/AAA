@@ -120,22 +120,42 @@ class Catcher:
                                last_12_opposing_percent: float, last_8_current_percent: float,
                                last_8_opposing_percent: float, last_4_current_percent: float,
                                last_4_opposing_percent: float, referee_all=None, referee_15=None):
-
-        last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
-        last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
-        last_8_percent = (last_8_current_percent + last_8_opposing_percent) / 2
-        last_4_percent = (last_4_current_percent + last_4_opposing_percent) / 2
-        similar_percent_low = (similar_current_percent_low + similar_opposing_percent_low) / 2
-        similar_percent_high = (similar_current_percent_high + similar_opposing_percent_high) / 2
-        big_data_percent = (big_data_current_percent + big_data_opposing_percent) / 2
-        last_year_percent = (last_year_current_percent + last_year_opposing_percent) / 2
+        try:
+            last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
+            last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
+            last_8_percent = (last_8_current_percent + last_8_opposing_percent) / 2
+            last_4_percent = (last_4_current_percent + last_4_opposing_percent) / 2
+        except TypeError:
+            return
+        try:
+            similar_percent_low = (similar_current_percent_low + similar_opposing_percent_low) / 2
+        except TypeError:
+            similar_percent_low = None
+        try:
+            similar_percent_high = (similar_current_percent_high + similar_opposing_percent_high) / 2
+        except TypeError:
+            similar_percent_high = None
+        try:
+            big_data_percent = (big_data_current_percent + big_data_opposing_percent) / 2
+        except TypeError:
+            big_data_percent = None
+        try:
+            last_year_percent = (last_year_current_percent + last_year_opposing_percent) / 2
+        except TypeError:
+            last_year_percent = None
 
         high_percent_1, low_percent = 90, 66.6
-
-        if referee_15:
+        if referee_15 and (rate_direction == 'Total_Under' or rate_direction == 'Total_Over'):
             coeff_total = float(coeff_set['total_number'])
-            if referee_15 >= high_percent_1 or (
-                    statistic_name == 'Фолы' and coeff_total > self.referee_data['avg'] + 7):
+            is_high_percent = referee_15 >= high_percent_1
+            is_fouls_stat = statistic_name == 'Фолы'
+            is_total_under = rate_direction == 'Total_Under'
+            is_total_over = rate_direction == 'Total_Over'
+            is_coeff_above_avg = coeff_total > self.referee_data[statistic_name]['avg'] + 7
+            is_coeff_below_avg = coeff_total < self.referee_data[statistic_name]['avg'] - 7
+
+            if is_high_percent or (is_fouls_stat and is_total_under and is_coeff_above_avg) or (
+                    is_fouls_stat and is_total_over and is_coeff_below_avg):
                 await self.process_high_percent_message(
                     statistic_name=statistic_name,
                     league_name=league_name,
@@ -314,12 +334,11 @@ class Catcher:
                 referee_message = RefereeMessageBuilder(
                     all_data=referee_all,
                     last15=referee_15,
-                    average=self.referee_data['avg'],
-                    length=self.referee_data['count'],
+                    average=self.referee_data[statistic_name]['avg'],
+                    length=self.referee_data[statistic_name]['count'],
                     coeff_total=coeff_set['total_number'],
                     rate_direction=rate_direction)
                 message = '\n'.join([message, referee_message.get_message()])
-
             print(message)
             self.__plot_graphs(statistic=self.statistic_name)
             await self.telegram.send_message_with_files(message, *self.files)
@@ -392,12 +411,11 @@ class Catcher:
             referee_message = RefereeMessageBuilder(
                 all_data=referee_all,
                 last15=referee_15,
-                average=self.referee_data['avg'],
-                length=self.referee_data['count'],
+                average=self.referee_data[statistic_name]['avg'],
+                length=self.referee_data[statistic_name]['count'],
                 coeff_total=coeff_set['total_number'],
                 rate_direction=rate_direction)
             message = '\n'.join([message, referee_message.get_message()])
-
         print(message)
         self.__plot_graphs(statistic=self.statistic_name)
         await self.telegram.send_message_with_files(message, *self.files)

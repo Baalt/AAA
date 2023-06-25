@@ -1,8 +1,10 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
+import time
 
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 
 class RefereeButtons:
     def __init__(self):
@@ -47,5 +49,20 @@ class RefereeButtons:
     def click_all_season_button(self):
         button = self.browser.find_element(
             By.XPATH,
-            '(//div[@id="teamsSeasons"])/button[last()]')
-        button.click()
+            '//div[@id="teamsSeasons"]//button[contains(text(), "Все")]')
+
+        # Scroll to the button if necessary
+        actions = ActionChains(self.browser)
+        actions.move_to_element(button)
+        actions.perform()
+
+        # Wait for the tooltip to disappear
+        wait = WebDriverWait(self.browser, 10)
+        tooltip = self.browser.find_element(By.CLASS_NAME, 'tooltip-inner')
+        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tooltip-inner')))
+
+        # Use JavaScript to click the button
+        self.browser.execute_script("arguments[0].click();", button)
+
+        # Optional: Add a small delay to allow the click to take effect
+        time.sleep(1)

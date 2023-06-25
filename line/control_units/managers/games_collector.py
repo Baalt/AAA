@@ -1,6 +1,6 @@
 import copy
 
-from selenium.common import ElementClickInterceptedException
+from selenium.common import ElementClickInterceptedException, NoSuchElementException
 
 from browser.browser import SmartChromeDriver
 from line.analytics.live_dict_builder import LiveDictBuilder
@@ -29,7 +29,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Germany: Bundesliga' in full_league_name:
+            # if 'Norway: Division 1' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()
@@ -60,7 +60,11 @@ class AllGamesCollector:
                         coeff_manager.get_coefficients_data()
 
                         referee_manager = RefereeCollector(driver=self.driver, league=league)
-                        referee_manager.collect_referee_data()
+                        try:
+                            referee_manager.collect_referee_data()
+                            referee_data = referee_manager.scraper.get_data()
+                        except NoSuchElementException:
+                            referee_data = None
 
                         self.game_number += 1
                         try:
@@ -76,7 +80,7 @@ class AllGamesCollector:
                             schedule_data=self.schedule_data,
                             coefficients=coeff_manager.get_data,
                             league_name=full_league_name,
-                            referee_data=referee_manager.scraper.get_data(),
+                            referee_data=referee_data,
                             game_number=f"{self.game_number:04d}")
                         try:
                             await math_collector.run()

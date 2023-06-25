@@ -39,7 +39,7 @@ if __name__ == '__main__':
     collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
     collector.run(address=SOURCE)
 
-    all_league_data = PickleHandler().read_data(f"data/04.06_AllLeaguesData.pkl")
+    all_league_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesData.pkl")
     collector = AllGamesCollector(driver=driver,
                                   schedule_data=scraper.get_schedule_data(),
                                   all_league_data=all_league_data)

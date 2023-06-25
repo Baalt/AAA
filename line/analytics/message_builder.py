@@ -165,10 +165,10 @@ ______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.las
 
 class RefereeMessageBuilder:
     def __init__(self, all_data, last15, average, length, coeff_total, rate_direction):
-        self.all_data = all_data,
-        self.last15 = last15,
-        self.average = average,
-        self.length = length,
+        self.all_data = all_data
+        self.last15 = last15
+        self.average = average
+        self.length = length
         self.rate_direction = rate_direction
         self.coeff_total = float(coeff_total) * 2 if self.rate_direction.startswith(
             'Total_1') or self.rate_direction.startswith('Total_2') else coeff_total

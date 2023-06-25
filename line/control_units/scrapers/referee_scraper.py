@@ -10,6 +10,7 @@ class RefereeScraper:
         table = soup.find('table', id='table')
         rows = table.find_all('tr')
 
+
         values = []
         for row in rows[1:]:  # Skip the header row
             columns = row.find_all('td')
@@ -25,7 +26,7 @@ class RefereeScraper:
             'all': values,
             'count': len(values),
             'first_15_elements': values15,
-            'avg': statistics.mean(values15)
+            'avg': round(statistics.mean(values15), 2)
         }
 
     def get_data(self):
