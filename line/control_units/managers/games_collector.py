@@ -29,7 +29,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Norway: Division 1' in full_league_name:
+            # if 'Brazil: Serie B' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()

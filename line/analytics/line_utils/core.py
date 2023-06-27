@@ -98,15 +98,16 @@ class Catcher:
 
     def referee_calculate(self, statistic_name, coeff_set, double=None):
         try:
-            under_all, over_all = self.calculate_percentage(
-                coeff_set=coeff_set,
-                seq=self.referee_data[statistic_name]['all'],
-                double=double)
-            under_15, over_15 = self.calculate_percentage(
-                coeff_set=coeff_set,
-                seq=self.referee_data[statistic_name]['first_15_elements'],
-                double=double)
-            return under_all, over_all, under_15, over_15
+            if self.referee_data:
+                under_all, over_all = self.calculate_percentage(
+                    coeff_set=coeff_set,
+                    seq=self.referee_data[statistic_name]['all'],
+                    double=double)
+                under_15, over_15 = self.calculate_percentage(
+                    coeff_set=coeff_set,
+                    seq=self.referee_data[statistic_name]['first_15_elements'],
+                    double=double)
+                return under_all, over_all, under_15, over_15
         except KeyError:
             return None
 
@@ -145,7 +146,8 @@ class Catcher:
             last_year_percent = None
 
         high_percent_1, low_percent = 90, 66.6
-        if referee_15 and (rate_direction == 'Total_Under' or rate_direction == 'Total_Over'):
+        if referee_15 and self.referee_data[statistic_name]['count'] > 9 and (
+                rate_direction == 'Total_Under' or rate_direction == 'Total_Over'):
             coeff_total = float(coeff_set['total_number'])
             is_high_percent = referee_15 >= high_percent_1
             is_fouls_stat = statistic_name == 'Фолы'
