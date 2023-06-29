@@ -4,12 +4,15 @@ from line.analytics.live_utils.handicap import LiveHandicapCalculation
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
 from utils.stat_switcher import stats_dict
 
+
 class FromStructureToLiveDict(LiveTotalCalculation,
                               LiveIndividualCalculation,
                               LiveHandicapCalculation):
-    def calculate(self, home_structure: HomeDataStructure,
+    def calculate(self,
+                  home_structure: HomeDataStructure,
                   away_structure: AwayDataStructure,
                   statistic_name: str):
+
         if statistic_name in stats_dict.keys():
             statistic_name = stats_dict[statistic_name]
 
@@ -40,6 +43,9 @@ class FromStructureToLiveDict(LiveTotalCalculation,
                                    total_2_under=total_2_under, total_2_over=total_2_over,
                                    handicap_1=handicap_1, handicap_2=handicap_2)
 
+        # if statistic_name in ['yellow cards', 'fouls'] and self.referee_data:
+        #     referee_total = self.calculate_referee_live_data()
+
     def add_live_data_to_dict(self, statistic_name,
                               total_under, total_over,
                               total_1_under, total_1_over,
@@ -54,8 +60,7 @@ class FromStructureToLiveDict(LiveTotalCalculation,
 
     @property
     def get_data(self):
-        if len(self.main_data) > 4:
-            return self.main_data
+        return self.main_data
 
     def big_data_structures_validation(self,
                                        home_structure: HomeDataStructure,

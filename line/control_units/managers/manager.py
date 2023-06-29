@@ -8,7 +8,7 @@ from line.control_units.managers.games_collector import AllGamesCollector
 from live.control_units.managers.schedule import LineScheduleManager
 from live.control_units.managers.tasks.main_operations import BrowserPreparer
 from utils.pickle_manager import PickleHandler
-from config_smrt import LOGIN, PASSWORD, SOURCE, COEFFICIENT_SOURCE
+from config_smrt import LOGIN, PASSWORD, SOURCE
 
 if __name__ == '__main__':
     driver = SmartChromeDriver()
@@ -47,3 +47,4 @@ if __name__ == '__main__':
     driver.close()
     all_games_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllGamesData.pkl")
     print('count of preparing game - ', len(all_games_data['lst']))
+

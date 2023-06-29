@@ -1,7 +1,7 @@
 import os
 import time
 
-from live.analytics.game_info import GameInfo
+from live.analytics.game_info import GameInfo, RedCardInfo
 from telega.telegram_bot import TelegramBot
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
@@ -38,8 +38,12 @@ class SmartLiveCompare():
                     total_2_over = smart_dct['TO_2']
                     handicap_1 = smart_dct['H1']
                     handicap_2 = smart_dct['H2']
+                    red_card = self.smart_data['smart_data']['red_card']
                 except KeyError:
                     continue
+
+                if statistic == 'fouls' and not red_card:
+                    await self.__red_card_rate_checker(statistic=statistic)
 
                 await self.__search_total(statistic=statistic,
                                           statistic_key='totals',
@@ -75,6 +79,18 @@ class SmartLiveCompare():
                                              rate_direction='handicap_2',
                                              key_handicap='H2')
 
+    async def __red_card_rate_checker(self, statistic):
+        if self.live_data['red cards'] != '0:0':
+            self.__plot_graphs(statistic=statistic)
+            info = RedCardInfo(
+                live_data=self.live_data,
+                smart_data=self.smart_data,
+                statistic_name=statistic)
+            message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+            print(message)
+            await self.telegram.send_message_with_files(message, *self.files)
+            self.close_bet(key=info.get_correction_key(), red_card=True)
+
     async def __search_total(self, statistic, statistic_key,
                              total_under, total_over,
                              rate_direction, key_under, key_over):
@@ -105,11 +121,11 @@ class SmartLiveCompare():
                         live_coeff=coeff_under,
                         smart_total=total_under,
                         key=key_under)
-                    self.__plot_graphs(statistic=statistic, key=key_under)
+                    self.__plot_graphs(statistic=statistic)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                     print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
-                    self.close_the_bet(key=info.get_correction_key())
+                    self.close_bet(key=info.get_correction_key())
 
                 try:
                     coeff_over = float(coeff_set['coefficient_over'])
@@ -131,11 +147,11 @@ class SmartLiveCompare():
                             live_coeff=coeff_over,
                             smart_total=total_over,
                             key=key_over)
-                        self.__plot_graphs(statistic=statistic, key=key_over)
+                        self.__plot_graphs(statistic=statistic)
                         message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                         print(message)
                         await self.telegram.send_message_with_files(message, *self.files)
-                        self.close_the_bet(key=info.get_correction_key())
+                        self.close_bet(key=info.get_correction_key())
 
     async def __search_handicap(self, statistic, statistic_key, handicap, rate_direction, key_handicap):
         try:
@@ -165,11 +181,11 @@ class SmartLiveCompare():
                         smart_total=handicap,
                         rate_direction=rate_direction,
                         key=key_handicap)
-                    self.__plot_graphs(statistic=statistic, key=key_handicap)
+                    self.__plot_graphs(statistic=statistic)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                     print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
-                    self.close_the_bet(key=info.get_correction_key())
+                    self.close_bet(key=info.get_correction_key())
 
                 elif statistic == 'yellow cards' and live_handicap > 3 and coeff > 1.65:
                     info = GameInfo(
@@ -181,13 +197,13 @@ class SmartLiveCompare():
                         smart_total=handicap,
                         rate_direction=rate_direction,
                         key=key_handicap)
-                    self.__plot_graphs(statistic=statistic, key=key_handicap)
+                    self.__plot_graphs(statistic=statistic)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                     print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
-                    self.close_the_bet(key=info.get_correction_key())
+                    self.close_bet(key=info.get_correction_key())
 
-    def __plot_graphs(self, statistic, key):
+    def __plot_graphs(self, statistic):
         self.delete_files_in_folder(folder_path='graph/data')
         MatchStatsVisualizer(data=self.live_data['match_stats']).plot_bar_chart()
         current_viz = TeamsStatsVisualizer(
@@ -220,23 +236,30 @@ class SmartLiveCompare():
             except Exception as e:
                 print(e)
 
-    def close_the_bet(self, key):
-        if key:
-            # Split the key by the separator ➠
-            parts = key.rstrip('➠').split('➠')
+    def close_bet(self, key, red_card=False):
+        parts = key.rstrip('➠').split('➠')
+        if red_card:
+            try:
+                self.smart_data['smart_data'][parts[1]] = True
+            except KeyError as e:
+                print('change smart_data error: ', e)
+        else:
             try:
                 self.smart_data['smart_data'][parts[1]][parts[2]] = None
             except KeyError as e:
                 print('change smart_data error: ', e)
 
-            file_path = os.path.join("data", f"{get_today_date()}_AllGamesData.pkl")
-            handler = PickleHandler()
-            if os.path.exists(file_path):
-                full_smart_data = handler.read_data(file_path)
-                for dct in full_smart_data['lst']:
-                    if dct['game_number'] == self.smart_data['smart_data']['game_number']:
+        file_path = os.path.join("data", f"{get_today_date()}_AllGamesData.pkl")
+        handler = PickleHandler()
+        if os.path.exists(file_path):
+            full_smart_data = handler.read_data(file_path)
+            for dct in full_smart_data['lst']:
+                if dct['game_number'] == self.smart_data['smart_data']['game_number']:
+                    if red_card:
+                        dct[parts[1]] = True
+                    else:
                         dct[parts[1]][parts[2]] = None
-                        handler.write_data(full_smart_data, file_path)
-                        break
-            else:
-                print(f"File {file_path} not found.")
+                    handler.write_data(full_smart_data, file_path)
+                    break
+        else:
+            print(f"File {file_path} not found.")

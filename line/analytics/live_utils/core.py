@@ -7,12 +7,16 @@ class BoundaryLiveValues:
                  league: str,
                  team1_name: str,
                  team2_name: str,
-                 game_number: str):
+                 game_number: str,
+                 referee_data: dict):
+
+        self.referee_data = referee_data
         self.main_data = {
             'league': league,
             'team1_name': team1_name,
             'team2_name': team2_name,
-            'game_number': game_number
+            'game_number': game_number,
+            'red_card': False
         }
 
     def total_calculation(self, seq: list, percent: int):

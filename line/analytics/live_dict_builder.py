@@ -97,7 +97,8 @@ class LiveDictBuilder(FromDictToStructure):
                 league=self.league_name,
                 team1_name=main_home_command_name,
                 team2_name=main_away_command_name,
-                game_number=self.game_number)
+                game_number=self.game_number,
+                referee_data=self.referee_data)
             for statistic_name in self.big_match_data:
                 if not statistic_name.startswith('home') and not statistic_name.startswith('away'):
                     try:
