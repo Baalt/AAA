@@ -1,3 +1,5 @@
+from utils.stat_switcher import stats_dict
+
 class MatrixDataGenerator:
     def __init__(self, league_data, last_year_data, home_command_name: str, away_command_name):
         self.league_data = league_data
@@ -34,13 +36,13 @@ class MatrixDataGenerator:
             }
 
             for goal_data in current_season_goals:
-                if goal_data['team_name'] == team_name:
+                if team_name in goal_data['team_name']:
                     matrix_entry['current_position'] = goal_data['team_position']
                     matrix_entry['current_points'] = goal_data['points']
                     matrix_entry['current_games_played'] = goal_data['games_played']
 
             for goal_data in previous_season_goals:
-                if goal_data['team_name'] == team_name:
+                if team_name in goal_data['team_name']:
                     matrix_entry['previous_position'] = goal_data['team_position']
                     matrix_entry['previous_points'] = goal_data['points']
                     matrix_entry['previous_games_played'] = goal_data['games_played']
@@ -55,14 +57,14 @@ class MatrixDataGenerator:
         for primary_key in primary_keys:
             for matrix_entry in matrix_data:
                 matrix_entry['home_collections'] = {
-                    primary_key: {
+                    stats_dict[primary_key]: {
                         'total': [],
                         'ind': [],
                         'hand': []
                     }
                 }
                 matrix_entry['away_collections'] = {
-                    primary_key: {
+                    stats_dict[primary_key]: {
                         'total': [],
                         'ind': [],
                         'hand': []
@@ -95,53 +97,53 @@ class MatrixDataGenerator:
                 )
 
                 if home_command_data_1:
-                    matrix_entry['home_collections'][primary_key]['total'].append(
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['total'].append(
                         float(home_command_data_1['home_command_individual_total']) +
                         float(home_command_data_1['away_command_individual_total'])
                     )
-                    matrix_entry['home_collections'][primary_key]['ind'].append(
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
                         float(home_command_data_1['away_command_individual_total'])
                     )
-                    matrix_entry['home_collections'][primary_key]['hand'].append(
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
                         float(home_command_data_1['away_command_individual_total']) -
                         float(home_command_data_1['home_command_individual_total'])
                     )
 
                 if home_command_data_2:
-                    matrix_entry['home_collections'][primary_key]['total'].append(
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['total'].append(
                         float(home_command_data_2['home_command_individual_total']) +
                         float(home_command_data_2['away_command_individual_total'])
                     )
-                    matrix_entry['home_collections'][primary_key]['ind'].append(
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
                         float(home_command_data_2['home_command_individual_total'])
                     )
-                    matrix_entry['home_collections'][primary_key]['hand'].append(
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
                         float(home_command_data_2['home_command_individual_total']) -
                         float(home_command_data_2['away_command_individual_total'])
                     )
 
                 if away_command_data_1:
-                    matrix_entry['away_collections'][primary_key]['total'].append(
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['total'].append(
                         float(away_command_data_1['home_command_individual_total']) +
                         float(away_command_data_1['away_command_individual_total'])
                     )
-                    matrix_entry['away_collections'][primary_key]['ind'].append(
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
                         float(away_command_data_1['home_command_individual_total'])
                     )
-                    matrix_entry['away_collections'][primary_key]['hand'].append(
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
                         float(away_command_data_1['home_command_individual_total']) -
                         float(away_command_data_1['away_command_individual_total'])
                     )
 
                 if away_command_data_2:
-                    matrix_entry['away_collections'][primary_key]['total'].append(
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['total'].append(
                         float(away_command_data_2['home_command_individual_total']) +
                         float(away_command_data_2['away_command_individual_total'])
                     )
-                    matrix_entry['away_collections'][primary_key]['ind'].append(
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
                         float(away_command_data_2['away_command_individual_total'])
                     )
-                    matrix_entry['away_collections'][primary_key]['hand'].append(
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
                         float(away_command_data_2['away_command_individual_total']) -
                         float(away_command_data_2['home_command_individual_total'])
                     )
