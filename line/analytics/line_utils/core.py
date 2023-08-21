@@ -146,9 +146,10 @@ class Catcher:
             last_year_percent = None
 
         high_percent_1, low_percent = 90, 66.6
+        coeff_total = float(coeff_set['total_number'])
+
         if referee_15 and self.referee_data[statistic_name]['count'] > 9 and (
                 rate_direction == 'Total_Under' or rate_direction == 'Total_Over'):
-            coeff_total = float(coeff_set['total_number'])
             is_high_percent = referee_15 >= high_percent_1
             is_fouls_stat = statistic_name == 'Фолы'
             is_total_under = rate_direction == 'Total_Under'

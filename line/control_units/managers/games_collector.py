@@ -29,7 +29,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Brazil: Serie B' in full_league_name:
+            # if 'Argentina: Superliga' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()
@@ -58,6 +58,8 @@ class AllGamesCollector:
 
                         coeff_manager = CoefficientDataManager(driver=self.driver)
                         coeff_manager.get_coefficients_data()
+                        from pprint import pprint
+                        pprint(last_year_data.all_match_data)
 
                         referee_manager = RefereeCollector(driver=self.driver, league=league)
                         try:

@@ -13,7 +13,7 @@ class SmartStatButtons:
         buttons = self.browser.find_elements(By.XPATH, selector)
         # Filter out buttons with specific texts
         filtered_buttons = [button for button in buttons if
-                            button.text.strip() not in ["Атаки", "Оп. атаки", "КК", "Другое", "Карточки"]]
+                            button.text.strip() not in ["xG", "Атаки", "Оп. атаки", "КК", "Другое", "Карточки"]]
         # Return the sorted buttons list
         return filtered_buttons
 

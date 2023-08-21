@@ -44,22 +44,20 @@ class LeagueDataCollector:
             self.wait_for_elements()
             time.sleep(1)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
+            try:
+                self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
+            except KeyError as err:
+                print('I try to catch League xG key err', err)
 
+        self.handle_button_and_soup('Ауты')
+        self.handle_button_and_soup('Удары от ворот')
+        self.handle_button_and_soup('Удары')
+
+    def handle_button_and_soup(self, button_text: str) -> None:
         other_button = self.driver.buttons.get_other_button()
         other_button.click()
         time.sleep(0.5)
-        self.driver.buttons.get_drop_down_button(button_text='Удары от ворот').click()
-        self.refresh_page()
-        self.wait_for_elements()
-        time.sleep(0.5)
-        button = self.driver.buttons.get_other_button()
-        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-        self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
-
-        other_button.click()
-        time.sleep(0.5)
-        self.driver.buttons.get_drop_down_button(button_text='Удары').click()
+        self.driver.buttons.get_drop_down_button(button_text=button_text).click()
         self.refresh_page()
         self.wait_for_elements()
         time.sleep(0.5)
@@ -75,3 +73,4 @@ class LeagueDataCollector:
 
     def wait_for_elements(self) -> None:
         WebDriverWait(self.driver.driver, 5).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
+
