@@ -771,7 +771,8 @@ class MatrixDataGenerator:
         matrix_data = self.__process_league_data()
         matrix_data = self.__process_last_year_data(matrix_data)
         matrix_data = self.__combining_data(matrix_data)
-        return matrix_data
+        matrix_data = self.__modify_team_names(matrix_data)
+        pprint(matrix_data)
 
     def __process_league_data(self):
         matrix_data = []
@@ -908,6 +909,24 @@ class MatrixDataGenerator:
                     )
 
         return matrix_data
+
+    def __modify_team_names(self, matrix_data):
+        modified_matrix_data = []
+
+        for matrix_entry in matrix_data:
+            team_name = matrix_entry['team_name']
+
+            if self.home_command_name in team_name:
+                modified_team_name = team_name.upper() + "_1"
+            elif self.away_command_name in team_name:
+                modified_team_name = team_name.upper() + "_2"
+            else:
+                modified_team_name = team_name
+
+            matrix_entry['team_name'] = modified_team_name
+            modified_matrix_data.append(matrix_entry)
+
+        return modified_matrix_data
 
 
 matrix = MatrixDataGenerator(league_data=league_data,
