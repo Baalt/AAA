@@ -12,6 +12,7 @@ class MatrixDataGenerator:
         matrix_data = self.__process_last_year_data(matrix_data)
         matrix_data = self.__combining_data(matrix_data)
         matrix_data = self.__modify_team_names(matrix_data)
+        matrix_data = self.__reset_excess_matrix_data(matrix_data)
         return matrix_data
 
     def __process_league_data(self):
@@ -60,14 +61,18 @@ class MatrixDataGenerator:
                     stats_dict[primary_key]: {
                         'total': [],
                         'ind': [],
-                        'hand': []
+                        'ind_opp': [],
+                        'hand': [],
+                        'hand_opp': []
                     }
                 }
                 matrix_entry['away_collections'] = {
                     stats_dict[primary_key]: {
                         'total': [],
                         'ind': [],
-                        'hand': []
+                        'ind_opp': [],
+                        'hand': [],
+                        'hand_opp': []
                     }
                 }
         return matrix_data
@@ -104,9 +109,16 @@ class MatrixDataGenerator:
                     matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
                         float(home_command_data_1['away_command_individual_total'])
                     )
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                        float(home_command_data_1['home_command_individual_total'])
+                    )
                     matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
                         float(home_command_data_1['away_command_individual_total']) -
                         float(home_command_data_1['home_command_individual_total'])
+                    )
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                        float(home_command_data_1['home_command_individual_total']) -
+                        float(home_command_data_1['away_command_individual_total'])
                     )
 
                 if home_command_data_2:
@@ -117,9 +129,16 @@ class MatrixDataGenerator:
                     matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
                         float(home_command_data_2['home_command_individual_total'])
                     )
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                        float(home_command_data_2['away_command_individual_total'])
+                    )
                     matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
                         float(home_command_data_2['home_command_individual_total']) -
                         float(home_command_data_2['away_command_individual_total'])
+                    )
+                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                        float(home_command_data_2['away_command_individual_total']) -
+                        float(home_command_data_2['home_command_individual_total'])
                     )
 
                 if away_command_data_1:
@@ -130,9 +149,16 @@ class MatrixDataGenerator:
                     matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
                         float(away_command_data_1['home_command_individual_total'])
                     )
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                        float(away_command_data_1['away_command_individual_total'])
+                    )
                     matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
                         float(away_command_data_1['home_command_individual_total']) -
                         float(away_command_data_1['away_command_individual_total'])
+                    )
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                        float(away_command_data_1['away_command_individual_total']) -
+                        float(away_command_data_1['home_command_individual_total'])
                     )
 
                 if away_command_data_2:
@@ -143,9 +169,16 @@ class MatrixDataGenerator:
                     matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
                         float(away_command_data_2['away_command_individual_total'])
                     )
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                        float(away_command_data_2['home_command_individual_total'])
+                    )
                     matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
                         float(away_command_data_2['away_command_individual_total']) -
                         float(away_command_data_2['home_command_individual_total'])
+                    )
+                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                        float(away_command_data_2['home_command_individual_total']) -
+                        float(away_command_data_2['away_command_individual_total'])
                     )
 
         return matrix_data
@@ -167,3 +200,18 @@ class MatrixDataGenerator:
             modified_matrix_data.append(matrix_entry)
 
         return modified_matrix_data
+
+    def __reset_excess_matrix_data(self, matrix_data):
+        for entry in matrix_data:
+            team_name = entry['team_name']
+            if team_name.endswith('_1'):
+                home_collections = entry['home_collections']
+                for key in home_collections:
+                    home_collections[key] = {'hand': [], 'hand_opp': [], 'ind': [], 'ind_opp': [], 'total': []}
+
+            elif team_name.endswith('_2'):
+                away_collections = entry['away_collections']
+                for key in away_collections:
+                    away_collections[key] = {'hand': [], 'hand_opp': [], 'ind': [], 'ind_opp': [], 'total': []}
+
+        return matrix_data
