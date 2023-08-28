@@ -46,13 +46,12 @@ class ScatterPlotBuilder:
             else:
                 raise ValueError("Invalid bet_direction")
 
-
             # Apply offset to x-coordinate for visual separation
             x_home = x - x_offset
             x_away = x + x_offset
 
-            ax.scatter([x_home] * len(y_home), y_home, color='blue', marker='o', s=point_size)
-            ax.scatter([x_away] * len(y_away), y_away, color='red', marker='o', s=point_size)
+            ax.scatter([x_home] * len(y_home), y_home, color='blue', marker='o', s=point_size, alpha=0.5)
+            ax.scatter([x_away] * len(y_away), y_away, color='red', marker='o', s=point_size, alpha=0.5)
 
         if bet_direction in ['H1', 'H2']:
             ax.axhline(y=0, color='red', linewidth=2)  # Set the red line to y=0 for H1 and H2
