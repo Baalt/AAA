@@ -12,8 +12,9 @@ if __name__ == '__main__':
     driver.maximize_window()
     login_page = SOURCE + '/login'
     driver.open_page(url=login_page)
-    # input('close add and choose the day')
+    input('close add and choose the day')
     driver.login(username=LOGIN, password=PASSWORD)
+
     input('close add and choose the day')
     soup = BeautifulSoup(driver.get_page_html(), 'lxml')
     scraper = SmartScheduleScraper(soup=soup)
@@ -21,8 +22,8 @@ if __name__ == '__main__':
     scraper.scrape_schedule(soup=soup)
     schedule_data = scraper.get_schedule_data()
 
-    # collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
-    # collector.run(address=SOURCE)
+    collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
+    collector.run(address=SOURCE)
 
     all_league_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesData.pkl")
     collector = AllGamesCollector(driver=driver,

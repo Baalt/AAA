@@ -1,5 +1,6 @@
 from utils.stat_switcher import stats_dict
 
+
 class MatrixDataGenerator:
     def __init__(self, league_data, last_year_data, home_command_name: str, away_command_name):
         self.league_data = league_data
@@ -55,131 +56,132 @@ class MatrixDataGenerator:
     def __process_last_year_data(self, matrix_data):
         primary_keys = list(self.last_year_data.keys())  # Primary keys like 'Goals', 'Fouls', etc.
 
-        for primary_key in primary_keys:
-            for matrix_entry in matrix_data:
-                matrix_entry['home_collections'] = {
-                    stats_dict[primary_key]: {
+        for matrix_entry in matrix_data:
+            matrix_entry['home_collections'] = {}
+            matrix_entry['away_collections'] = {}
+
+            for primary_key in primary_keys:
+                if not primary_key.startswith('home') and not primary_key.startswith('away'):
+                    matrix_entry['home_collections'][stats_dict[primary_key]] = {
                         'total': [],
                         'ind': [],
                         'ind_opp': [],
                         'hand': [],
                         'hand_opp': []
                     }
-                }
-                matrix_entry['away_collections'] = {
-                    stats_dict[primary_key]: {
+                    matrix_entry['away_collections'][stats_dict[primary_key]] = {
                         'total': [],
                         'ind': [],
                         'ind_opp': [],
                         'hand': [],
                         'hand_opp': []
                     }
-                }
         return matrix_data
 
     def __combining_data(self, matrix_data):
         primary_keys = list(self.last_year_data.keys())  # Primary keys like 'Goals', 'Fouls', etc.
 
         for primary_key in primary_keys:
-            home_collections = self.last_year_data[primary_key]['home_collections']
-            away_collections = self.last_year_data[primary_key]['away_collections']
+            if not primary_key.startswith('home') and not primary_key.startswith('away'):
+                home_collections = self.last_year_data[primary_key]['home_collections']
+                away_collections = self.last_year_data[primary_key]['away_collections']
 
-            for matrix_entry in matrix_data:
-                team_name = matrix_entry['team_name']
+                for matrix_entry in matrix_data:
+                    team_name = matrix_entry['team_name']
 
-                home_command_data_1 = next(
-                    (item for item in home_collections if team_name in item['home_command']), None
-                )
-                home_command_data_2 = next(
-                    (item for item in home_collections if team_name in item['away_command']), None
-                )
-
-                away_command_data_1 = next(
-                    (item for item in away_collections if team_name in item['away_command']), None
-                )
-                away_command_data_2 = next(
-                    (item for item in away_collections if team_name in item['home_command']), None
-                )
-
-                if home_command_data_1:
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['total'].append(
-                        float(home_command_data_1['home_command_individual_total']) +
-                        float(home_command_data_1['away_command_individual_total'])
+                    home_command_data_1 = next(
+                        (item for item in home_collections if team_name in item['home_command']), None
                     )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
-                        float(home_command_data_1['away_command_individual_total'])
-                    )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind_opp'].append(
-                        float(home_command_data_1['home_command_individual_total'])
-                    )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
-                        float(home_command_data_1['away_command_individual_total']) -
-                        float(home_command_data_1['home_command_individual_total'])
-                    )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand_opp'].append(
-                        float(home_command_data_1['home_command_individual_total']) -
-                        float(home_command_data_1['away_command_individual_total'])
+                    home_command_data_2 = next(
+                        (item for item in home_collections if team_name in item['away_command']), None
                     )
 
-                if home_command_data_2:
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['total'].append(
-                        float(home_command_data_2['home_command_individual_total']) +
-                        float(home_command_data_2['away_command_individual_total'])
+                    away_command_data_1 = next(
+                        (item for item in away_collections if team_name in item['away_command']), None
                     )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
-                        float(home_command_data_2['home_command_individual_total'])
-                    )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['ind_opp'].append(
-                        float(home_command_data_2['away_command_individual_total'])
-                    )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
-                        float(home_command_data_2['home_command_individual_total']) -
-                        float(home_command_data_2['away_command_individual_total'])
-                    )
-                    matrix_entry['home_collections'][stats_dict[primary_key]]['hand_opp'].append(
-                        float(home_command_data_2['away_command_individual_total']) -
-                        float(home_command_data_2['home_command_individual_total'])
+                    away_command_data_2 = next(
+                        (item for item in away_collections if team_name in item['home_command']), None
                     )
 
-                if away_command_data_1:
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['total'].append(
-                        float(away_command_data_1['home_command_individual_total']) +
-                        float(away_command_data_1['away_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
-                        float(away_command_data_1['home_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind_opp'].append(
-                        float(away_command_data_1['away_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
-                        float(away_command_data_1['home_command_individual_total']) -
-                        float(away_command_data_1['away_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand_opp'].append(
-                        float(away_command_data_1['away_command_individual_total']) -
-                        float(away_command_data_1['home_command_individual_total'])
-                    )
+                    if home_command_data_1:
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['total'].append(
+                            float(home_command_data_1['home_command_individual_total']) +
+                            float(home_command_data_1['away_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
+                            float(home_command_data_1['away_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                            float(home_command_data_1['home_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
+                            float(home_command_data_1['away_command_individual_total']) -
+                            float(home_command_data_1['home_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                            float(home_command_data_1['home_command_individual_total']) -
+                            float(home_command_data_1['away_command_individual_total'])
+                        )
 
-                if away_command_data_2:
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['total'].append(
-                        float(away_command_data_2['home_command_individual_total']) +
-                        float(away_command_data_2['away_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
-                        float(away_command_data_2['away_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['ind_opp'].append(
-                        float(away_command_data_2['home_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
-                        float(away_command_data_2['away_command_individual_total']) -
-                        float(away_command_data_2['home_command_individual_total'])
-                    )
-                    matrix_entry['away_collections'][stats_dict[primary_key]]['hand_opp'].append(
-                        float(away_command_data_2['home_command_individual_total']) -
-                        float(away_command_data_2['away_command_individual_total'])
-                    )
+                    if home_command_data_2:
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['total'].append(
+                            float(home_command_data_2['home_command_individual_total']) +
+                            float(home_command_data_2['away_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['ind'].append(
+                            float(home_command_data_2['home_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                            float(home_command_data_2['away_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['hand'].append(
+                            float(home_command_data_2['home_command_individual_total']) -
+                            float(home_command_data_2['away_command_individual_total'])
+                        )
+                        matrix_entry['home_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                            float(home_command_data_2['away_command_individual_total']) -
+                            float(home_command_data_2['home_command_individual_total'])
+                        )
+
+                    if away_command_data_1:
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['total'].append(
+                            float(away_command_data_1['home_command_individual_total']) +
+                            float(away_command_data_1['away_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
+                            float(away_command_data_1['home_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                            float(away_command_data_1['away_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
+                            float(away_command_data_1['home_command_individual_total']) -
+                            float(away_command_data_1['away_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                            float(away_command_data_1['away_command_individual_total']) -
+                            float(away_command_data_1['home_command_individual_total'])
+                        )
+
+                    if away_command_data_2:
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['total'].append(
+                            float(away_command_data_2['home_command_individual_total']) +
+                            float(away_command_data_2['away_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['ind'].append(
+                            float(away_command_data_2['away_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['ind_opp'].append(
+                            float(away_command_data_2['home_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['hand'].append(
+                            float(away_command_data_2['away_command_individual_total']) -
+                            float(away_command_data_2['home_command_individual_total'])
+                        )
+                        matrix_entry['away_collections'][stats_dict[primary_key]]['hand_opp'].append(
+                            float(away_command_data_2['home_command_individual_total']) -
+                            float(away_command_data_2['away_command_individual_total'])
+                        )
 
         return matrix_data
 

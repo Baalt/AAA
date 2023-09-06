@@ -2,6 +2,7 @@ import os
 import time
 
 from graph.teams_stats_viz import TeamsStatsVisualizer
+from graph.matrix_stats_viz import ScatterPlotBuilder
 from line.analytics.message_builder import KushMessageBuilder, ExpressMessageBuilder, RefereeMessageBuilder
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
 from utils.stat_switcher import stats_dict
@@ -16,13 +17,15 @@ class Catcher:
                  coefficients: dict,
                  statistic_name: str,
                  all_league_data: dict,
-                 referee_data: dict):
+                 referee_data: dict,
+                 matrix_data):
 
         self.telegram = telegram
         self.home_structure = home_structure
         self.away_structure = away_structure
         self.big_match_data = big_match_data
         self.coefficients = coefficients
+        self.matrix_data = matrix_data
 
         self.all_league_data = all_league_data
         self.referee_data = referee_data
@@ -121,6 +124,9 @@ class Catcher:
                                last_12_opposing_percent: float, last_8_current_percent: float,
                                last_8_opposing_percent: float, last_4_current_percent: float,
                                last_4_opposing_percent: float, referee_all=None, referee_15=None):
+        self.bet_direction = rate_direction
+        self.coeff_set = coeff_set
+        self.coeff_total = float(self.coeff_set['total_number'])
         try:
             last_20_percent = (last_20_current_percent + last_20_opposing_percent) / 2
             last_12_percent = (last_12_current_percent + last_12_opposing_percent) / 2
@@ -146,7 +152,6 @@ class Catcher:
             last_year_percent = None
 
         high_percent_1, low_percent = 90, 66.6
-        coeff_total = float(coeff_set['total_number'])
 
         if referee_15 and self.referee_data[statistic_name]['count'] > 9 and (
                 rate_direction == 'Total_Under' or rate_direction == 'Total_Over'):
@@ -154,8 +159,8 @@ class Catcher:
             is_fouls_stat = statistic_name == 'Фолы'
             is_total_under = rate_direction == 'Total_Under'
             is_total_over = rate_direction == 'Total_Over'
-            is_coeff_above_avg = coeff_total > self.referee_data[statistic_name]['avg'] + 7
-            is_coeff_below_avg = coeff_total < self.referee_data[statistic_name]['avg'] - 7
+            is_coeff_above_avg = self.coeff_total > self.referee_data[statistic_name]['avg'] + 7
+            is_coeff_below_avg = self.coeff_total < self.referee_data[statistic_name]['avg'] - 7
 
             if is_high_percent or (is_fouls_stat and is_total_under and is_coeff_above_avg) or (
                     is_fouls_stat and is_total_over and is_coeff_below_avg):
@@ -343,7 +348,7 @@ class Catcher:
                     rate_direction=rate_direction)
                 message = '\n'.join([message, referee_message.get_message()])
             print(message)
-            self.__plot_graphs(statistic=self.statistic_name)
+            self.__plot_graphs()
             await self.telegram.send_message_with_files(message, *self.files)
 
     async def process_kush_message(self, statistic_name: str, league_name: str, coeff_set,
@@ -420,7 +425,7 @@ class Catcher:
                 rate_direction=rate_direction)
             message = '\n'.join([message, referee_message.get_message()])
         print(message)
-        self.__plot_graphs(statistic=self.statistic_name)
+        self.__plot_graphs()
         await self.telegram.send_message_with_files(message, *self.files)
 
     def kush_calculate(self, percent, coefficient):
@@ -431,7 +436,7 @@ class Catcher:
         kush = ((percent * (coefficient - 1)) - (100 - percent)) / 100
         return kush
 
-    def __plot_graphs(self, statistic):
+    def __plot_graphs(self):
         self.delete_files_in_folder(folder_path='graph/data')
         current_viz = TeamsStatsVisualizer(
             data=self.all_league_data['current_season'],
@@ -447,8 +452,15 @@ class Catcher:
         previous_viz.plot_points(
             data_lst=self.all_league_data['previous_season']['goals'],
             season='previous_season')
-        current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_individual_team')
-        previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
+        matrix_viz = ScatterPlotBuilder(matrix_data=self.matrix_data)
+        matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
+                                      bookmaker_value=self.coeff_total,
+                                      bet_direction=self.bet_direction,
+                                      season='current_season')
+        matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
+                                      bookmaker_value=self.coeff_total,
+                                      bet_direction=self.bet_direction,
+                                      season='previous_season')
         time.sleep(3)
 
     def delete_files_in_folder(self, folder_path):

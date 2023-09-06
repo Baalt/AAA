@@ -1,20 +1,30 @@
+import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+plt.ioff()
+
 
 class ScatterPlotBuilder:
     def __init__(self, matrix_data):
         self.matrix_data = matrix_data
 
     def build_scatter_plot(self, stat_name, bookmaker_value, bet_direction, season):
-        if season == "current":
+        if season == "current_season":
             filtered_teams = [
                 team for team in self.matrix_data
-                if team['current_position'] is not None and (team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name]['total'])
+                if team['current_position'] is not None and (
+                            team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name][
+                        'total'])
             ]
             sorted_teams = sorted(filtered_teams, key=lambda x: int(x['current_position']))
-        elif season == "previous":
+        elif season == "previous_season":
             filtered_teams = [
                 team for team in self.matrix_data
-                if team['previous_position'] is not None and (team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name]['total'])
+                if team['previous_position'] is not None and (
+                            team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name][
+                        'total'])
             ]
             sorted_teams = sorted(filtered_teams, key=lambda x: int(x['previous_position']))
         else:
@@ -31,10 +41,10 @@ class ScatterPlotBuilder:
             if bet_direction in ['TO', 'TU']:
                 y_home = team['home_collections'][stat_name]['total']
                 y_away = team['away_collections'][stat_name]['total']
-            elif bet_direction in ['TU1', 'TO1']:
+            elif bet_direction in ['TU_1', 'TO_1']:
                 y_home = team['home_collections'][stat_name]['ind']
                 y_away = team['away_collections'][stat_name]['ind_opp']
-            elif bet_direction in ['TU2', 'TO2']:
+            elif bet_direction in ['TU_2', 'TO_2']:
                 y_home = team['away_collections'][stat_name]['ind']
                 y_away = team['home_collections'][stat_name]['ind_opp']
             elif bet_direction == 'H1':
@@ -64,4 +74,6 @@ class ScatterPlotBuilder:
         ax.set_ylabel(stat_name)
         ax.set_title(f'{stat_name} - {bet_direction} - {season}')
         plt.tight_layout()
-        plt.show()
+
+        fig.savefig(f"graph/data/{season}_stat.png", dpi=300)
+        plt.close(fig)

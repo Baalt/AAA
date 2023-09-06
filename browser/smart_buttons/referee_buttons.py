@@ -24,7 +24,7 @@ class RefereeButtons:
     def filter_table_by_matches(self, number='100'):
 
         # Find the input element
-        input_element = WebDriverWait(self.browser, 10).until(
+        input_element = WebDriverWait(self.browser, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, "manual-howmuch-input"))
         )
 

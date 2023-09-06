@@ -8,6 +8,7 @@ from line.control_units.managers.referee_collector import RefereeCollector
 from line.control_units.managers.tasks.game_data_collector import GameCollector
 from line.control_units.managers.tasks.coeff_data_collector import CoefficientDataManager
 from line.control_units.filters.last_year_filter import LastYearFilter
+from graph.matrix_data_generator import MatrixDataGenerator
 from telega.telegram_bot import TelegramBot
 from telega import config
 from utils.error import LiveDictBuilderError
@@ -58,8 +59,6 @@ class AllGamesCollector:
 
                         coeff_manager = CoefficientDataManager(driver=self.driver)
                         coeff_manager.get_coefficients_data()
-                        from pprint import pprint
-                        pprint(last_year_data.all_match_data)
 
                         referee_manager = RefereeCollector(driver=self.driver, league=league)
                         try:
@@ -74,8 +73,15 @@ class AllGamesCollector:
                         except KeyError as e:
                             print('league_data error:', e)
                             continue
+
+                        matrix = MatrixDataGenerator(league_data=league_data,
+                                                     last_year_data=last_year_data.all_match_data,
+                                                     home_command_name=game_manager.get_data['home_command_name'],
+                                                     away_command_name=game_manager.get_data['away_command_name'])
+
+                        matrix_data = matrix.generate_matrix_data()
+
                         math_collector = LiveDictBuilder(
-                            telegram=self.telegram,
                             big_match_data=game_manager.get_data,
                             last_year_data=last_year_data.all_match_data,
                             all_league_data=league_data,
@@ -83,7 +89,9 @@ class AllGamesCollector:
                             coefficients=coeff_manager.get_data,
                             league_name=full_league_name,
                             referee_data=referee_data,
-                            game_number=f"{self.game_number:04d}")
+                            matrix_data=matrix_data,
+                            game_number=f"{self.game_number:04d}",
+                            telegram=self.telegram)
                         try:
                             await math_collector.run()
                         except LiveDictBuilderError as e:
