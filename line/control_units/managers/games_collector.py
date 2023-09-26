@@ -75,11 +75,12 @@ class AllGamesCollector:
                             continue
 
                         matrix = MatrixDataGenerator(league_data=league_data,
-                                                     last_year_data=last_year_data.all_match_data,
+                                                     big_data=game_manager.get_data,
                                                      home_command_name=game_manager.get_data['home_command_name'],
                                                      away_command_name=game_manager.get_data['away_command_name'])
 
                         matrix_data = matrix.generate_matrix_data()
+                        # pprint(matrix_data)
 
                         math_collector = LiveDictBuilder(
                             big_match_data=game_manager.get_data,
