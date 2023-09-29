@@ -1,41 +1,34 @@
 import re
-from datetime import datetime
-
+import datetime
 
 class GameDataNormalizer:
-    def __init__(self, season: str, day_month: str):
-        self.season = season
-        self.day_month = day_month
+    def __init__(self):
+        self.previous_dm = None
+        self.current_year = None
 
-    def convert_season_to_dmY(self):
-        try:
-            match = re.search('\d{2}/\d{2}', self.season)
-            year_or_years = match.group().split('/')
-            if len(year_or_years) == 2:
-                first_half_season_year, second_half_season_year = year_or_years
-                first_half_season_year = '20' + first_half_season_year
-                second_half_season_year = '20' + second_half_season_year
+    def find_current_year(self, day_month):
+        if self.current_year == None:
+            current_year = datetime.datetime.now().year
+            self.current_year = str(current_year)[-2:]
+            self.previous_dm = day_month
 
-                return self.determine_the_year_by_the_month_of_the_season(first_half_season_year=first_half_season_year,
-                                                                          second_half_season_year=second_half_season_year)
-        except AttributeError:
-            match = re.search('\d{2}', self.season)
+    def convert_season_to_dmY(self, season, day_month):
+        self.find_current_year(day_month)
+        if self.current_year in season:
+            prev_month = int(self.previous_dm.split('.')[1])
+            curr_month = int(day_month.split('.')[1])
+            self.previous_dm = day_month
+            if prev_month < curr_month:
+                self.current_year = str(int(self.current_year) - 1)
+            return f"{day_month}.20{self.current_year}"
+
+        else:
+            match = re.search(r'\((\d{2}/\d{2}|\d{4})\)', season)
             if match:
-                year_or_years = '20' + match.group()
-                return f'{self.day_month}.{year_or_years}'
+                year_pattern = match.group(1)
+                self.current_year = year_pattern[-2:]
+                self.previous_dm = day_month
+            return f"{day_month}.20{self.current_year}"
 
-    def determine_the_year_by_the_month_of_the_season(self,
-                                                      first_half_season_year: str,
-                                                      second_half_season_year: str):
-        try:
-            if self.day_month == '29.02':
-                self.day_month = '28.02'
-            match_date = datetime.strptime(self.day_month, "%d.%m")
 
-            if match_date.month in range(1, 7):
-                return f'{self.day_month}.{second_half_season_year}'
-            if match_date.month in range(7, 13):
-                return f'{self.day_month}.{first_half_season_year}'
 
-        except ValueError as err:
-            print(f'Value Error: "{err}"')

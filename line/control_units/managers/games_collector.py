@@ -80,7 +80,6 @@ class AllGamesCollector:
                                                      away_command_name=game_manager.get_data['away_command_name'])
 
                         matrix_data = matrix.generate_matrix_data()
-                        # pprint(matrix_data)
 
                         math_collector = LiveDictBuilder(
                             big_match_data=game_manager.get_data,

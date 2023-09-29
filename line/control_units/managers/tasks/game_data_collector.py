@@ -56,7 +56,7 @@ class GameCollector:
 
     def scrap_accordion_data(self):
         self.driver.buttons.get_other_button().click()
-        time.sleep(0.5)
+        time.sleep(1)
         self.driver.buttons.get_drop_down_button(button_text='Удары от ворот').click()
         self.refresh_page()
         self.wait_for_elements()
@@ -66,7 +66,7 @@ class GameCollector:
         self.scraper.scrap_accordion_table_data(soup=soup)
 
         self.driver.buttons.get_other_button().click()
-        time.sleep(0.5)
+        time.sleep(1)
         self.driver.buttons.get_drop_down_button(button_text='Удары').click()
         self.refresh_page()
         self.wait_for_elements()
@@ -98,11 +98,13 @@ class GameCollector:
 
             return True
 
-        except IndexError:
-            print(
-                'GameCollectorError catch INDEX ERROR in address: '
-                'line/control_units/managers/games_collector/GameCollector.get_match_data()')
-            return None
+        except IndexError as err:
+            raise err
+
+            # print(
+            #     'GameCollectorError catch INDEX ERROR in address: '
+            #     'line/control_units/managers/games_collector/GameCollector.get_match_data()')
+            # return None
 
     def validation_goal_data(self, statistics_name, threshold=20):
         if not (len(self.all_match_data[statistics_name]['home_collections']) > threshold and len(

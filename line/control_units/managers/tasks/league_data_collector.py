@@ -56,11 +56,11 @@ class LeagueDataCollector:
     def handle_button_and_soup(self, button_text: str) -> None:
         other_button = self.driver.buttons.get_other_button()
         other_button.click()
-        time.sleep(0.5)
+        time.sleep(1)
         self.driver.buttons.get_drop_down_button(button_text=button_text).click()
         self.refresh_page()
         self.wait_for_elements()
-        time.sleep(0.5)
+        time.sleep(1)
         button = self.driver.buttons.get_other_button()
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
         self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])

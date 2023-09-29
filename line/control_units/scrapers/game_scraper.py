@@ -38,6 +38,7 @@ class GameScraper:
         self.all_match_data['away_command_name'] = self.away_command_name.strip('()')
 
     def scrap_match_table_data(self, soup, tooltip=False):
+
         home_table = soup.find_all('table',
                                    id='table')[0].find('tbody').find_all('tr',
                                                                          attrs={'class': "match-row"})
@@ -47,8 +48,9 @@ class GameScraper:
 
         self.statistic_name = self.scrap_statistic_name(soup=soup, tooltip=tooltip)
         self.all_match_data[self.statistic_name] = {'home_collections': list(), 'away_collections': list()}
-
+        self.dmy = GameDataNormalizer()
         [self.scrap_them_collect_to_global_storage(row, 'home_collections') for row in home_table]
+        self.dmy = GameDataNormalizer()
         [self.scrap_them_collect_to_global_storage(row, 'away_collections') for row in away_table]
 
     def scrap_accordion_table_data(self, soup):
@@ -68,9 +70,7 @@ class GameScraper:
     def scrap_them_collect_to_global_storage(self, row: BeautifulSoup, home_away_key: str):
         season = row.find_all('td')[1].find('a').get_text(strip=True)
         day_month = row.find_all('td')[2].get_text(strip=True)
-
-        dmY = GameDataNormalizer(season=season, day_month=day_month).convert_season_to_dmY()
-
+        dmY = self.dmy.convert_season_to_dmY(season=season, day_month=day_month)
         home_command = row.find_all('td')[3].find('a').get_text(strip=True)
         away_command = row.find_all('td')[6].find('a').get_text(strip=True)
 
