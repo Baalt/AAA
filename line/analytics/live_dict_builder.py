@@ -10,7 +10,8 @@ from utils.error import LiveDictBuilderError, ValidStructureError
 
 class LiveDictBuilder(FromDictToStructure):
     def __init__(self, big_match_data: dict, last_year_data: dict, schedule_data: dict, all_league_data: dict,
-                 coefficients, game_number: str, league_name: str, referee_data: dict, matrix_data, telegram):
+                 coefficients, game_number: str, league_name: str, referee_data: dict,
+                 big_matrix_data, year_matrix_data, telegram):
         self.big_match_data = big_match_data
         self.last_year_data = last_year_data
         self.all_league_data = all_league_data
@@ -18,7 +19,8 @@ class LiveDictBuilder(FromDictToStructure):
         self.league_name = league_name
         self.game_number = game_number
         self.referee_data = referee_data
-        self.matrix_data = matrix_data
+        self.big_matrix_data = big_matrix_data
+        self.year_matrix_data = year_matrix_data
         self.telegram = telegram
         self.data_file_name = f"data/{schedule_data['date']}_AllGamesData.pkl"
         self.data = {'lst': []}
@@ -148,7 +150,8 @@ class LiveDictBuilder(FromDictToStructure):
                                     statistic_name=statistic_name,
                                     all_league_data=self.all_league_data,
                                     referee_data=self.referee_data,
-                                    matrix_data=self.matrix_data)
+                                    big_matrix_data=self.big_matrix_data,
+                                    year_matrix_data=self.year_matrix_data)
                                 await compare.search(statistic_name=statistic_name, full_league_name=self.league_name)
 
 

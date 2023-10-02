@@ -18,20 +18,24 @@ class Catcher:
                  statistic_name: str,
                  all_league_data: dict,
                  referee_data: dict,
-                 matrix_data):
+                 big_matrix_data,
+                 year_matrix_data):
 
         self.telegram = telegram
         self.home_structure = home_structure
         self.away_structure = away_structure
         self.big_match_data = big_match_data
         self.coefficients = coefficients
-        self.matrix_data = matrix_data
+        self.big_matrix_data = big_matrix_data
+        self.year_matrix_data = year_matrix_data
 
         self.all_league_data = all_league_data
         self.referee_data = referee_data
         self.files = [
             "graph/data/current_season_points.png",
             "graph/data/previous_season_points.png",
+            "graph/data/year_current_season_stat.png",
+            "graph/data/year_previous_season_stat.png",
             "graph/data/current_season_stat.png",
             "graph/data/previous_season_stat.png"
         ]
@@ -151,7 +155,7 @@ class Catcher:
         except TypeError:
             last_year_percent = None
 
-        high_percent_1, low_percent = 90, 66.6
+        high_percent_1, low_percent = 86, 66.6
 
         if referee_15 and self.referee_data[statistic_name]['count'] > 9 and (
                 rate_direction == 'Total_Under' or rate_direction == 'Total_Over'):
@@ -199,7 +203,7 @@ class Catcher:
                     last_4_opposing_percent=last_4_opposing_percent)
 
         percent_1 = min(last_20_percent, last_12_percent, last_8_percent, last_4_percent)
-        if percent_1 >= high_percent_1:
+        if percent_1 >= 90:
             await self.process_high_percent_message(statistic_name=statistic_name,
                                                     league_name=league_name,
                                                     coefficients=coefficients,
@@ -303,7 +307,7 @@ class Catcher:
         coefficient = coeff_set[coeff_under_over_key]
         if not isinstance(coefficient, float):
             coefficient = float(coefficient)
-        if coefficient > 1.27:
+        if coefficient > 1.1:
             exp_message = ExpressMessageBuilder(
                 statistic_name=statistic_name,
                 league_name=league_name,
@@ -452,7 +456,16 @@ class Catcher:
         previous_viz.plot_points(
             data_lst=self.all_league_data['previous_season']['goals'],
             season='previous_season')
-        matrix_viz = ScatterPlotBuilder(matrix_data=self.matrix_data)
+        matrix_viz = ScatterPlotBuilder(matrix_data=self.year_matrix_data)
+        matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
+                                      bookmaker_value=self.coeff_total,
+                                      bet_direction=self.bet_direction,
+                                      season='year_current_season')
+        matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
+                                      bookmaker_value=self.coeff_total,
+                                      bet_direction=self.bet_direction,
+                                      season='year_previous_season')
+        matrix_viz = ScatterPlotBuilder(matrix_data=self.big_matrix_data)
         matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
                                       bookmaker_value=self.coeff_total,
                                       bet_direction=self.bet_direction,

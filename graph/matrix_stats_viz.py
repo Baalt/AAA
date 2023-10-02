@@ -11,7 +11,7 @@ class ScatterPlotBuilder:
         self.matrix_data = matrix_data
 
     def build_scatter_plot(self, stat_name, bookmaker_value, bet_direction, season):
-        if season == "current_season":
+        if season == "current_season" or season == "year_current_season":
             filtered_teams = [
                 team for team in self.matrix_data
                 if team['current_position'] is not None and (
@@ -19,7 +19,7 @@ class ScatterPlotBuilder:
                         'total'])
             ]
             sorted_teams = sorted(filtered_teams, key=lambda x: int(x['current_position']))
-        elif season == "previous_season":
+        elif season == "previous_season" or season == 'year_previous_season':
             filtered_teams = [
                 team for team in self.matrix_data
                 if team['previous_position'] is not None and (

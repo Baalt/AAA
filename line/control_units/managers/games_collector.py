@@ -74,12 +74,18 @@ class AllGamesCollector:
                             print('league_data error:', e)
                             continue
 
-                        matrix = MatrixDataGenerator(league_data=league_data,
+                        big_matrix = MatrixDataGenerator(league_data=league_data,
                                                      big_data=game_manager.get_data,
                                                      home_command_name=game_manager.get_data['home_command_name'],
                                                      away_command_name=game_manager.get_data['away_command_name'])
 
-                        matrix_data = matrix.generate_matrix_data()
+                        year_matrix = MatrixDataGenerator(league_data=league_data,
+                                                         big_data=last_year_data.all_match_data,
+                                                         home_command_name=game_manager.get_data['home_command_name'],
+                                                         away_command_name=game_manager.get_data['away_command_name'])
+
+                        big_matrix_data = big_matrix.generate_matrix_data()
+                        year_matrix_data = year_matrix.generate_matrix_data()
 
                         math_collector = LiveDictBuilder(
                             big_match_data=game_manager.get_data,
@@ -89,7 +95,8 @@ class AllGamesCollector:
                             coefficients=coeff_manager.get_data,
                             league_name=full_league_name,
                             referee_data=referee_data,
-                            matrix_data=matrix_data,
+                            big_matrix_data=big_matrix_data,
+                            year_matrix_data=year_matrix_data,
                             game_number=f"{self.game_number:04d}",
                             telegram=self.telegram)
                         try:

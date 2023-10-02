@@ -166,9 +166,9 @@ class MatrixDataGenerator:
         for matrix_entry in matrix_data:
             team_name = matrix_entry['team_name']
 
-            if self.home_command_name in team_name:
+            if self.home_command_name in team_name or team_name in self.home_command_name:
                 modified_team_name = team_name.upper() + "_1"
-            elif self.away_command_name in team_name:
+            elif self.away_command_name in team_name or team_name in self.away_command_name:
                 modified_team_name = team_name.upper() + "_2"
             else:
                 modified_team_name = team_name
