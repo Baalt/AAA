@@ -14,17 +14,17 @@ class ScatterPlotBuilder:
         if season == "current_season" or season == "year_current_season":
             filtered_teams = [
                 team for team in self.matrix_data
-                if team['current_position'] is not None and (
-                            team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name][
-                        'total'])
+                if team['current_position'] is not None # and (
+                #             team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name][
+                #         'total'])
             ]
             sorted_teams = sorted(filtered_teams, key=lambda x: int(x['current_position']))
         elif season == "previous_season" or season == 'year_previous_season':
             filtered_teams = [
                 team for team in self.matrix_data
-                if team['previous_position'] is not None and (
-                            team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name][
-                        'total'])
+                if team['previous_position'] is not None # and (
+                #             team['home_collections'][stat_name]['total'] or team['away_collections'][stat_name][
+                #         'total'])
             ]
             sorted_teams = sorted(filtered_teams, key=lambda x: int(x['previous_position']))
         else:

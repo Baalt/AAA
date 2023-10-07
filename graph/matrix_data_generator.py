@@ -25,6 +25,10 @@ class MatrixDataGenerator:
         teams = set()
         for goal_data in current_season_goals:
             teams.add(goal_data['team_name'][:10])
+        for goal_data in previous_season_goals:
+            if goal_data['team_name'][:10] not in teams:
+                teams.add(goal_data['team_name'][:10])
+
 
         for team_name in teams:
             matrix_entry = {

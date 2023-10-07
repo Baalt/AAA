@@ -8,15 +8,31 @@ class BoundaryLiveValues:
                  team1_name: str,
                  team2_name: str,
                  game_number: str,
-                 referee_data: dict):
+                 referee_data: dict,
+                 big_matrix_data,
+                 year_matrix_data,
+                 yellow_referee_15,
+                 yellow_referee_all,
+                 foul_referee_15,
+                 foul_referee_all):
 
+
+        self.big_matrix_data = big_matrix_data,
+        self.year_matrix_data = year_matrix_data
         self.referee_data = referee_data
         self.main_data = {
             'league': league,
             'team1_name': team1_name,
             'team2_name': team2_name,
             'game_number': game_number,
-            'red_card': False
+            'red_card': False,
+            'big_matrix_data': self.big_matrix_data,
+            'year_matrix_data': self.year_matrix_data,
+            'yellow_referee_15': yellow_referee_15,
+            'yellow_referee_all': yellow_referee_all,
+            'foul_referee_15': foul_referee_15,
+            'foul_referee_all': foul_referee_all,
+            'referee_name': None
         }
 
     def total_calculation(self, seq: list, percent: int):
