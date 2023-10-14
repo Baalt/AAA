@@ -344,6 +344,7 @@ class Catcher:
             message = exp_message.get_message()
             if referee_15:
                 referee_message = RefereeMessageBuilder(
+                    referee_name=self.referee_data['referee_name'],
                     all_data=referee_all,
                     last15=referee_15,
                     average=self.referee_data[statistic_name]['avg'],
@@ -421,6 +422,7 @@ class Catcher:
         message = kush_message.get_message()
         if referee_15:
             referee_message = RefereeMessageBuilder(
+                referee_name=self.referee_data['referee_name'],
                 all_data=referee_all,
                 last15=referee_15,
                 average=self.referee_data[statistic_name]['avg'],

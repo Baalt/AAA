@@ -60,7 +60,47 @@ class KushMessageBuilder:
         self.last_4_current = last_4_current_percent
         self.last_4_opposing = last_4_opposing_percent
 
+    def format_float(self, value):
+        return f"{value:3.2f}" if value is not None else "None"
+
     def get_message(self):
+        try:
+            sim_low = float(self.similar_current_low)
+            sim_opp_high = float(self.similar_opposing_high)
+            similar_percent_low_str = f'{(sim_low + sim_opp_high) / 2:3.2f}'
+        except TypeError:
+            similar_percent_low_str = 'None'
+
+        try:
+            sim_high = float(self.similar_current_high)
+            sim_opp_low = float(self.similar_opposing_low)
+            similar_percent_high_str = f'{(sim_high + sim_opp_low) / 2:3.2f}'
+        except TypeError:
+            similar_percent_high_str = 'None'
+
+        big_data_current_str = self.format_float(self.big_data_current)
+        big_data_opposing_str = self.format_float(self.big_data_opposing)
+        big_data_percent_str = self.format_float(self.big_data_percent)
+        last_year_current_str = self.format_float(self.last_year_current)
+        last_year_opposing_str = self.format_float(self.last_year_opposing)
+        last_year_percent_str = self.format_float(self.last_year_percent)
+        similar_current_low_str = self.format_float(self.similar_current_low)
+        similar_opposing_low_str = self.format_float(self.similar_opposing_low)
+        similar_current_high_str = self.format_float(self.similar_current_high)
+        similar_opposing_high_str = self.format_float(self.similar_opposing_high)
+        last_20_current_str = self.format_float(self.last_20_current)
+        last_20_opposing_str = self.format_float(self.last_20_opposing)
+        last_20_percent_str = self.format_float(self.last_20_percent)
+        last_12_current_str = self.format_float(self.last_12_current)
+        last_12_opposing_str = self.format_float(self.last_12_opposing)
+        last_12_home_away_percent_str = self.format_float(self.last_12_home_away_percent)
+        last_8_current_str = self.format_float(self.last_8_current)
+        last_8_opposing_str = self.format_float(self.last_8_opposing)
+        last_8_percent_str = self.format_float(self.last_8_percent)
+        last_4_current_str = self.format_float(self.last_4_current)
+        last_4_opposing_str = self.format_float(self.last_4_opposing)
+        last_4_percent_str = self.format_float(self.last_4_percent)
+
         return f"""         
 ########## LINE ##########
 
@@ -82,14 +122,14 @@ L10___HA: {self.last_12_kush_by_rate:3.2f} kush
 _____L10: {self.last_8_kush_by_rate:3.2f} kush
 ______L5: {self.last_4_kush_by_rate:3.2f} kush 
     
-Big Data: {self.big_data_current:3.2f} __ {self.big_data_opposing:3.2f} __ {self.big_data_percent:3.2f}%
-LastYear: {self.last_year_current:3.2f} __ {self.last_year_opposing:3.2f} __ {self.last_year_percent:3.2f}%
-SimlLow: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-SimiHigh: {self.similar_current_high:3.2f} __ {self.similar_opposing_high:3.2f} __ {self.similar_percent_high:3.2f}%
-_____L15: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
-L10__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
-_____L10: {self.last_8_current:3.2f} __ {self.last_8_opposing:3.2f} __ {self.last_8_percent:3.2f}%
-______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.last_4_percent:3.2f}%"""
+Big Data: {big_data_current_str} __ {big_data_opposing_str} __ {big_data_percent_str}%
+LastYear: {last_year_current_str} __ {last_year_opposing_str} __ {last_year_percent_str}%
+SimilLow: {similar_current_low_str} __ {similar_opposing_high_str} __ {similar_percent_low_str}%
+SimiHigh: {similar_current_high_str} __ {similar_opposing_low_str} __ {similar_percent_high_str}%
+_____L15: {last_20_current_str} __ {last_20_opposing_str} __ {last_20_percent_str}%
+L10__HA: {last_12_current_str} __ {last_12_opposing_str}  __  {last_12_home_away_percent_str}%
+_____L10: {last_8_current_str} __ {last_8_opposing_str} __ {last_8_percent_str}%
+______L5: {last_4_current_str} __ {last_4_opposing_str} __ {last_4_percent_str}%"""
 
 
 class ExpressMessageBuilder:
@@ -105,8 +145,8 @@ class ExpressMessageBuilder:
                  last_12_current_percent: float, last_12_opposing_percent: float,
                  last_8_current_percent: float, last_8_opposing_percent: float,
                  last_4_current_percent: float, last_4_opposing_percent: float):
-        self.statistic_name = statistic_name or ''
-        self.league_name = league_name or ''
+        self.statistic_name = statistic_name
+        self.league_name = league_name
 
         self.big_data_percent = big_data_percent
         self.last_year_percent = last_year_percent
@@ -120,8 +160,8 @@ class ExpressMessageBuilder:
         self.big_match_data = big_match_data or {}
         self.coeff_total = coeff_total or 0
         self.coeff_value = coeff_value or 0
-        self.rate_direction = rate_direction or ''
-        self.category = category or ''
+        self.rate_direction = rate_direction
+        self.category = category
         self.coefficients = coefficients or {}
 
         self.big_data_current = big_data_current_percent
@@ -141,7 +181,47 @@ class ExpressMessageBuilder:
         self.last_4_current = last_4_current_percent
         self.last_4_opposing = last_4_opposing_percent
 
+    def format_float(self, value):
+        return f"{value:3.2f}" if value is not None else "None"
+
     def get_message(self):
+        try:
+            sim_low = float(self.similar_current_low)
+            sim_opp_high = float(self.similar_opposing_high)
+            similar_percent_low_str = f'{(sim_low + sim_opp_high) / 2:3.2f}'
+        except TypeError:
+            similar_percent_low_str = 'None'
+
+        try:
+            sim_high = float(self.similar_current_high)
+            sim_opp_low = float(self.similar_opposing_low)
+            similar_percent_high_str = f'{(sim_high + sim_opp_low) / 2:3.2f}'
+        except TypeError:
+            similar_percent_high_str = 'None'
+
+        big_data_current_str = self.format_float(self.big_data_current)
+        big_data_opposing_str = self.format_float(self.big_data_opposing)
+        big_data_percent_str = self.format_float(self.big_data_percent)
+        last_year_current_str = self.format_float(self.last_year_current)
+        last_year_opposing_str = self.format_float(self.last_year_opposing)
+        last_year_percent_str = self.format_float(self.last_year_percent)
+        similar_current_low_str = self.format_float(self.similar_current_low)
+        similar_opposing_low_str = self.format_float(self.similar_opposing_low)
+        similar_current_high_str = self.format_float(self.similar_current_high)
+        similar_opposing_high_str = self.format_float(self.similar_opposing_high)
+        last_20_current_str = self.format_float(self.last_20_current)
+        last_20_opposing_str = self.format_float(self.last_20_opposing)
+        last_20_percent_str = self.format_float(self.last_20_percent)
+        last_12_current_str = self.format_float(self.last_12_current)
+        last_12_opposing_str = self.format_float(self.last_12_opposing)
+        last_12_home_away_percent_str = self.format_float(self.last_12_home_away_percent)
+        last_8_current_str = self.format_float(self.last_8_current)
+        last_8_opposing_str = self.format_float(self.last_8_opposing)
+        last_8_percent_str = self.format_float(self.last_8_percent)
+        last_4_current_str = self.format_float(self.last_4_current)
+        last_4_opposing_str = self.format_float(self.last_4_opposing)
+        last_4_percent_str = self.format_float(self.last_4_percent)
+
         return f"""         
 ########## LINE ##########
 __League: {self.league_name}
@@ -153,18 +233,19 @@ RateType: {'Part for combine rate' if float(self.coeff_value) < 1.683 else 'Sing
 ______Bet: {self.coeff_total} {self.rate_direction}  
 ____Coeff: {self.coeff_value}
 
-Big Data: {self.big_data_current:3.2f} __ {self.big_data_opposing:3.2f} __ {self.big_data_percent:3.2f}%
-LastYear: {self.last_year_current:3.2f} __ {self.last_year_opposing:3.2f} __ {self.last_year_percent:3.2f}%
-SimilLow: {self.similar_current_low:3.2f} __ {self.similar_opposing_low:3.2f} __ {self.similar_percent_low:3.2f}%
-SimiHigh: {self.similar_current_high:3.2f} __ {self.similar_opposing_high:3.2f} __ {self.similar_percent_high:3.2f}%
-_____L15: {self.last_20_current:3.2f} __ {self.last_20_opposing:3.2f} __ {self.last_20_percent:3.2f}%
-L10__HA: {self.last_12_current:3.2f} __ {self.last_12_opposing:3.2f}  __  {self.last_12_home_away_percent:3.2f}%
-_____L10: {self.last_8_current:3.2f} __ {self.last_8_opposing:3.2f} __ {self.last_8_percent:3.2f}%
-______L5: {self.last_4_current:3.2f} __ {self.last_4_opposing:3.2f} __ {self.last_4_percent:3.2f}%"""
+Big Data: {big_data_current_str} __ {big_data_opposing_str} __ {big_data_percent_str}%
+LastYear: {last_year_current_str} __ {last_year_opposing_str} __ {last_year_percent_str}%
+SimilLow: {similar_current_low_str} __ {similar_opposing_high_str} __ {similar_percent_low_str}%
+SimiHigh: {similar_current_high_str} __ {similar_opposing_low_str} __ {similar_percent_high_str}%
+_____L15: {last_20_current_str} __ {last_20_opposing_str} __ {last_20_percent_str}%
+L10__HA: {last_12_current_str} __ {last_12_opposing_str}  __  {last_12_home_away_percent_str}%
+_____L10: {last_8_current_str} __ {last_8_opposing_str} __ {last_8_percent_str}%
+______L5: {last_4_current_str} __ {last_4_opposing_str} __ {last_4_percent_str}%"""
 
 
 class RefereeMessageBuilder:
-    def __init__(self, all_data, last15, average, length, coeff_total, rate_direction):
+    def __init__(self, referee_name, all_data, last15, average, length, coeff_total, rate_direction):
+        self.referee_name = referee_name
         self.all_data = all_data
         self.last15 = last15
         self.average = average
@@ -176,6 +257,7 @@ class RefereeMessageBuilder:
     def get_message(self):
         return f"""         
 ######## REFEREE ########
+{self.referee_name}
 ______Bet: {self.coeff_total} {self.rate_direction} 
 Big Data: {self.all_data:3.2f} %
 _____L15: {self.last15:3.2f} %

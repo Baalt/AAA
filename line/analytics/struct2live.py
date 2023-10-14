@@ -19,7 +19,9 @@ class FromStructureToLiveDict(LiveTotalCalculation,
         percent = self.percent_define(statistic_name=statistic_name)
         total = self.calculate_total_live_data(home_structure=home_structure,
                                                away_structure=away_structure,
+                                               statistic_name=statistic_name,
                                                percent=percent)
+
         total_1 = self.calculate_individual_1_live_data(home_structure=home_structure,
                                                         away_structure=away_structure,
                                                         percent=percent)
@@ -43,8 +45,6 @@ class FromStructureToLiveDict(LiveTotalCalculation,
                                    total_2_under=total_2_under, total_2_over=total_2_over,
                                    handicap_1=handicap_1, handicap_2=handicap_2)
 
-        # if statistic_name in ['yellow cards', 'fouls'] and self.referee_data:
-        #     referee_total = self.calculate_referee_live_data()
 
     def add_live_data_to_dict(self, statistic_name,
                               total_under, total_over,

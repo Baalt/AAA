@@ -11,15 +11,20 @@ class BoundaryLiveValues:
                  referee_data: dict,
                  big_matrix_data,
                  year_matrix_data,
-                 yellow_referee_15,
-                 yellow_referee_all,
-                 foul_referee_15,
-                 foul_referee_all):
-
+                 ):
 
         self.big_matrix_data = big_matrix_data,
         self.year_matrix_data = year_matrix_data
         self.referee_data = referee_data
+
+        try:
+            if self.referee_data:
+                referee_name = self.referee_data['referee_name']
+            else:
+                referee_name = None
+        except KeyError:
+            referee_name = None
+
         self.main_data = {
             'league': league,
             'team1_name': team1_name,
@@ -28,11 +33,7 @@ class BoundaryLiveValues:
             'red_card': False,
             'big_matrix_data': self.big_matrix_data,
             'year_matrix_data': self.year_matrix_data,
-            'yellow_referee_15': yellow_referee_15,
-            'yellow_referee_all': yellow_referee_all,
-            'foul_referee_15': foul_referee_15,
-            'foul_referee_all': foul_referee_all,
-            'referee_name': None
+            'referee_name': referee_name,
         }
 
     def total_calculation(self, seq: list, percent: int):
@@ -41,39 +42,42 @@ class BoundaryLiveValues:
         total_count = len(seq)
 
         # Calculation for totals under a certain threshold
-        for search_total in np.arange(0.5, 70.5, 1):
-            win_counter = Counter()
+        if total_count:
+            for search_total in np.arange(0.5, 70.5, 1):
+                win_counter = Counter()
 
-            for real_total in seq:
-                if search_total > real_total:
-                    win_counter[real_total] += 1
+                for real_total in seq:
+                    if search_total > real_total:
+                        win_counter[real_total] += 1
 
-            quantity_win = sum(win_counter.values())
+                quantity_win = sum(win_counter.values())
 
-            under_percent = round((quantity_win / total_count) * 100, 2)
-            if under_percent >= percent:
-                total_under = search_total
-                break
+                under_percent = round((quantity_win / total_count) * 100, 2)
 
-        # Calculation for totals over a certain threshold
-        for search_total in np.arange(70.5, -0.5, -1):
-            win_counter = Counter()
+                if under_percent >= percent:
+                    total_under = search_total
+                    break
 
-            for real_total in seq:
-                if search_total < real_total:
-                    win_counter[real_total] += 1
+            # Calculation for totals over a certain threshold
+            for search_total in np.arange(70.5, -0.5, -1):
+                win_counter = Counter()
 
-            quantity_win = sum(win_counter.values())
+                for real_total in seq:
+                    if search_total < real_total:
+                        win_counter[real_total] += 1
 
-            over_percent = round((quantity_win / total_count) * 100, 2)
-            if over_percent >= percent:
-                total_over = search_total
-                break
+                quantity_win = sum(win_counter.values())
+
+                over_percent = round((quantity_win / total_count) * 100, 2)
+
+                if over_percent >= percent:
+                    total_over = search_total
+                    break
 
         return total_under, total_over
 
     def handicap_calculation(self, current_seq, opposing_seq, percent):
-        if len(current_seq) == len(opposing_seq):
+        if current_seq and (len(current_seq) == len(opposing_seq)):
             for search_total in np.arange(0.5, 70.5, 1):
                 win_counter = Counter()
 
