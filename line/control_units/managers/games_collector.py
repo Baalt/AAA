@@ -30,7 +30,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Spain: Primera RFEF' in full_league_name:
+            # if 'Europe: EURO U21 Qualification' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 league = full_league_name.split(':')[-1].strip()
