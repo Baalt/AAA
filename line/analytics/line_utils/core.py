@@ -240,7 +240,7 @@ class Catcher:
         except TypeError:
             return
 
-        if percent_1 > low_percent and min_kush >= 0.25:
+        if percent_1 > low_percent and min_kush > 0.23:
             await self.process_kush_message(
                 statistic_name=statistic_name,
                 league_name=league_name,

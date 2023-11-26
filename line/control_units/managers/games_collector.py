@@ -28,11 +28,12 @@ class AllGamesCollector:
         self.smart_live_data = {'lst': []}
 
     async def run(self):
-        # flag = False
+        flag = False
         for full_league_name in self.schedule_data:
-            # if 'Europe: EURO U21 Qualification' in full_league_name:
-            #     flag = True
-            if ':' in full_league_name:
+            if 'England: Premier League' in full_league_name:
+                flag = True
+            if ':' in full_league_name and flag:
+                flag = False
                 league = full_league_name.split(':')[-1].strip()
                 full_league_name = full_league_name.strip()
                 for game_url in self.schedule_data[full_league_name]['match_url']:

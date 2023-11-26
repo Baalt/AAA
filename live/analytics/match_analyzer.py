@@ -1,6 +1,7 @@
 import os
 import time
 
+from graph.matrix_stats_viz import ScatterPlotBuilder
 from live.analytics.game_info import GameInfo, RedCardInfo
 from telega.telegram_bot import TelegramBot
 from utils.pickle_manager import PickleHandler
@@ -17,10 +18,13 @@ class SmartLiveCompare():
         self.live_data = live_data
         self.league_data = league_data
         self.telegram = telegram
+
         self.files = [
             "graph/data/live_stats.png",
             "graph/data/current_season_points.png",
             "graph/data/previous_season_points.png",
+            "graph/data/year_current_season_stat.png",
+            "graph/data/year_previous_season_stat.png",
             "graph/data/current_season_stat.png",
             "graph/data/previous_season_stat.png"
         ]
@@ -38,12 +42,12 @@ class SmartLiveCompare():
                     total_2_over = smart_dct['TO_2']
                     handicap_1 = smart_dct['H1']
                     handicap_2 = smart_dct['H2']
-                    red_card = self.smart_data['smart_data']['red_card']
-                except KeyError:
+                except KeyError as err:
+                    print('self.smart_dataError', err)
                     continue
 
-                if statistic == 'fouls' and not red_card:
-                    await self.__red_card_rate_checker(statistic=statistic)
+                if statistic == 'fouls' and self.live_data['red cards']:
+                    await self.red_card_rate_checker(statistic=statistic)
 
                 await self.__search_total(statistic=statistic,
                                           statistic_key='totals',
@@ -60,6 +64,7 @@ class SmartLiveCompare():
                                           rate_direction='total_1',
                                           key_under='TU_1',
                                           key_over='TO_1')
+
                 await self.__search_total(statistic=statistic,
                                           statistic_key='team2_totals',
                                           total_under=total_2_under,
@@ -73,15 +78,15 @@ class SmartLiveCompare():
                                              handicap=handicap_1,
                                              rate_direction='handicap_1',
                                              key_handicap='H1')
+
                 await self.__search_handicap(statistic=statistic,
                                              statistic_key='team2_handicaps',
                                              handicap=handicap_2,
                                              rate_direction='handicap_2',
                                              key_handicap='H2')
 
-    async def __red_card_rate_checker(self, statistic):
+    async def red_card_rate_checker(self, statistic):
         if self.live_data['red cards'] != '0:0':
-            self.__plot_graphs(statistic=statistic)
             info = RedCardInfo(
                 live_data=self.live_data,
                 smart_data=self.smart_data,
@@ -121,7 +126,9 @@ class SmartLiveCompare():
                         live_coeff=coeff_under,
                         smart_total=total_under,
                         key=key_under)
-                    self.__plot_graphs(statistic=statistic)
+                    self.__plot_graphs(statistic=statistic,
+                                       live_total=live_total,
+                                       rate_direction=rate_direction)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                     print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
@@ -147,7 +154,9 @@ class SmartLiveCompare():
                             live_coeff=coeff_over,
                             smart_total=total_over,
                             key=key_over)
-                        self.__plot_graphs(statistic=statistic)
+                        self.__plot_graphs(statistic=statistic,
+                                           live_total=live_total,
+                                           rate_direction=rate_direction)
                         message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                         print(message)
                         await self.telegram.send_message_with_files(message, *self.files)
@@ -181,7 +190,9 @@ class SmartLiveCompare():
                         smart_total=handicap,
                         rate_direction=rate_direction,
                         key=key_handicap)
-                    self.__plot_graphs(statistic=statistic)
+                    self.__plot_graphs(statistic=statistic,
+                                       live_total=live_handicap,
+                                       rate_direction=rate_direction)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                     print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
@@ -197,13 +208,15 @@ class SmartLiveCompare():
                         smart_total=handicap,
                         rate_direction=rate_direction,
                         key=key_handicap)
-                    self.__plot_graphs(statistic=statistic)
+                    self.__plot_graphs(statistic=statistic,
+                                       live_total=live_handicap,
+                                       rate_direction=rate_direction)
                     message = '\n'.join([info.get_game_info(), info.get_correction_key()])
                     print(message)
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_bet(key=info.get_correction_key())
 
-    def __plot_graphs(self, statistic):
+    def __plot_graphs(self, statistic, live_total, rate_direction):
         self.delete_files_in_folder(folder_path='graph/data')
         MatchStatsVisualizer(data=self.live_data['match_stats']).plot_bar_chart()
         current_viz = TeamsStatsVisualizer(
@@ -220,8 +233,26 @@ class SmartLiveCompare():
         previous_viz.plot_points(
             data_lst=self.league_data[self.smart_data['smart_data']['league']]['previous_season']['goals'],
             season='previous_season')
-        current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_individual_team')
-        previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
+        # current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_individual_team')
+        # previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
+        matrix_viz = ScatterPlotBuilder(matrix_data=self.smart_data['smart_data']['year_matrix_data'])
+        matrix_viz.build_scatter_plot(stat_name=statistic,
+                                      bookmaker_value=live_total,
+                                      bet_direction=rate_direction,
+                                      season='year_current_season')
+        matrix_viz.build_scatter_plot(stat_name=statistic,
+                                      bookmaker_value=live_total,
+                                      bet_direction=rate_direction,
+                                      season='year_previous_season')
+        matrix_viz = ScatterPlotBuilder(matrix_data=self.smart_data['smart_data']['big_matrix_data'])
+        matrix_viz.build_scatter_plot(stat_name=statistic,
+                                      bookmaker_value=live_total,
+                                      bet_direction=rate_direction,
+                                      season='current_season')
+        matrix_viz.build_scatter_plot(stat_name=statistic,
+                                      bookmaker_value=live_total,
+                                      bet_direction=rate_direction,
+                                      season='previous_season')
         time.sleep(3)
 
     def delete_files_in_folder(self, folder_path):
@@ -240,7 +271,7 @@ class SmartLiveCompare():
         parts = key.rstrip('➠').split('➠')
         if red_card:
             try:
-                self.smart_data['smart_data'][parts[1]] = True
+                self.smart_data['smart_data'][parts[1]] = None
             except KeyError as e:
                 print('change smart_data error: ', e)
         else:
@@ -256,7 +287,7 @@ class SmartLiveCompare():
             for dct in full_smart_data['lst']:
                 if dct['game_number'] == self.smart_data['smart_data']['game_number']:
                     if red_card:
-                        dct[parts[1]] = True
+                        dct[parts[1]] = None
                     else:
                         dct[parts[1]][parts[2]] = None
                     handler.write_data(full_smart_data, file_path)

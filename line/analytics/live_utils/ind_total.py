@@ -34,10 +34,10 @@ class LiveIndividualCalculation(BoundaryLiveValues):
             seq=away_structure.last_20_games_individual_total_opposing_teams_current_away_by_year_in_home_away_games,
             percent=percent)
         last_12_current_result = self.total_calculation(
-            seq=home_structure.last_12_games_individual_total_current_home_by_year_in_home_games,
+            seq=home_structure.last_12_games_individual_total_current_home_by_year_in_home_games[:12],
             percent=percent)
         last_12_opposing_result = self.total_calculation(
-            seq=away_structure.last_12_games_individual_total_opposing_teams_current_away_by_year_in_home_games,
+            seq=away_structure.last_12_games_individual_total_opposing_teams_current_away_by_year_in_home_games[:12],
             percent=percent)
         last_8_current_result = self.total_calculation(
             seq=home_structure.last_8_games_individual_total_current_home_by_year_in_home_away_games,
@@ -143,10 +143,10 @@ class LiveIndividualCalculation(BoundaryLiveValues):
             seq=home_structure.last_20_games_individual_total_opposing_teams_current_home_by_year_in_home_away_games,
             percent=percent)
         last_12_current_result = self.total_calculation(
-            seq=away_structure.last_12_games_individual_total_current_away_by_year_in_away_games,
+            seq=away_structure.last_12_games_individual_total_current_away_by_year_in_away_games[:12],
             percent=percent)
         last_12_opposing_result = self.total_calculation(
-            seq=home_structure.last_12_games_individual_total_opposing_teams_current_home_by_year_in_away_games,
+            seq=home_structure.last_12_games_individual_total_opposing_teams_current_home_by_year_in_away_games[:12],
             percent=percent)
         last_8_current_result = self.total_calculation(
             seq=away_structure.last_8_games_individual_total_current_away_by_year_in_home_away_games,

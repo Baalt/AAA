@@ -30,7 +30,6 @@ class BoundaryLiveValues:
             'team1_name': team1_name,
             'team2_name': team2_name,
             'game_number': game_number,
-            'red_card': False,
             'big_matrix_data': self.big_matrix_data,
             'year_matrix_data': self.year_matrix_data,
             'referee_name': referee_name,
