@@ -101,3 +101,34 @@ class ValidStructureFilter:
                             and len(
                         self.away_structure.last_12_games_total_current_away_command_by_year_in_away_games) >= 10:
                         return True
+
+
+    def is_championships_home_structure_valid(self):
+        if self.home_structure:
+            if len(self.home_structure.last_year_total_current_home_command_in_home_away_games) == len(
+                    self.home_structure.last_year_individual_total_current_home_command_in_home_away_games) == len(
+                self.home_structure.last_year_individual_total_opposing_teams_current_home_in_home_away_games):
+
+                if len(self.home_structure.last_12_games_total_current_home_command_by_year_in_home_games) == len(
+                        self.home_structure.last_12_games_individual_total_current_home_by_year_in_home_games) == len(
+                    self.home_structure.last_12_games_individual_total_opposing_teams_current_home_by_year_in_away_games):
+
+                    if len(self.home_structure.big_data_total_current_home_in_home_away_games) >= 7 \
+                            and len(
+                        self.home_structure.last_12_games_total_current_home_command_by_year_in_home_games) >= 3:
+                        return True
+
+    def is_championships_away_structure_valid(self):
+        if self.away_structure:
+            if len(self.away_structure.last_year_total_current_away_command_in_home_away_games) == len(
+                    self.away_structure.last_year_individual_total_current_away_command_in_home_away_games) == len(
+                self.away_structure.last_year_individual_total_opposing_teams_current_away_in_home_away_games):
+
+                if len(self.away_structure.last_12_games_total_current_away_command_by_year_in_away_games) == len(
+                        self.away_structure.last_12_games_individual_total_current_away_by_year_in_away_games) == len(
+                    self.away_structure.last_12_games_individual_total_opposing_teams_current_away_by_year_in_home_games):
+
+                    if len(self.away_structure.big_data_total_current_away_in_home_away_games) >= 7 \
+                            and len(
+                        self.away_structure.last_12_games_total_current_away_command_by_year_in_away_games) >= 4:
+                        return True
