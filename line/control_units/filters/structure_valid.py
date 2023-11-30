@@ -11,6 +11,11 @@ class ValidStructureFilter:
             self.adding_home_structures_for_the_latest_games()
             self.adding_away_structures_for_the_latest_games()
 
+    def championship_valid_and_create(self):
+        if self.is_championships_home_structure_valid() and self.is_championships_away_structure_valid():
+            self.adding_home_structures_for_the_latest_games()
+            self.adding_away_structures_for_the_latest_games()
+
     def adding_home_structures_for_the_latest_games(self):
         # last20 home-away games
         self.home_structure.last_20_games_total_current_home_by_year_in_home_away_games = \
@@ -101,7 +106,6 @@ class ValidStructureFilter:
                             and len(
                         self.away_structure.last_12_games_total_current_away_command_by_year_in_away_games) >= 10:
                         return True
-
 
     def is_championships_home_structure_valid(self):
         if self.home_structure:
