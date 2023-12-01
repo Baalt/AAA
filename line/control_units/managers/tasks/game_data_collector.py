@@ -9,12 +9,14 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from browser.browser import LiveChromeDriver
 from line.control_units.scrapers.game_scraper import GameScraper
+from utils.championships import championships
 
 
 class GameCollector:
-    def __init__(self, driver: LiveChromeDriver, league: str):
+    def __init__(self, driver: LiveChromeDriver, league: str, full_league_name: str):
         self.driver = driver
         self.league = league
+        self.full_league_name = full_league_name
         self.all_match_data = {}
 
         self.scraper = GameScraper(all_match_data=self.all_match_data)
@@ -85,7 +87,11 @@ class GameCollector:
             self.scraper.scrap_match_table_data(soup=soup)
             statistics_name = self.scraper.scrap_statistic_name(soup=soup)
 
-            self.validation_goal_data(statistics_name=statistics_name)
+            if self.full_league_name in championships:
+                self.validation_goal_data(statistics_name=statistics_name, threshold=7)
+            else:
+                self.validation_goal_data(statistics_name=statistics_name)
+
             for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
                 button.click()
                 self.refresh_page()

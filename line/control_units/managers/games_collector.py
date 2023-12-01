@@ -39,7 +39,10 @@ class AllGamesCollector:
                 for game_url in self.schedule_data[full_league_name]['match_url']:
                     self.driver.open_page(game_url)
                     try:
-                        game_manager = GameCollector(driver=self.driver, league=league)
+                        game_manager = GameCollector(
+                            driver=self.driver,
+                            league=league,
+                            full_league_name=full_league_name)
                     except AttributeError:
                         continue
                     try:
@@ -76,14 +79,14 @@ class AllGamesCollector:
                             continue
 
                         big_matrix = MatrixDataGenerator(league_data=league_data,
-                                                     big_data=game_manager.get_data,
-                                                     home_command_name=game_manager.get_data['home_command_name'],
-                                                     away_command_name=game_manager.get_data['away_command_name'])
-
-                        year_matrix = MatrixDataGenerator(league_data=league_data,
-                                                         big_data=last_year_data.all_match_data,
+                                                         big_data=game_manager.get_data,
                                                          home_command_name=game_manager.get_data['home_command_name'],
                                                          away_command_name=game_manager.get_data['away_command_name'])
+
+                        year_matrix = MatrixDataGenerator(league_data=league_data,
+                                                          big_data=last_year_data.all_match_data,
+                                                          home_command_name=game_manager.get_data['home_command_name'],
+                                                          away_command_name=game_manager.get_data['away_command_name'])
 
                         big_matrix_data = big_matrix.generate_matrix_data()
                         year_matrix_data = year_matrix.generate_matrix_data()

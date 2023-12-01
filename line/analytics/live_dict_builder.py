@@ -6,6 +6,7 @@ from line.analytics.struct2live import FromStructureToLiveDict
 from line.control_units.filters.structure_valid import ValidStructureFilter
 from utils.pickle_manager import PickleHandler
 from utils.error import LiveDictBuilderError, ValidStructureError
+from utils.championships import championships
 
 
 class LiveDictBuilder(FromDictToStructure):
@@ -24,15 +25,6 @@ class LiveDictBuilder(FromDictToStructure):
         self.telegram = telegram
         self.data_file_name = f"data/{schedule_data['date']}_AllGamesData.pkl"
         self.data = {'lst': []}
-        self.championships = [
-            'Europe: Champions League',
-            'Europe: Conference League',
-            'Europe: Champions League Women',
-            'Europe: UEFA Youth League',
-            'Europe: Europa League',
-            'Asia: AFC Champions League',
-            'Asia: AFC Cup'
-        ]
 
     def add_similar_commands_in_list(self,
                                      statistic_name,
@@ -142,31 +134,31 @@ class LiveDictBuilder(FromDictToStructure):
                         try:
                             structures = ValidStructureFilter(home_structure=home_structure,
                                                               away_structure=away_structure)
-                            if self.league_name in self.championships:
+                            if self.league_name in championships:
                                 structures.championship_valid_and_create()
                             else:
                                 structures.valid_and_create()
 
                             is_valid = live_data_manager.big_data_structures_validation(
-                                    home_structure=home_structure,
-                                    away_structure=away_structure)
+                                home_structure=home_structure,
+                                away_structure=away_structure)
                             if is_valid:
-                                    live_data_manager.calculate(
-                                        home_structure=home_structure,
-                                        away_structure=away_structure,
-                                        statistic_name=statistic_name)
+                                live_data_manager.calculate(
+                                    home_structure=home_structure,
+                                    away_structure=away_structure,
+                                    statistic_name=statistic_name)
 
                             compare = DataMetrics(
-                                    telegram=self.telegram,
-                                    home_structure=structures.home_structure,
-                                    away_structure=structures.away_structure,
-                                    big_match_data=self.big_match_data,
-                                    coefficients=self.coefficients,
-                                    statistic_name=statistic_name,
-                                    all_league_data=self.all_league_data,
-                                    referee_data=self.referee_data,
-                                    big_matrix_data=self.big_matrix_data,
-                                    year_matrix_data=self.year_matrix_data)
+                                telegram=self.telegram,
+                                home_structure=structures.home_structure,
+                                away_structure=structures.away_structure,
+                                big_match_data=self.big_match_data,
+                                coefficients=self.coefficients,
+                                statistic_name=statistic_name,
+                                all_league_data=self.all_league_data,
+                                referee_data=self.referee_data,
+                                big_matrix_data=self.big_matrix_data,
+                                year_matrix_data=self.year_matrix_data)
                             await compare.search(statistic_name=statistic_name, full_league_name=self.league_name)
 
 
