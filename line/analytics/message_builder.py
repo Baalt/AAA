@@ -106,7 +106,7 @@ ____Coeff: {self.coeff_value}
     
 Big Data: {self.big_data_kush_by_rate:3.2f} kush
 LastYear: {self.last_year_kush_by_rate:3.2f} kush
-__Similar:
+__Similar: {self.similar_kush_by_rate:3.2f} kush
 SimlLow: {self.similar_kush_by_rate_low:3.2f} kush
 SimiHigh: {self.similar_kush_by_rate_high:3.2f} kush
 _____L15: {self.last_20_kush_by_rate:3.2f} kush

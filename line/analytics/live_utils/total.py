@@ -2,7 +2,7 @@ from line.analytics.live_utils.core import BoundaryLiveValues
 
 
 class LiveTotalCalculation(BoundaryLiveValues):
-    def calculate_total_live_data(self, home_structure, away_structure, statistic_name, percent):
+    def calculate_total_live_data(self, home_structure, away_structure, percent):
         big_data_home_result = \
             self.total_calculation(seq=home_structure.big_data_total_current_home_in_home_away_games,
                                    percent=percent)
@@ -108,29 +108,4 @@ class LiveTotalCalculation(BoundaryLiveValues):
 
         under = self.over_under_define(seq=under_list, over_under='under')
         over = self.over_under_define(seq=over_list, over_under='over')
-        if statistic_name == 'ЖК' or statistic_name == 'Фолы':
-            print('i try to add referee data')
-            self.add_referee_data(statistic_name)
-            print('added data need check all_games_data ')
         return under, over
-
-    def add_referee_data(self, statistic_name):
-        try:
-            referee_15 = self.referee_data[statistic_name]['first_15_elements']
-            referee_all = self.referee_data[statistic_name]['all']
-            under_15, over_15 = self.total_calculation(seq=referee_15, percent=93)
-            under_all, over_all = self.total_calculation(seq=referee_all, percent=93)
-            if statistic_name == 'ЖК':
-                print(f'statistic_name ЖК? = {statistic_name}!')
-                self.main_data['yellow_reff_15_under'] = under_15
-                self.main_data['yellow_reff_15_over'] = over_15
-                self.main_data['yellow_reff_all_under'] = under_all
-                self.main_data['yellow_reff_all_over'] = over_all
-            elif statistic_name == 'Фолы':
-                print(f'statistic_name Фолы? = {statistic_name}!')
-                self.main_data['foul_reff_15_under'] = under_15
-                self.main_data['foul_reff_15_over'] = over_15
-                self.main_data['foul_reff_all_under'] = under_all
-                self.main_data['foul_reff_all_over'] = over_all
-        except KeyError:
-            print('add_referee_data() ')

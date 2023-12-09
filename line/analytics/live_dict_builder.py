@@ -134,32 +134,35 @@ class LiveDictBuilder(FromDictToStructure):
                         try:
                             structures = ValidStructureFilter(home_structure=home_structure,
                                                               away_structure=away_structure)
-                            if self.league_name in championships:
-                                structures.championship_valid_and_create()
-                            else:
+                            if self.league_name not in championships:
                                 structures.valid_and_create()
+                            else:
+                                structures.championship_valid_and_create()
 
-                            is_valid = live_data_manager.big_data_structures_validation(
-                                home_structure=home_structure,
-                                away_structure=away_structure)
-                            if is_valid:
-                                live_data_manager.calculate(
+                            if home_structure.last_20_games_total_current_home_by_year_in_home_away_games and \
+                                    away_structure.last_20_games_total_current_away_by_year_in_home_away_games:
+
+                                is_valid = live_data_manager.big_data_structures_validation(
                                     home_structure=home_structure,
-                                    away_structure=away_structure,
-                                    statistic_name=statistic_name)
+                                    away_structure=away_structure)
+                                if is_valid:
+                                    live_data_manager.calculate(
+                                        home_structure=home_structure,
+                                        away_structure=away_structure,
+                                        statistic_name=statistic_name)
 
-                            compare = DataMetrics(
-                                telegram=self.telegram,
-                                home_structure=structures.home_structure,
-                                away_structure=structures.away_structure,
-                                big_match_data=self.big_match_data,
-                                coefficients=self.coefficients,
-                                statistic_name=statistic_name,
-                                all_league_data=self.all_league_data,
-                                referee_data=self.referee_data,
-                                big_matrix_data=self.big_matrix_data,
-                                year_matrix_data=self.year_matrix_data)
-                            await compare.search(statistic_name=statistic_name, full_league_name=self.league_name)
+                                compare = DataMetrics(
+                                    telegram=self.telegram,
+                                    home_structure=structures.home_structure,
+                                    away_structure=structures.away_structure,
+                                    big_match_data=self.big_match_data,
+                                    coefficients=self.coefficients,
+                                    statistic_name=statistic_name,
+                                    all_league_data=self.all_league_data,
+                                    referee_data=self.referee_data,
+                                    big_matrix_data=self.big_matrix_data,
+                                    year_matrix_data=self.year_matrix_data)
+                                await compare.search(statistic_name=statistic_name, full_league_name=self.league_name)
 
 
                         except ValidStructureError as err:

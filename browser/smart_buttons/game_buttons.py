@@ -46,7 +46,7 @@ class SmartGameButtons:
 
             return current_league_home_command_button, current_league_away_command_button
 
-        except:
+        except Exception:
             try:
                 button_league = league.split()
                 if len(button_league) > 1:

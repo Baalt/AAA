@@ -32,4 +32,7 @@ if __name__ == '__main__':
     await collector.run()
     driver.close()
     all_games_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllGamesData.pkl")
+
     print('count of preparing game - ', len(all_games_data['lst']))
+    from pprint import pprint
+    pprint(all_games_data['lst'][-1])

@@ -34,8 +34,8 @@ class AllGamesCollector:
                 flag = True
             if ':' in full_league_name and flag:
                 flag = False
-                league = full_league_name.split(':')[-1].strip()
                 full_league_name = full_league_name.strip()
+                league = full_league_name.split(':')[-1].strip()
                 for game_url in self.schedule_data[full_league_name]['match_url']:
                     self.driver.open_page(game_url)
                     try:
