@@ -66,6 +66,8 @@ class LiveHandicapCalculation(BoundaryLiveValues):
             last_4_current_smart_handicap,
             last_4_opposing_smart_handicap
         ]
+
+        handicap_list = [var for var in handicap_list if var is not None]
         return self.handicap_define(seq=handicap_list)
 
     def calculate_handicap_2_live_data(self, home_structure, away_structure, percent):
@@ -132,4 +134,6 @@ class LiveHandicapCalculation(BoundaryLiveValues):
             last_4_current_smart_handicap,
             last_4_opposing_smart_handicap
         ]
+
+        handicap_list = [var for var in handicap_list if var is not None]
         return self.handicap_define(seq=handicap_list)

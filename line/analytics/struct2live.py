@@ -8,22 +8,17 @@ from utils.stat_switcher import stats_dict
 class FromStructureToLiveDict(LiveTotalCalculation,
                               LiveIndividualCalculation,
                               LiveHandicapCalculation):
-    def convert_statistic(self, statistic_name):
-        for key, value in stats_dict.items():
-            if statistic_name == value:
-                return key
 
     def add_referee_data(self, statistic_name):
         try:
-            referee_15 = self.referee_data[self.convert_statistic(statistic_name)]['first_15_elements']
-            referee_all = self.referee_data[self.convert_statistic(statistic_name)]['all']
+            referee_15 = self.referee_data[statistic_name]['first_15_elements']
+            referee_all = self.referee_data[statistic_name]['all']
             under_15, over_15 = self.total_calculation(seq=referee_15, percent=93)
             under_all, over_all = self.total_calculation(seq=referee_all, percent=93)
-            self.main_data[f'{statistic_name}_reff_15_under'] = under_15
-            self.main_data[f'{statistic_name}_reff_15_over'] = over_15
-            self.main_data[f'{statistic_name}_reff_all_under'] = under_all
-            self.main_data[f'{statistic_name}_reff_all_over'] = over_all
-
+            self.main_data[f'{stats_dict[statistic_name]}_reff_15_under'] = under_15
+            self.main_data[f'{stats_dict[statistic_name]}_reff_15_over'] = over_15
+            self.main_data[f'{stats_dict[statistic_name]}_reff_all_under'] = under_all
+            self.main_data[f'{stats_dict[statistic_name]}_reff_all_over'] = over_all
         except KeyError as e:
             print('FromStructureToLiveDict.add_referee_data()Error: ', e)
 
@@ -31,40 +26,41 @@ class FromStructureToLiveDict(LiveTotalCalculation,
                   home_structure: HomeDataStructure,
                   away_structure: AwayDataStructure,
                   statistic_name: str):
+        if self.big_data_structures_validation(home_structure=home_structure,
+                                               away_structure=away_structure):
+            if statistic_name in ['ЖК', 'Фолы']:
+                self.add_referee_data(statistic_name=statistic_name)
 
-        if statistic_name in stats_dict.keys():
-            statistic_name = stats_dict[statistic_name]
+            if statistic_name in stats_dict.keys():
+                statistic_name = stats_dict[statistic_name]
 
-        percent = self.percent_define(statistic_name=statistic_name)
-        total = self.calculate_total_live_data(home_structure=home_structure,
-                                               away_structure=away_structure,
-                                               percent=percent)
+                percent = self.percent_define(statistic_name=statistic_name)
+                total = self.calculate_total_live_data(home_structure=home_structure,
+                                                       away_structure=away_structure,
+                                                       percent=percent)
 
-        total_1 = self.calculate_individual_1_live_data(home_structure=home_structure,
-                                                        away_structure=away_structure,
-                                                        percent=percent)
-        total_2 = self.calculate_individual_2_live_data(home_structure=home_structure,
-                                                        away_structure=away_structure,
-                                                        percent=percent)
-        handicap_1 = self.calculate_handicap_1_live_data(home_structure=home_structure,
-                                                         away_structure=away_structure,
-                                                         percent=percent)
-        handicap_2 = self.calculate_handicap_2_live_data(home_structure=home_structure,
-                                                         away_structure=away_structure,
-                                                         percent=percent)
+                total_1 = self.calculate_individual_1_live_data(home_structure=home_structure,
+                                                                away_structure=away_structure,
+                                                                percent=percent)
+                total_2 = self.calculate_individual_2_live_data(home_structure=home_structure,
+                                                                away_structure=away_structure,
+                                                                percent=percent)
+                handicap_1 = self.calculate_handicap_1_live_data(home_structure=home_structure,
+                                                                 away_structure=away_structure,
+                                                                 percent=percent)
+                handicap_2 = self.calculate_handicap_2_live_data(home_structure=home_structure,
+                                                                 away_structure=away_structure,
+                                                                 percent=percent)
 
-        total_under, total_over = total
-        total_1_under, total_1_over = total_1
-        total_2_under, total_2_over = total_2
+                total_under, total_over = total
+                total_1_under, total_1_over = total_1
+                total_2_under, total_2_over = total_2
 
-        if statistic_name in ['yellow cards', 'fouls']:
-            self.add_referee_data(statistic_name=statistic_name)
-
-        self.add_live_data_to_dict(statistic_name=statistic_name,
-                                   total_under=total_under, total_over=total_over,
-                                   total_1_under=total_1_under, total_1_over=total_1_over,
-                                   total_2_under=total_2_under, total_2_over=total_2_over,
-                                   handicap_1=handicap_1, handicap_2=handicap_2)
+                self.add_live_data_to_dict(statistic_name=statistic_name,
+                                           total_under=total_under, total_over=total_over,
+                                           total_1_under=total_1_under, total_1_over=total_1_over,
+                                           total_2_under=total_2_under, total_2_over=total_2_over,
+                                           handicap_1=handicap_1, handicap_2=handicap_2)
 
     def add_live_data_to_dict(self, statistic_name,
                               total_under, total_over,
@@ -76,6 +72,8 @@ class FromStructureToLiveDict(LiveTotalCalculation,
                                       'TU_1': total_1_under, 'TO_1': total_1_over,
                                       'TU_2': total_2_under, 'TO_2': total_2_over,
                                       'H1': handicap_1, 'H2': handicap_2}}
+        if statistic_name == 'goals':
+            self.main_data['check'] = True
         self.main_data.update(live_dict)
 
     @property

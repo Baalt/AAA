@@ -16,29 +16,45 @@ class BoundaryLiveValues:
         self.big_matrix_data = big_matrix_data,
         self.year_matrix_data = year_matrix_data
         self.referee_data = referee_data
-
+        self.league = league
+        self.team1_name = team1_name
+        self.team2_name = team2_name
+        self.game_number = game_number
         try:
             if self.referee_data:
-                referee_name = self.referee_data['referee_name']
+                self.referee_name = self.referee_data['referee_name']
             else:
-                referee_name = None
+                self.referee_name = None
         except KeyError:
-            referee_name = None
+            self.referee_name = None
 
         self.main_data = {
-            'league': league,
-            'team1_name': team1_name,
-            'team2_name': team2_name,
-            'game_number': game_number,
+            'check': None,
+            'league': self.league,
+            'team1_name': self.team1_name,
+            'team2_name': self.team2_name,
+            'game_number': self.game_number,
             'big_matrix_data': self.big_matrix_data,
             'year_matrix_data': self.year_matrix_data,
-            'referee_name': referee_name,
+            'referee_name': self.referee_name,
+            'yellow cards_reff_15_over': None,
+            'yellow cards_reff_15_under': None,
+            'yellow cards_reff_all_over': None,
+            'yellow cards_reff_all_under': None,
+            'fouls_reff_15_over': None,
+            'fouls_reff_15_under': None,
+            'fouls_reff_all_over': None,
+            'fouls_reff_all_under': None
         }
 
     def total_calculation(self, seq: list, percent: int):
         total_under = None
         total_over = None
-        total_count = len(seq)
+        try:
+            total_count = len(seq)
+        except TypeError:
+            return None, None
+
 
         # Calculation for totals under a certain threshold
         if total_count:
@@ -90,22 +106,22 @@ class BoundaryLiveValues:
 
                 quantity_win = sum(win_counter.values())
 
-                total_count = len(current_seq)
+                try:
+                    total_count = len(current_seq)
+                except TypeError:
+                    return None
+
                 percent_current_seq_greater = round((quantity_win / total_count) * 100, 2)
                 if percent_current_seq_greater >= percent:
                     return search_total
 
     def over_under_define(self, seq: list, over_under: str):
-        for _ in seq:
-            if _ is None:
-                return None
-        if over_under == 'under':
-            return max(seq)
-        if over_under == 'over':
-            return min(seq)
+        if seq:
+            if over_under == 'under':
+                return max(seq)
+            elif over_under == 'over':
+                return min(seq)
 
     def handicap_define(self, seq: list):
-        for _ in seq:
-            if _ is None:
-                return None
-        return max(seq)
+        if seq:
+            return max(seq)

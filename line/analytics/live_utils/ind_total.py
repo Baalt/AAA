@@ -107,6 +107,8 @@ class LiveIndividualCalculation(BoundaryLiveValues):
             last_4_opposing_over,
         ]
 
+        under_list = [var for var in under_list if var is not None]
+        over_list = [var for var in over_list if var is not None]
         under = self.over_under_define(seq=under_list, over_under='under')
         over = self.over_under_define(seq=over_list, over_under='over')
         return under, over
@@ -216,6 +218,8 @@ class LiveIndividualCalculation(BoundaryLiveValues):
             last_4_opposing_over,
         ]
 
+        under_list = [var for var in under_list if var is not None]
+        over_list = [var for var in over_list if var is not None]
         under = self.over_under_define(seq=under_list, over_under='under')
         over = self.over_under_define(seq=over_list, over_under='over')
         return under, over

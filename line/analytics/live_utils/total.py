@@ -63,6 +63,7 @@ class LiveTotalCalculation(BoundaryLiveValues):
         h_similar_away_under, h_similar_away_over = high_similar_away_result
         l_similar_away_under, l_similar_away_over = low_similar_away_result
 
+
         last_20_home_under, last_20_home_over = last_20_home_result
         last_20_away_under, last_20_away_over = last_20_away_result
         last_12_home_under, last_12_home_over = last_12_home_result
@@ -105,7 +106,8 @@ class LiveTotalCalculation(BoundaryLiveValues):
                      last_8_away_over,
                      last_4_home_over,
                      last_4_away_over, ]
-
+        under_list = [var for var in under_list if var is not None]
+        over_list = [var for var in over_list if var is not None]
         under = self.over_under_define(seq=under_list, over_under='under')
         over = self.over_under_define(seq=over_list, over_under='over')
         return under, over

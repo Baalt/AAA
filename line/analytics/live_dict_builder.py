@@ -139,18 +139,13 @@ class LiveDictBuilder(FromDictToStructure):
                             else:
                                 structures.championship_valid_and_create()
 
+                            live_data_manager.calculate(
+                                home_structure=home_structure,
+                                away_structure=away_structure,
+                                statistic_name=statistic_name)
+
                             if home_structure.last_20_games_total_current_home_by_year_in_home_away_games and \
                                     away_structure.last_20_games_total_current_away_by_year_in_home_away_games:
-
-                                is_valid = live_data_manager.big_data_structures_validation(
-                                    home_structure=home_structure,
-                                    away_structure=away_structure)
-                                if is_valid:
-                                    live_data_manager.calculate(
-                                        home_structure=home_structure,
-                                        away_structure=away_structure,
-                                        statistic_name=statistic_name)
-
                                 compare = DataMetrics(
                                     telegram=self.telegram,
                                     home_structure=structures.home_structure,
@@ -178,7 +173,7 @@ class LiveDictBuilder(FromDictToStructure):
                         continue
 
             live_data = live_data_manager.get_data
-            if live_data:
+            if live_data['check']:
                 pickle_handler = PickleHandler()
                 self.load_data_from_file()
                 self.data['lst'].append(live_data)
