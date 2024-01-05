@@ -28,12 +28,11 @@ class AllGamesCollector:
         self.smart_live_data = {'lst': []}
 
     async def run(self):
-        flag = False
+        # flag = False
         for full_league_name in self.schedule_data:
-            if 'England: Premier League' in full_league_name:
-                flag = True
-            if ':' in full_league_name and flag:
-                flag = False
+            # if 'Saudi Arabia: Premier League' in full_league_name:
+            #     flag = True
+            if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
                 league = full_league_name.split(':')[-1].strip()
                 for game_url in self.schedule_data[full_league_name]['match_url']:
@@ -52,7 +51,8 @@ class AllGamesCollector:
 
                     try:
                         is_match_data = game_manager.get_match_data()
-                    except AttributeError:
+                    except (AttributeError, IndexError) as e:
+                        print('game_manager.get_match_data() ERROR: ', e)
                         continue
 
                     if is_match_data:

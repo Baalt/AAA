@@ -41,7 +41,7 @@ class AllLeaguesCollector:
         self.load_data_from_file()
         # flag = False
         for league_key, league_data in self.schedule_data.items():
-            # if 'Spain: La Liga' in league_key and flag:
+            # if 'International: Club Friendlies' in league_key:
             #     flag = True
             if league_key != 'date':
                 url = address + league_data['league_url']

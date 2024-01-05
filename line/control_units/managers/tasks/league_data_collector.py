@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.common import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 from bs4 import BeautifulSoup
 
@@ -48,10 +49,22 @@ class LeagueDataCollector:
                 self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
             except KeyError as err:
                 print('I try to catch League xG key err', err)
-
-        self.handle_button_and_soup('Ауты')
-        self.handle_button_and_soup('Удары от ворот')
-        self.handle_button_and_soup('Удары')
+        try:
+            self.handle_button_and_soup('Ауты')
+        except TimeoutException:
+            # self.click_anywhere_on_page()
+            self.refresh_page()
+            self.handle_button_and_soup('Ауты')
+        try:
+            self.handle_button_and_soup('Удары от ворот')
+        except TimeoutException:
+            self.refresh_page()
+            self.handle_button_and_soup('Удары от ворот')
+        try:
+            self.handle_button_and_soup('Удары')
+        except TimeoutException:
+            self.refresh_page()
+            self.handle_button_and_soup('Удары')
 
     def handle_button_and_soup(self, button_text: str) -> None:
         other_button = self.driver.buttons.get_other_button()
@@ -73,4 +86,3 @@ class LeagueDataCollector:
 
     def wait_for_elements(self) -> None:
         WebDriverWait(self.driver.driver, 5).until(EC.presence_of_all_elements_located((By.XPATH, '//*')))
-

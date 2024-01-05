@@ -40,6 +40,12 @@ class RefereeButtons:
         # Click the button
         button_element.click()
 
+    def click_all_league_button(self):
+        button = self.browser.find_element(
+            By.XPATH,
+            '//div[@id="refCompetitions"]/button[contains(text(), "Все")]')
+        button.click()
+
     def click_current_league_button(self, league: str):
         button = self.browser.find_element(
             By.XPATH,

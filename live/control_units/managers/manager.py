@@ -29,6 +29,11 @@ if __name__ == '__main__':
         except TimeoutException:
             continue
         print(f'number of scanned games {len(lv_smrt_dct.keys())}')
+        from pprint import pprint
+        for key in lv_smrt_dct:
+            pprint(lv_smrt_dct[key])
+            break
+        # pprint(lv_smrt_dct)
         operator = WebCrawler(driver=browser.get_driver(),
                               smart_data=lv_smrt_dct,
                               league_data=leagues_dct,

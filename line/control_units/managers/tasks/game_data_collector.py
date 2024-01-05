@@ -26,6 +26,8 @@ class GameCollector:
                 self.quantity_of_matches_fix_input_clicker = self.driver.buttons.quantity_of_matches_buttons
             self.season_home_button_all, \
                 self.season_away_button_all = self.driver.buttons.teams_season_buttons_all
+            self.clear_league_home_command_buttons, \
+                self.clear_league_away_command_buttons = self.driver.buttons.clear_league_command_buttons()
         except NoSuchElementException:
             raise AttributeError
 
@@ -49,6 +51,9 @@ class GameCollector:
 
         self.season_home_button_all.click()
         self.season_away_button_all.click()
+
+        self.clear_league_home_command_buttons.click()
+        self.clear_league_away_command_buttons.click()
 
         self.current_league_home_command_button.click()
         self.current_league_away_command_button.click()
@@ -107,10 +112,7 @@ class GameCollector:
         except IndexError as err:
             raise err
 
-            # print(
-            #     'GameCollectorError catch INDEX ERROR in address: '
-            #     'line/control_units/managers/games_collector/GameCollector.get_match_data()')
-            # return None
+
 
     def validation_goal_data(self, statistics_name, threshold=20):
         if not (len(self.all_match_data[statistics_name]['home_collections']) > threshold and len(

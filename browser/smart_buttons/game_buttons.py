@@ -32,6 +32,21 @@ class SmartGameButtons:
 
         return season_home_button_all, season_away_button_all
 
+    def all_league_command_buttons(self, num):
+        buttons = self.browser.find_elements(By.XPATH, f'(//div[@id="refCompetitions"])[{num}]/button')
+        return buttons
+
+    def clear_league_command_buttons(self):
+        CURRENT_HOME_LEAGUE_XPATH = f'(//div[@id="refCompetitions"])[1]' \
+                                    f'/button[contains(text(), "Все")]'
+        CURRENT_AWAY_LEAGUE_XPATH = f'(//div[@id="refCompetitions"])[2]' \
+                                    f'/button[contains(text(), "Все")]'
+        button_1 = self.browser.find_element(By.XPATH,
+                                             value=CURRENT_HOME_LEAGUE_XPATH)
+        button_2 = self.browser.find_element(By.XPATH,
+                                             value=CURRENT_AWAY_LEAGUE_XPATH)
+        return button_1, button_2
+
     def current_league_command_buttons(self, league: str):
         try:
             CURRENT_HOME_LEAGUE_XPATH = f'(//div[@id="refCompetitions"])[1]' \

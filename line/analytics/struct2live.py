@@ -19,7 +19,7 @@ class FromStructureToLiveDict(LiveTotalCalculation,
             self.main_data[f'{stats_dict[statistic_name]}_reff_15_over'] = over_15
             self.main_data[f'{stats_dict[statistic_name]}_reff_all_under'] = under_all
             self.main_data[f'{stats_dict[statistic_name]}_reff_all_over'] = over_all
-        except KeyError as e:
+        except (KeyError, TypeError) as e:
             print('FromStructureToLiveDict.add_referee_data()Error: ', e)
 
     def calculate(self,

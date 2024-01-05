@@ -40,6 +40,7 @@ class RefereeCollector:
 
     def filter_out(self):
         self.driver.buttons.filter_table_by_matches()
+        self.driver.buttons.click_all_league_button()
         self.driver.buttons.click_current_league_button(league=self.league)
         self.driver.buttons.click_all_season_button()
 

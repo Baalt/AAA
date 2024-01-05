@@ -33,3 +33,9 @@ if __name__ == '__main__':
     driver.close()
     all_games_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllGamesData.pkl")
     print('count of preparing game - ', len(all_games_data['lst']))
+
+    from pprint import pprint
+    all_league_data = PickleHandler().read_data(f"data/21.12_AllGamesData.pkl")
+    pprint(all_league_data)
+    for league in all_league_data:
+        print(league)
