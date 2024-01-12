@@ -49,22 +49,23 @@ class LeagueDataCollector:
                 self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
             except KeyError as err:
                 print('I try to catch League xG key err', err)
-        try:
-            self.handle_button_and_soup('Ауты')
-        except TimeoutException:
-            # self.click_anywhere_on_page()
-            self.refresh_page()
-            self.handle_button_and_soup('Ауты')
-        try:
-            self.handle_button_and_soup('Удары от ворот')
-        except TimeoutException:
-            self.refresh_page()
-            self.handle_button_and_soup('Удары от ворот')
-        try:
-            self.handle_button_and_soup('Удары')
-        except TimeoutException:
-            self.refresh_page()
-            self.handle_button_and_soup('Удары')
+            break
+        # try:
+        #     self.handle_button_and_soup('Ауты')
+        # except TimeoutException:
+        #     # self.click_anywhere_on_page()
+        #     self.refresh_page()
+        #     self.handle_button_and_soup('Ауты')
+        # try:
+        #     self.handle_button_and_soup('Удары от ворот')
+        # except TimeoutException:
+        #     self.refresh_page()
+        #     self.handle_button_and_soup('Удары от ворот')
+        # try:
+        #     self.handle_button_and_soup('Удары')
+        # except TimeoutException:
+        #     self.refresh_page()
+        #     self.handle_button_and_soup('Удары')
 
     def handle_button_and_soup(self, button_text: str) -> None:
         other_button = self.driver.buttons.get_other_button()

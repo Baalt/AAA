@@ -20,4 +20,4 @@ if __name__ == '__main__':
     coeff_1 = input('big_chance_coeff: ')
     coeff_2 = input('small_chance_coeff: ')
     coeff_1, coeff_2, = float(coeff_1), float(coeff_2)
-    calculate_bets_and_coeff(coeff_1=coeff_1, coeff_2=coeff_2, bet_1='big_chance', bet_2='small_chance', rate=5000)
+    calculate_bets_and_coeff(coeff_1=coeff_1, coeff_2=coeff_2, bet_1='big_chance', bet_2='small_chance', rate=1000)

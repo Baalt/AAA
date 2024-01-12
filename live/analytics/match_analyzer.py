@@ -46,7 +46,8 @@ class SmartLiveCompare():
                     print('self.smart_dataError', err)
                     continue
 
-                if statistic == 'fouls' and self.live_data['red cards']:
+                if (statistic == 'yellow cards' or statistic == 'fouls') and (
+                        self.live_data['red cards'] and self.smart_data['smart_data']['check']):
                     await self.red_card_rate_checker(statistic=statistic)
 
                 await self.__search_total(statistic=statistic,
@@ -84,17 +85,6 @@ class SmartLiveCompare():
                                              handicap=handicap_2,
                                              rate_direction='handicap_2',
                                              key_handicap='H2')
-
-    async def red_card_rate_checker(self, statistic):
-        if self.live_data['red cards'] != '0:0':
-            info = RedCardInfo(
-                live_data=self.live_data,
-                smart_data=self.smart_data,
-                statistic_name=statistic)
-            message = '\n'.join([info.get_game_info(), info.get_correction_key()])
-            print(message)
-            await self.telegram.send_message_with_files(message, *self.files)
-            self.close_bet(key=info.get_correction_key(), red_card=True)
 
     async def __search_total(self, statistic, statistic_key,
                              total_under, total_over,
@@ -254,6 +244,39 @@ class SmartLiveCompare():
                                       bet_direction=rate_direction,
                                       season='previous_season')
         time.sleep(3)
+
+    def __short_plot_graphs(self):
+        self.delete_files_in_folder(folder_path='graph/data')
+        MatchStatsVisualizer(data=self.live_data['match_stats']).plot_bar_chart()
+        current_viz = TeamsStatsVisualizer(
+            data=self.league_data[self.smart_data['smart_data']['league']]['current_season'],
+            team_name_1=self.smart_data['smart_data']['team1_name'],
+            team_name_2=self.smart_data['smart_data']['team2_name'])
+        current_viz.plot_points(
+            data_lst=self.league_data[self.smart_data['smart_data']['league']]['current_season']['goals'],
+            season='current_season')
+        previous_viz = TeamsStatsVisualizer(
+            data=self.league_data[self.smart_data['smart_data']['league']]['previous_season'],
+            team_name_1=self.smart_data['smart_data']['team1_name'],
+            team_name_2=self.smart_data['smart_data']['team2_name'])
+        previous_viz.plot_points(
+            data_lst=self.league_data[self.smart_data['smart_data']['league']]['previous_season']['goals'],
+            season='previous_season')
+        # current_viz.plot_team_stats(stat_key=statistic, season='current_season', sort_by='avg_individual_team')
+        # previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
+        time.sleep(3)
+
+    async def red_card_rate_checker(self, statistic):
+        if self.live_data['red cards'] != '0:0':
+            self.__short_plot_graphs()
+            info = RedCardInfo(
+                live_data=self.live_data,
+                smart_data=self.smart_data,
+                statistic_name=statistic)
+            message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+            print(message)
+            await self.telegram.send_message_with_files(message, *self.files[:3])
+            self.close_bet(key=info.get_correction_key(), red_card=True)
 
     def delete_files_in_folder(self, folder_path):
         """

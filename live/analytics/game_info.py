@@ -46,7 +46,7 @@ class RedCardInfo:
         self.statistic_name = statistic_name
 
     def get_correction_key(self):
-        return f"\n{self.smart_data['smart_data']['game_number']}➠red_card➠"
+        return f"\n{self.smart_data['smart_data']['game_number']}➠check➠"
 
     def get_game_info(self):
         try:
@@ -65,7 +65,8 @@ ST: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data
 
     Statistic Name: {self.statistic_name}
 RECEIVED A RED CARD IN THE MATCH!!!
-TAKE A FOULS HANDICAP ON A TEAM WHICH DID NOT RECEIVE A RED CARD!"""
+TAKE A +YELLOW CARDS HANDICAP ON A TEAM WHICH DID NOT RECEIVE A RED CARD!
+TAKE A FOULS UNDER LIKE OPTION!"""
         except KeyError as e:
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
             return None

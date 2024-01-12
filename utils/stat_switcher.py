@@ -9,3 +9,29 @@ stats_dict = {
     'Удары от ворот': 'goal kicks',
     'Удары': 'shots',
 }
+
+exclude_list = [
+    'union',
+    'united',
+    'town',
+    'hapoel',
+    'city',
+    'county',
+    'olympique',
+    'west',
+    'deportivo',
+    'maccabi',
+    'port',
+    'santa',
+    'rovers',
+    'central',
+    'sport',
+    'nicosia',
+    'wanderers',
+    'kings',
+    'borac',
+    'south',
+    'atletico',
+    'saint',
+    'moscow'
+]

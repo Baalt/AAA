@@ -10,10 +10,9 @@ class BoundaryLiveValues:
                  game_number: str,
                  referee_data: dict,
                  big_matrix_data,
-                 year_matrix_data,
-                 ):
+                 year_matrix_data):
 
-        self.big_matrix_data = big_matrix_data,
+        self.big_matrix_data = big_matrix_data
         self.year_matrix_data = year_matrix_data
         self.referee_data = referee_data
         self.league = league
