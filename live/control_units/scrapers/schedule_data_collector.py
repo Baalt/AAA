@@ -17,4 +17,4 @@ class LiveScheduleScraper:
         return commands_dict
 
     def is_valid_name(self, name):
-        return '(' not in name and ')' not in name and not re.search('U\d\d', name)
+        return '(' not in name and not re.search('U\d\d', name)

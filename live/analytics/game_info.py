@@ -40,10 +40,58 @@ ST: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data
 
 
 class RedCardInfo:
-    def __init__(self, live_data, smart_data, statistic_name: str):
+    def __init__(self, live_data, yellow_cards, fouls):
+        self.live_data = live_data
+        self.yellow_cards = yellow_cards
+        self.fouls = fouls
+
+    def get_game_info(self):
+        try:
+            return f"""
+########## LIVE ##########
+ 
+LL: {self.live_data['league']}
+LT: {self.live_data['team1_name']} - {self.live_data['team2_name']}
+
+                      TIME: {self.live_data['match_time']}
+                  SCORE: {self.live_data['match_score']}
+         RED CARDS: {self.live_data['red cards']}
+
+      Yellow Cards: {self.yellow_cards}
+             Fouls: {self.fouls}         
+        """
+        except KeyError as e:
+            print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
+            return None
+
+    def get_yellow_handicap_info(self, live_handicap, coeff):
+        try:
+            return f"""
+########## LIVE ##########
+
+LL: {self.live_data['league']}
+LT: {self.live_data['team1_name']} - {self.live_data['team2_name']}
+
+                      TIME: {self.live_data['match_time']}
+                  SCORE: {self.live_data['match_score']}
+         RED CARDS: {self.live_data['red cards']}
+
+      Yellow Cards: {self.yellow_cards}
+             Fouls: {self.fouls}
+
+   Yellow Handicap: {live_handicap}
+      Yellow Coeff: {coeff}
+        """
+        except KeyError as e:
+            print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
+            return None
+
+
+class SmartRedCardInfo(RedCardInfo):
+    def __init__(self, live_data, smart_data, yellow_cards, fouls):
+        super().__init__(live_data, yellow_cards, fouls)
         self.live_data = live_data
         self.smart_data = smart_data
-        self.statistic_name = statistic_name
 
     def get_correction_key(self):
         return f"\n{self.smart_data['smart_data']['game_number']}➠check➠"
@@ -63,10 +111,9 @@ ST: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data
                   SCORE: {self.live_data['match_score']}
          RED CARDS: {self.live_data['red cards']}
 
-    Statistic Name: {self.statistic_name}
-RECEIVED A RED CARD IN THE MATCH!!!
-TAKE A +YELLOW CARDS HANDICAP ON A TEAM WHICH DID NOT RECEIVE A RED CARD!
-TAKE A FOULS UNDER LIKE OPTION!"""
+      Yellow Cards: {self.yellow_cards}
+             Fouls: {self.fouls}
+"""
         except KeyError as e:
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
             return None

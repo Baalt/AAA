@@ -5,5 +5,10 @@ class LiveDictBuilderError(Exception):
 class ValidStructureError(Exception):
     pass
 
+
 class HandicapNotMatchSeqError(Exception):
+    pass
+
+
+class ContinueError(Exception):
     pass

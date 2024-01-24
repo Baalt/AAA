@@ -2,7 +2,7 @@ import os
 import time
 
 from graph.matrix_stats_viz import ScatterPlotBuilder
-from live.analytics.game_info import GameInfo, RedCardInfo
+from live.analytics.game_info import GameInfo, RedCardInfo, SmartRedCardInfo
 from telega.telegram_bot import TelegramBot
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
@@ -12,13 +12,70 @@ from graph.match_stats_viz import MatchStatsVisualizer
 from graph.teams_stats_viz import TeamsStatsVisualizer
 
 
-class SmartLiveCompare():
+class RedLiveCompare:
+    def __init__(self, live_data: dict, telegram: TelegramBot, excluded_red_games: list, game_key: str):
+        self.live_data = live_data
+        self.telegram = telegram
+        self.excluded_red_games = excluded_red_games
+        self.game_key = game_key
+        self.is_yellow_cards = True if 'yellow cards' in self.live_data else None
+        self.is_fouls = True if 'fouls' in self.live_data else None
+
+    async def compare(self):
+        if (self.is_yellow_cards or self.is_fouls) and self.live_data['red cards']:
+            await self.red_card_checker()
+
+        if self.is_yellow_cards:
+            await self.yellow_card_handicap_checker(handicap_key='H1')
+            await self.yellow_card_handicap_checker(handicap_key='H2')
+
+    async def yellow_card_handicap_checker(self, handicap_key):
+        if self.is_yellow_cards:
+            try:
+                coeff_box = self.live_data['yellow cards'][handicap_key]
+            except KeyError as e:
+                # print('SmartLiveCompare.search_handicap_engine coeff_box error: ', e)
+                return
+
+            for coeff_set in coeff_box:
+                try:
+                    live_handicap = float(coeff_set['total_number'])
+                    coeff = float(coeff_set['coefficient'])
+                except (KeyError, ValueError) as e:
+                    print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
+                    continue
+                if live_handicap > 3.6:
+                    info = RedCardInfo(
+                        live_data=self.live_data,
+                        yellow_cards=self.is_yellow_cards,
+                        fouls=self.is_fouls)
+                    message = info.get_yellow_handicap_info(live_handicap=live_handicap, coeff=coeff)
+                    print(message)
+                    await self.telegram.send_message_with_files(message)
+                    self.excluded_red_games.append(self.game_key)
+
+
+
+    async def red_card_checker(self):
+        if self.live_data['red cards'] != '0:0':
+            info = RedCardInfo(
+                live_data=self.live_data,
+                yellow_cards=self.is_yellow_cards,
+                fouls=self.is_fouls)
+            message = info.get_game_info()
+            print(message)
+            await self.telegram.send_message_with_files(message)
+            self.excluded_red_games.append(self.game_key)
+
+
+class SmartLiveCompare:
     def __init__(self, smart_data: dict, live_data: dict, league_data: dict, telegram: TelegramBot):
         self.smart_data = smart_data
         self.live_data = live_data
         self.league_data = league_data
         self.telegram = telegram
-
+        self.is_yellow_cards = True if 'yellow cards' in self.live_data else None
+        self.is_fouls = True if 'fouls' in self.live_data else None
         self.files = [
             "graph/data/live_stats.png",
             "graph/data/current_season_points.png",
@@ -30,6 +87,11 @@ class SmartLiveCompare():
         ]
 
     async def compare(self):
+        if self.is_yellow_cards or self.is_fouls:
+            if self.live_data['red cards'] and self.smart_data['smart_data']['check']:
+                await self.red_card_rate_checker(yellow_cards=self.is_yellow_cards,
+                                                 fouls=self.is_fouls)
+
         for statistic in self.live_data:
             if statistic in stats_dict.values():
                 try:
@@ -42,13 +104,9 @@ class SmartLiveCompare():
                     total_2_over = smart_dct['TO_2']
                     handicap_1 = smart_dct['H1']
                     handicap_2 = smart_dct['H2']
-                except KeyError as err:
-                    print('self.smart_dataError', err)
+                except KeyError:
+                    # print('self.smart_dataError', err)
                     continue
-
-                if (statistic == 'yellow cards' or statistic == 'fouls') and (
-                        self.live_data['red cards'] and self.smart_data['smart_data']['check']):
-                    await self.red_card_rate_checker(statistic=statistic)
 
                 await self.__search_total(statistic=statistic,
                                           statistic_key='totals',
@@ -124,33 +182,33 @@ class SmartLiveCompare():
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_bet(key=info.get_correction_key())
 
-                try:
-                    coeff_over = float(coeff_set['coefficient_over'])
-                except KeyError as e:
-                    print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
-                    continue
-
-                if total_over:
-                    if not isinstance(total_over, float):
-                        total_over = float(total_over)
-                    if live_total <= total_over and coeff_over > 1.7:
-                        full_rate_direction = rate_direction + '_over'
-                        info = GameInfo(
-                            live_data=self.live_data,
-                            smart_data=self.smart_data,
-                            statistic_name=statistic,
-                            rate_direction=full_rate_direction,
-                            live_total=live_total,
-                            live_coeff=coeff_over,
-                            smart_total=total_over,
-                            key=key_over)
-                        self.__plot_graphs(statistic=statistic,
-                                           live_total=live_total,
-                                           rate_direction=key_over)
-                        message = '\n'.join([info.get_game_info(), info.get_correction_key()])
-                        print(message)
-                        await self.telegram.send_message_with_files(message, *self.files)
-                        self.close_bet(key=info.get_correction_key())
+                # try:
+                #     coeff_over = float(coeff_set['coefficient_over'])
+                # except KeyError as e:
+                #     print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
+                #     continue
+                #
+                # if total_over:
+                #     if not isinstance(total_over, float):
+                #         total_over = float(total_over)
+                #     if live_total <= total_over and coeff_over > 1.7:
+                #         full_rate_direction = rate_direction + '_over'
+                #         info = GameInfo(
+                #             live_data=self.live_data,
+                #             smart_data=self.smart_data,
+                #             statistic_name=statistic,
+                #             rate_direction=full_rate_direction,
+                #             live_total=live_total,
+                #             live_coeff=coeff_over,
+                #             smart_total=total_over,
+                #             key=key_over)
+                #         self.__plot_graphs(statistic=statistic,
+                #                            live_total=live_total,
+                #                            rate_direction=key_over)
+                #         message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                #         print(message)
+                #         await self.telegram.send_message_with_files(message, *self.files)
+                #         self.close_bet(key=info.get_correction_key())
 
     async def __search_handicap(self, statistic, statistic_key, handicap, rate_direction, key_handicap):
         try:
@@ -188,7 +246,7 @@ class SmartLiveCompare():
                     await self.telegram.send_message_with_files(message, *self.files)
                     self.close_bet(key=info.get_correction_key())
 
-                elif statistic == 'yellow cards' and live_handicap > 3 and coeff > 1.65:
+                elif statistic == 'yellow cards' and live_handicap >= 4:
                     info = GameInfo(
                         live_data=self.live_data,
                         smart_data=self.smart_data,
@@ -266,13 +324,14 @@ class SmartLiveCompare():
         # previous_viz.plot_team_stats(stat_key=statistic, season='previous_season', sort_by='avg_individual_team')
         time.sleep(3)
 
-    async def red_card_rate_checker(self, statistic):
+    async def red_card_rate_checker(self, yellow_cards, fouls):
         if self.live_data['red cards'] != '0:0':
             self.__short_plot_graphs()
-            info = RedCardInfo(
+            info = SmartRedCardInfo(
                 live_data=self.live_data,
                 smart_data=self.smart_data,
-                statistic_name=statistic)
+                yellow_cards=yellow_cards,
+                fouls=fouls)
             message = '\n'.join([info.get_game_info(), info.get_correction_key()])
             print(message)
             await self.telegram.send_message_with_files(message, *self.files[:3])
