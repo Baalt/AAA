@@ -26,35 +26,31 @@ class RedLiveCompare:
             await self.red_card_checker()
 
         if self.is_yellow_cards:
-            await self.yellow_card_handicap_checker(handicap_key='H1')
-            await self.yellow_card_handicap_checker(handicap_key='H2')
+            await self.yellow_card_handicap_checker(handicap_key='team1_handicaps')
+            await self.yellow_card_handicap_checker(handicap_key='team2_handicaps')
 
     async def yellow_card_handicap_checker(self, handicap_key):
-        if self.is_yellow_cards:
+        try:
+            coeff_box = self.live_data['yellow cards'][handicap_key]
+        except KeyError:
+            return
+
+        for coeff_set in coeff_box:
             try:
-                coeff_box = self.live_data['yellow cards'][handicap_key]
-            except KeyError as e:
-                # print('SmartLiveCompare.search_handicap_engine coeff_box error: ', e)
-                return
-
-            for coeff_set in coeff_box:
-                try:
-                    live_handicap = float(coeff_set['total_number'])
-                    coeff = float(coeff_set['coefficient'])
-                except (KeyError, ValueError) as e:
-                    print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
-                    continue
-                if live_handicap > 3.6:
-                    info = RedCardInfo(
-                        live_data=self.live_data,
-                        yellow_cards=self.is_yellow_cards,
-                        fouls=self.is_fouls)
-                    message = info.get_yellow_handicap_info(live_handicap=live_handicap, coeff=coeff)
-                    print(message)
-                    await self.telegram.send_message_with_files(message)
-                    self.excluded_red_games.append(self.game_key)
-
-
+                live_handicap = float(coeff_set['total_number'])
+                coeff = float(coeff_set['coefficient'])
+            except (KeyError, ValueError) as e:
+                print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
+                continue
+            if live_handicap > 3.6:
+                info = RedCardInfo(
+                    live_data=self.live_data,
+                    yellow_cards=self.is_yellow_cards,
+                    fouls=self.is_fouls)
+                message = info.get_yellow_handicap_info(live_handicap=live_handicap, coeff=coeff)
+                print(message)
+                await self.telegram.send_message_with_files(message)
+                self.excluded_red_games.append(self.game_key)
 
     async def red_card_checker(self):
         if self.live_data['red cards'] != '0:0':

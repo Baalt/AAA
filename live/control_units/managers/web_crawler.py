@@ -27,7 +27,6 @@ class WebCrawler:
 
     async def run_crawler(self):
         start_time = time.time()
-        # await self.click_filter_games()
         await self.click_all_games()
         end_time = time.time()
         elapsed_time = end_time - start_time
