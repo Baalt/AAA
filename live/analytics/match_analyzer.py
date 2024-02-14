@@ -13,19 +13,24 @@ from graph.teams_stats_viz import TeamsStatsVisualizer
 
 
 class RedLiveCompare:
-    def __init__(self, live_data: dict, telegram: TelegramBot, excluded_red_games: list, game_key: str):
+    def __init__(self, live_data: dict, line_data: dict, telegram: TelegramBot, excluded_games: dict, game_key: str):
         self.live_data = live_data
+        self.line_data = line_data
         self.telegram = telegram
-        self.excluded_red_games = excluded_red_games
+        self.excluded_games = excluded_games
         self.game_key = game_key
         self.is_yellow_cards = True if 'yellow cards' in self.live_data else None
         self.is_fouls = True if 'fouls' in self.live_data else None
 
     async def compare(self):
-        if (self.is_yellow_cards or self.is_fouls) and self.live_data['red cards']:
-            await self.red_card_checker()
+        if self.live_data['red cards'] != '0:0':
+            if self.is_fouls and self.excluded_games[self.game_key]['red_foul']:
+                await self.red_card_foul_checker()
 
-        if self.is_yellow_cards:
+            if self.is_yellow_cards and self.excluded_games[self.game_key]['red_yellow']:
+                await  self.red_card_yellows_checker()
+
+        if self.is_yellow_cards and self.excluded_games[self.game_key]['hand_yellow']:
             await self.yellow_card_handicap_checker(handicap_key='team1_handicaps')
             await self.yellow_card_handicap_checker(handicap_key='team2_handicaps')
 
@@ -50,18 +55,81 @@ class RedLiveCompare:
                 message = info.get_yellow_handicap_info(live_handicap=live_handicap, coeff=coeff)
                 print(message)
                 await self.telegram.send_message_with_files(message)
-                self.excluded_red_games.append(self.game_key)
+                self.excluded_games[self.game_key]['hand_yellow'] = None
 
-    async def red_card_checker(self):
-        if self.live_data['red cards'] != '0:0':
+    async def red_card_yellows_checker(self):
+        hand_1, hand_2 = self.get_max_yellows_handicap()
+        try:
+            red_1, red_2 = self.live_data['red cards'].split(':')
+        except ValueError:
+            red_1, red_2 = self.live_data['red cards'].split('-')
+
+        if red_1 != '0' and hand_2 and hand_2 > 1.9:
             info = RedCardInfo(
                 live_data=self.live_data,
                 yellow_cards=self.is_yellow_cards,
-                fouls=self.is_fouls)
+                fouls=self.is_fouls,
+                yellow_handicap=hand_2)
             message = info.get_game_info()
             print(message)
             await self.telegram.send_message_with_files(message)
-            self.excluded_red_games.append(self.game_key)
+            self.excluded_games[self.game_key]['red_yellow'] = None
+
+        elif red_2 != '0' and hand_1 and hand_1 > 1.9:
+            info = RedCardInfo(
+                live_data=self.live_data,
+                yellow_cards=self.is_yellow_cards,
+                fouls=self.is_fouls,
+                yellow_handicap=hand_1)
+            message = info.get_game_info()
+            print(message)
+            await self.telegram.send_message_with_files(message)
+            self.excluded_games[self.game_key]['red_yellow'] = None
+
+    async def red_card_foul_checker(self):
+        min_foul_line_total = self.get_min_line_total()
+        max_foul_live_total = self.get_max_live_total()
+        print(self.game_key, 'игра чекается по фолам - лайн и лайв тотал =', min_foul_line_total, max_foul_live_total)
+        if min_foul_line_total and max_foul_live_total and max_foul_live_total >= min_foul_line_total:
+            info = RedCardInfo(
+                live_data=self.live_data,
+                yellow_cards=self.is_yellow_cards,
+                fouls=self.is_fouls,
+                foul_line_total=min_foul_line_total,
+                foul_live_total=max_foul_live_total)
+            message = info.get_game_info()
+            print(message)
+            await self.telegram.send_message_with_files(message)
+            self.excluded_games[self.game_key]['red_foul'] = None
+
+    def get_min_line_total(self):
+        try:
+            total_list = [float(data['total_number']) for data in self.line_data[self.game_key]['fouls']['totals']]
+            print('line_total', min(total_list))
+            return min(total_list) if total_list else None
+        except KeyError:
+            print('LINE_DATA_DONT_HAVE_A_FOUL_DATA for', self.game_key)
+
+    def get_max_live_total(self):
+        try:
+            live_list = [float(data['total_number']) for data in self.live_data['fouls']['totals']]
+            print('line_total', min(live_list))
+            return max(live_list) if live_list else None
+        except KeyError:
+            pass
+
+    def get_max_yellows_handicap(self):
+        try:
+            hand_1_list = [float(data['total_number']) for data in self.live_data['yellow cards']['team1_handicaps']]
+            handicap_1 = max(hand_1_list) if hand_1_list else None
+        except KeyError:
+            handicap_1 = None
+        try:
+            hand_2_list = [float(data['total_number']) for data in self.live_data['yellow cards']['team2_handicaps']]
+            handicap_2 = max(hand_2_list) if hand_2_list else None
+        except KeyError:
+            handicap_2 = None
+        return handicap_1, handicap_2
 
 
 class SmartLiveCompare:

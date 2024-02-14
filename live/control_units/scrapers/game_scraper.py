@@ -6,7 +6,7 @@ class RealTimeGameScraper:
     keys = {
         'goals': {
             'total_text': 'Total goals',
-            'team_total_text': 'Team totals goals',
+            'team_total_text': 'Team total goals',
             'handicap_text': 'Handicap',
         },
         'corners': {
@@ -65,6 +65,14 @@ class RealTimeGameScraper:
         # Get team names
         team1_name = soup.select_one('.team1--3LWqC1 .ev-team__name--6W4ZZS').text
         team2_name = soup.select_one('.team2--4SM4BI .ev-team__name--6W4ZZS').text
+        self.game_info['team1_name'] = team1_name
+        self.game_info['team2_name'] = team2_name
+        return f"{team1_name}{separator}{team2_name}"
+
+    def scrape_line_team_names(self, soup: BeautifulSoup, separator=' — '):
+        # Get team names
+        team1_name = soup.select_one('.team-statistic-1--krP2Db .ev-team__name--6W4ZZS').text
+        team2_name = soup.select_one('.team-statistic-2--3q4zZu .ev-team__name--6W4ZZS').text
         self.game_info['team1_name'] = team1_name
         self.game_info['team2_name'] = team2_name
         return f"{team1_name}{separator}{team2_name}"

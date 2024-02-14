@@ -20,7 +20,7 @@ class LiveGameButtons:
             if button:
                 return True
         except NoSuchElementException:
-            return False
+            return
 
     def get_stats_button(
             self,

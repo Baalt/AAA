@@ -16,14 +16,15 @@ from utils.error import ContinueError
 
 
 class WebCrawler:
-    def __init__(self, driver: LiveChromeDriver, smart_data: dict, league_data: dict, tel, excluded_red_games):
+    def __init__(self, driver: LiveChromeDriver, smart_data: dict, league_data: dict,
+                 line_data: dict, tel):
         self.driver = driver
         self.smart_data = smart_data
         self.league_data = league_data
+        self.line_data = line_data
         self.tel = tel
         self.first_time_scanned = True
-        self.games_keys = []
-        self.excluded_red_games = excluded_red_games
+        self.excluded_games = {}
 
     async def run_crawler(self):
         start_time = time.time()
@@ -52,11 +53,11 @@ class WebCrawler:
                             await self.stats_filter(key=key, first_time=True)
                         except (ContinueError, KeyError):
                             continue
-            print(f'number of scanned free games {len(self.games_keys)}')
+            print(f'number of scanned free games {len(self.excluded_games)}')
             self.first_time_scanned = None
         else:
             await self.click_filter_games(keys=self.smart_data, smart=True)
-            await self.click_filter_games(keys=self.games_keys)
+            await self.click_filter_games(keys=self.excluded_games)
 
     async def click_filter_games(self, keys, smart=None):
         for key in keys:
@@ -65,7 +66,7 @@ class WebCrawler:
                 continue
             if smart:
                 self.wait_for_elements()
-                # time.sleep(0.5)
+                time.sleep(0.5)
                 self.scraper = RealTimeGameScraper()
                 if self.driver.buttons.is_match_button_clicked():
                     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
@@ -125,6 +126,7 @@ class WebCrawler:
                 stats_button.click()
             except StaleElementReferenceException:
                 raise ContinueError
+            time.sleep(0.5)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             if not smart:
                 self.scrape_team_names(soup=soup)
@@ -138,13 +140,19 @@ class WebCrawler:
                 raise ContinueError
 
             live_data = self.scraper.get_game_info()
-            if ('yellow cards' in live_data or 'fouls' in live_data) and key not in self.excluded_red_games:
-                await RedLiveCompare(live_data=live_data,
-                                     telegram=self.tel,
-                                     excluded_red_games=self.excluded_red_games,
-                                     game_key=key).compare()
+            if 'yellow cards' in live_data or 'fouls' in live_data:
                 if first_time:
-                    self.games_keys.append(key)
+                    self.excluded_games[key] = {
+                        'red_foul': True,
+                        'red_yellow': True,
+                        'hand_yellow': True
+                    }
+                await RedLiveCompare(live_data=live_data,
+                                     line_data=self.line_data,
+                                     telegram=self.tel,
+                                     excluded_games=self.excluded_games,
+                                     game_key=key).compare()
+
             if smart:
                 await SmartLiveCompare(smart_data=self.smart_data[key],
                                        live_data=live_data,

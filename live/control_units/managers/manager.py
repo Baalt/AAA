@@ -5,7 +5,8 @@ from telegram.error import NetworkError
 
 from browser.browser import LiveChromeDriver
 from live.control_units.managers.schedule import ScheduleManager
-from live.control_units.managers.tasks.main_operations import BrowserPreparer
+from live.control_units.managers.tasks.line_collector import GameDataCollector
+from live.control_units.managers.tasks.main_operations import BrowserPreparer, FootballMenuHandler
 from live.control_units.managers.web_crawler import WebCrawler
 from telega.telegram_bot import TelegramBot
 from telega import config
@@ -15,6 +16,19 @@ from config_smrt import LIVE_SOURCE
 
 if __name__ == '__main__':
     driver = LiveChromeDriver()
+    try:
+        line_data = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLineData.pkl')
+    except FileNotFoundError:
+        line_data = {}
+        browser = BrowserPreparer(driver=driver)
+        browser.open_page(url='https://www.fon.bet/sports/?mode=1')
+        browser.switch_language()
+        controller = FootballMenuHandler(driver=browser.browser)
+        controller.open_main_football_menu()
+        controller.open_full_leagues_list()
+        controller.open_all_football_leagues()
+        GameDataCollector(driver=driver).collect()
+        driver.close()
     browser = BrowserPreparer(driver=driver)
     browser.open_page()
     browser.switch_language()
@@ -37,8 +51,8 @@ if __name__ == '__main__':
         operator = WebCrawler(driver=browser.get_driver(),
                               smart_data=lv_smrt_dct,
                               league_data=leagues_dct,
-                              tel=tel,
-                              excluded_red_games=excluded_red_games)
+                              line_data=line_data,
+                              tel=tel)
         while now_plus_delta > now:
             await operator.run_crawler()
             try:

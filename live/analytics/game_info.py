@@ -40,10 +40,14 @@ ST: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data
 
 
 class RedCardInfo:
-    def __init__(self, live_data, yellow_cards, fouls):
+    def __init__(self, live_data, yellow_cards, fouls,
+                 yellow_handicap=None, foul_line_total=None, foul_live_total=None):
         self.live_data = live_data
         self.yellow_cards = yellow_cards
         self.fouls = fouls
+        self.yellow_handicap = yellow_handicap
+        self.line_total = foul_line_total
+        self.live_total = foul_live_total
 
     def get_game_info(self):
         try:
@@ -58,7 +62,9 @@ LT: {self.live_data['team1_name']} - {self.live_data['team2_name']}
          RED CARDS: {self.live_data['red cards']}
 
       Yellow Cards: {self.yellow_cards}
+              Live: {self.yellow_handicap}
              Fouls: {self.fouls}         
+       Live - Line: {self.live_total} >= {self.line_total}
         """
         except KeyError as e:
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
