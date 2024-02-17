@@ -89,7 +89,6 @@ class RedLiveCompare:
     async def red_card_foul_checker(self):
         min_foul_line_total = self.get_min_line_total()
         max_foul_live_total = self.get_max_live_total()
-        print(self.game_key, 'игра чекается по фолам - лайн и лайв тотал =', min_foul_line_total, max_foul_live_total)
         if min_foul_line_total and max_foul_live_total and max_foul_live_total >= min_foul_line_total:
             info = RedCardInfo(
                 live_data=self.live_data,
@@ -105,7 +104,6 @@ class RedLiveCompare:
     def get_min_line_total(self):
         try:
             total_list = [float(data['total_number']) for data in self.line_data[self.game_key]['fouls']['totals']]
-            print('line_total', min(total_list))
             return min(total_list) if total_list else None
         except KeyError:
             print('LINE_DATA_DONT_HAVE_A_FOUL_DATA for', self.game_key)
@@ -113,7 +111,6 @@ class RedLiveCompare:
     def get_max_live_total(self):
         try:
             live_list = [float(data['total_number']) for data in self.live_data['fouls']['totals']]
-            print('line_total', min(live_list))
             return max(live_list) if live_list else None
         except KeyError:
             pass

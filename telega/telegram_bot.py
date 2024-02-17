@@ -41,7 +41,10 @@ class TelegramBot:
             for update in updates:
                 message = update.message
                 if message is not None:
-                    parts = message.text.rstrip('➠').split('➠')
+                    try:
+                        parts = message.text.rstrip('➠').split('➠')
+                    except AttributeError:
+                        continue
                     file_path = os.path.join("data", f"{get_today_date()}_AllGamesData.pkl")
                     handler = PickleHandler()
                     if len(parts) == 4 and os.path.exists(file_path):
