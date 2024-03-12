@@ -17,14 +17,14 @@ from utils.error import ContinueError
 
 class WebCrawler:
     def __init__(self, driver: LiveChromeDriver, smart_data: dict, league_data: dict,
-                 line_data: dict, tel):
+                 line_data: dict, tel, excluded_games: dict):
         self.driver = driver
         self.smart_data = smart_data
         self.league_data = league_data
         self.line_data = line_data
         self.tel = tel
         self.first_time_scanned = True
-        self.excluded_games = {}
+        self.excluded_games = excluded_games
 
     async def run_crawler(self):
         start_time = time.time()
@@ -142,11 +142,14 @@ class WebCrawler:
             live_data = self.scraper.get_game_info()
             if 'yellow cards' in live_data or 'fouls' in live_data:
                 if first_time:
-                    self.excluded_games[key] = {
-                        'red_foul': True,
-                        'red_yellow': True,
-                        'hand_yellow': True
-                    }
+                    try:
+                       self.excluded_games[key]
+                    except KeyError:
+                        self.excluded_games[key] = {
+                            'red_foul': True,
+                            'red_yellow': True,
+                            'hand_yellow': True
+                        }
                 await RedLiveCompare(live_data=live_data,
                                      line_data=self.line_data,
                                      telegram=self.tel,
@@ -207,7 +210,7 @@ class WebCrawler:
         try:
             WebDriverWait(self.driver.driver, 10).until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, '//div[contains(@class, "event-view-control--64c7OE")]')))
+                    (By.XPATH, '//div[contains(@class, "tables--SkIhq")]')))
         except TimeoutException:
             pass
 
@@ -215,7 +218,7 @@ class WebCrawler:
         try:
             WebDriverWait(self.driver.driver, 10).until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, '//div[contains(@class, "ev-scoreboard")]')))
+                    (By.XPATH, '//div[contains(@class, "event-view__header__scoreboard-container")]')))
         except TimeoutException:
             pass
 

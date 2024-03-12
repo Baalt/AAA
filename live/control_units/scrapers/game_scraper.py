@@ -57,52 +57,89 @@ class RealTimeGameScraper:
         return self.game_info
 
     def scrape_league(self, soup: BeautifulSoup):
-        # Get league information from the last element with the specified class
-        league_info = soup.select('.ev-header__caption--1nhETX:last-of-type')[-1].text
+        # Find the last <a> tag within the specified div
+        league_tag = soup.select('.event-view__header__caption--U2mqs a')[-1]
+        # Extract the text content of the <a> tag, which should contain the league information
+        league_info = league_tag.text.strip()
+        print(league_info)
         self.game_info['league'] = league_info
 
     def scrape_team_names(self, soup: BeautifulSoup, separator=' — '):
         # Get team names
-        team1_name = soup.select_one('.team1--3LWqC1 .ev-team__name--6W4ZZS').text
-        team2_name = soup.select_one('.team2--4SM4BI .ev-team__name--6W4ZZS').text
+        team1_name = soup.select_one(
+            '.scoreboard-compact__main__team--JipHC._team1--fKDjV .scoreboard-compact__main__team__name--LRB3V').text
+        team2_name = soup.select_one(
+            '.scoreboard-compact__main__team--JipHC._team2--nEcQF .scoreboard-compact__main__team__name--LRB3V').text
         self.game_info['team1_name'] = team1_name
         self.game_info['team2_name'] = team2_name
+        print(f"{team1_name}{separator}{team2_name}")
         return f"{team1_name}{separator}{team2_name}"
 
-    def scrape_line_team_names(self, soup: BeautifulSoup, separator=' — '):
-        # Get team names
-        team1_name = soup.select_one('.team-statistic-1--krP2Db .ev-team__name--6W4ZZS').text
-        team2_name = soup.select_one('.team-statistic-2--3q4zZu .ev-team__name--6W4ZZS').text
-        self.game_info['team1_name'] = team1_name
-        self.game_info['team2_name'] = team2_name
-        return f"{team1_name}{separator}{team2_name}"
+    # def scrape_line_team_names(self, soup: BeautifulSoup, separator=' — '):
+    #     # Get team names
+    #     team1_name = soup.select_one('.team-statistic-1--krP2Db .ev-team__name--6W4ZZS').text
+    #     team2_name = soup.select_one('.team-statistic-2--3q4zZu .ev-team__name--6W4ZZS').text
+    #     self.game_info['team1_name'] = team1_name
+    #     self.game_info['team2_name'] = team2_name
+    #     return f"{team1_name}{separator}{team2_name}"
 
     def scrape_match_time(self, soup: BeautifulSoup):
         # Get match time
         try:
-            match_time = soup.select_one('.ev-live-time__timer--6XZjl4').text
+            match_time = soup.select_one('.scoreboard-timer__value').text
             self.game_info['match_time'] = match_time
+            print(self.game_info['match_time'])
         except AttributeError:
             self.game_info['match_time'] = 'Match has not started'
 
     def scrape_match_score(self, soup: BeautifulSoup):
-        scores: List[int] = [int(score.text) for score in soup.select('.ev-score--4dG0AR._main--1NGLZW')]
-        if len(scores) == 2:
-            score_str = f"{scores[0]} : {scores[1]}"
+        try:
+            # Find all elements with class 'column--bERXJ'
+            score_columns = soup.select('.column--bERXJ')
+
+            # Get the second occurrence of '.column--bERXJ' (index 1)
+            second_score_column = score_columns[1]
+
+            # Get the scores from the first and second columns in the second score column
+            score1 = second_score_column.select_one('.column__t1--r0tu1').text
+            score2 = second_score_column.select_one('.column__t2--uLoi9').text
+
+            # Create the score string
+            score_str = f"{score1} : {score2}"
+
+            # Store the score string in game_info
             self.game_info['match_score'] = score_str
+        except (AttributeError, IndexError):
+            self.game_info['match_score'] = 'Scores not available'
 
     def scrape_red_cards(self, soup: BeautifulSoup):
-        # Find the first element that matches the specified selector
-        red_card_elem = soup.select_one('div.ev-comment__tail--5ILNNG._style_red--3JeHeN[title="Sending off"]')
-        red_card_text = red_card_elem.text if red_card_elem else '0:0'
-        self.game_info['red cards'] = red_card_text
+        try:
+            score_columns = soup.select('.column--bERXJ')
+            second_score_column = score_columns[5]
+            score1 = second_score_column.select_one('.column__t1--r0tu1').text
+            score2 = second_score_column.select_one('.column__t2--uLoi9').text
+            score_str = f"{score1} : {score2}"
+            self.game_info['match_score'] = score_str
+        except (AttributeError, IndexError):
+            self.game_info['match_score'] = 'Scores not available'
+
+    def scrape_yellow_cards(self, soup: BeautifulSoup):
+        try:
+            score_columns = soup.select('.column--bERXJ')
+            second_score_column = score_columns[4]
+            score1 = second_score_column.select_one('.column__t1--r0tu1').text
+            score2 = second_score_column.select_one('.column__t2--uLoi9').text
+            score_str = f"{score1} : {score2}"
+            self.game_info['match_score'] = score_str
+        except (AttributeError, IndexError):
+            self.game_info['match_score'] = 'Scores not available'
 
     def scrape_match_stats(self, soup: BeautifulSoup):
         match_stats = {}
-        stat_elements = soup.select('div.title--1ynOw7')
+        stat_elements = soup.select('div.title--a22by')
         for stat_element in stat_elements:
-            stat_name = stat_element.find('span', {'class': 'caption-new--IGcNO4'}).text
-            score_element = stat_element.find_next('div', {'class': 'score--6jKiQM'})
+            stat_name = stat_element.find('span', {'class': 'caption--qB8wa'}).text
+            score_element = stat_element.find_next('span', {'class': 'score--rN4ok'})
             try:
                 score = score_element.text.strip()
             except AttributeError:
@@ -113,10 +150,10 @@ class RealTimeGameScraper:
 
     def collect_stats(self, soup, match_stat, total_text, team_total_text, handicap_text):
         # Find all market-group-box elements and loop through each one
-        market_boxes = soup.select('.market-group-box--z23Vvd')
+        market_boxes = soup.select('.market-group-box--U9Qtj')
         for box in market_boxes:
             # Find all text-new elements and check for Total goals
-            scoring_category = box.find('div', {'class': 'text-new--2WAqa8'})
+            scoring_category = box.find('div', {'class': 'text--AFRgY'})
             if scoring_category:
                 category = scoring_category.text
                 if category == total_text:
@@ -139,7 +176,7 @@ class RealTimeGameScraper:
     def __add_totals_info(self, info_box, match_stat, key):
         statistic_key_dict = []
 
-        for row in info_box.find_all('div', {'class': 'row-common--33mLED'}):
+        for row in info_box.find_all('div', {'class': 'normal-row--OHyY8'}):
             self.__extract_total_sets(row, statistic_key_dict)
 
         if statistic_key_dict:
@@ -204,7 +241,7 @@ class RealTimeGameScraper:
 
     def __extract_total_sets(self, info_box, statistic_key_dict, total_text='Total'):
         over_under, total, over, under = None, None, None, None
-        for cell in info_box.select('div[class*="cell-wrap--LHnTwg"]'):
+        for cell in info_box.select('div[class*="cell--NEHKQ"]'):
             cell_text = cell.text.strip()
             if total_text in cell_text:
                 total = cell_text.split()[-1]
@@ -225,7 +262,7 @@ class RealTimeGameScraper:
                 total, over, under = None, None, None
 
     def __extract_handicap_sets(self, info_box, statistic_key_dict, handicap_text='Hcap'):
-        cells = info_box.select('div[class*="cell-wrap--LHnTwg"]')
+        cells = info_box.select('div[class*="cell--NEHKQ"]')
         if len(cells) % 2 == 0:
             total, coeff = None, None
             for cell in cells:
@@ -246,7 +283,7 @@ class RealTimeGameScraper:
                     total, coeff = None, None
 
     def __get_box_command_names(self, info_box):
-        divs = info_box.find_all('div', {'class': 'header-text--5VlC6H'})
+        divs = info_box.find_all('div', {'class': 'text--dWt5e'})
         return [div.text for div in divs if div.text not in ['Over', 'Under', '']]
 
     def __replace_nbsp_with_space(self, lst):
@@ -256,8 +293,8 @@ class RealTimeGameScraper:
     def __get_team_box(self, info_box, index):
         try:
             command_box = info_box.find_all(
-                'div', {'class': "section--5JAm4a _horizontal--18WrKP"})[index].find_all(
-                'div', {'class': "row-common--33mLED"})
+                'div', {'class': "table--pbd8Q"})[index].find_all(
+                'div', {'class': "normal-row--OHyY8"})
         except IndexError:
             command_box = None
         return command_box

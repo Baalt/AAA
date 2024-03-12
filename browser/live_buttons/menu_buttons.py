@@ -22,18 +22,11 @@ class FootballMenuButtons:
     def __init__(self):
         self.browser = None
 
-    def get_pre_match_button(
-            self,
-            selector='//div[@class="filter-component-sport-mode__item--6QIgTS"]//span[text()="Pre-match"]'):
-        button = WebDriverWait(self.browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, selector)))
-        return button
-
     def get_football_category_button(
             self,
             selector='//div[contains(@class, "vertical-panel__grow")]'
                      '//div[contains(@class, "filter-component-row-container")][1]'
-                     '//span[contains(@class, "filter-component-expander__arrow--5izki")]'):
+                     '//span[contains(@class, "filter-item-sport__expander")]'):
         button = WebDriverWait(self.browser, 20).until(
             EC.element_to_be_clickable((By.XPATH, selector)))
         return button
@@ -44,9 +37,7 @@ class FootballMenuButtons:
 
     def get_all_leagues_buttons(
             self,
-            selector='//div[contains(@class, "vertical-panel__grow")]'
-                     '//div[contains(@class, "filter-component-row-container")][1]'
-                     '//span[contains(@class, "filter-component-expander--2CxuU")]'):
-        buttons = WebDriverWait(self.browser, 20).until(
-            EC.visibility_of_all_elements_located((By.XPATH, selector)))
+            selector='//div[contains(@class, "filter-component-row-container--jBqNU") and contains(@class, "selected")]'
+                     '//span[contains(@class, "filter-component-expander--fx9FJ")]'):
+        buttons = self.browser.find_elements(By.XPATH, selector)
         return buttons

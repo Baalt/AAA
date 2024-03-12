@@ -1,4 +1,5 @@
 import time
+from pprint import pprint
 
 from bs4 import BeautifulSoup
 from selenium.webdriver import ActionChains
@@ -21,7 +22,7 @@ class GameDataCollector:
         self.line_data = {}
 
     def collect(self):
-        buttons = self.driver.driver.find_elements(By.XPATH, f'//a[contains(@class, "filter-item-event--20qx1S")]')
+        buttons = self.driver.driver.find_elements(By.XPATH, f'//a[contains(@class, "filter-component-row--HjoKl") and contains(@class, "filter-item-event")]')
         for element in buttons:
             try:
                 key = element.text
@@ -37,12 +38,12 @@ class GameDataCollector:
 
 
     def click_filter_games(self, key, smart=True):
-        xpath = f'//a[contains(@class, "filter-item-event--20qx1S") and starts-with(normalize-space(), "{key}")]'
+        xpath = f'//a[contains(@class, "filter-component-row--HjoKl") and starts-with(normalize-space(), "{key}")]'
         if not self.click_element(xpath):
             raise ContinueError
         if smart:
             self.wait_for_elements()
-            # time.sleep(0.5)
+            time.sleep(0.5)
             self.scraper = RealTimeGameScraper()
             if self.driver.buttons.is_match_button_clicked():
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
@@ -64,6 +65,7 @@ class GameDataCollector:
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                 try:
                     self.collect_game_info(soup)
+                    pprint(self.scraper.get_game_info())
                 except AttributeError:
                     raise ContinueError
                 self.add_default_values(key=key)
@@ -107,6 +109,7 @@ class GameDataCollector:
                 self.scraper.scrape_match_stats(soup=soup)
             try:
                 self.collect_game_info(soup=soup)
+                pprint(self.scraper.get_game_info())
                 self.add_default_values(key=key)
             except AttributeError:
                 raise ContinueError
@@ -128,7 +131,7 @@ class GameDataCollector:
         try:
             WebDriverWait(self.driver.driver, 10).until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, '//div[contains(@class, "ev-scoreboard")]')))
+                    (By.XPATH, '//div[contains(@class, "event-view__header__scoreboard-container")]')))
         except TimeoutException:
             pass
 
@@ -136,18 +139,18 @@ class GameDataCollector:
         try:
             WebDriverWait(self.driver.driver, 10).until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, '//div[contains(@class, "event-view-control--64c7OE")]')))
+                    (By.XPATH, '//div[contains(@class, "tables--SkIhq")]')))
         except TimeoutException:
             pass
 
     def scrape_team_names(self, soup):
         try:
-            self.scraper.scrape_line_team_names(soup=soup)
+            self.scraper.scrape_team_names(soup=soup)
         except AttributeError:
             try:
                 time.sleep(1)
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                self.scraper.scrape_line_team_names(soup=soup)
+                self.scraper.scrape_team_names(soup=soup)
             except AttributeError as e:
                 print('scrape_team_names error', e)
                 raise ContinueError

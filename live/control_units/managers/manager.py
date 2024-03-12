@@ -22,16 +22,15 @@ if __name__ == '__main__':
         line_data = {}
         browser = BrowserPreparer(driver=driver)
         browser.open_page(url='https://www.fon.bet/sports/?mode=1')
-        browser.switch_language()
+        input('choose language')
         controller = FootballMenuHandler(driver=browser.browser)
         controller.open_main_football_menu()
         controller.open_full_leagues_list()
         controller.open_all_football_leagues()
         GameDataCollector(driver=driver).collect()
-        driver.close()
-    browser = BrowserPreparer(driver=driver)
-    browser.open_page()
-    browser.switch_language()
+    # browser = BrowserPreparer(driver=driver)
+    # browser.open_page()
+    # browser.switch_language()
     try:
         leagues_dct = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLeaguesData.pkl')
         smart_dict = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllGamesData.pkl')
@@ -39,7 +38,7 @@ if __name__ == '__main__':
         leagues_dct, smart_dict = {}, {}
     tel = TelegramBot(token=config.token, chat_id=config.chat_id)
     now = datetime.datetime.now()
-    excluded_red_games = []
+    excluded_games = {}
     while True:
         now_plus_delta = now + datetime.timedelta(minutes=10)
         try:
@@ -52,7 +51,8 @@ if __name__ == '__main__':
                               smart_data=lv_smrt_dct,
                               league_data=leagues_dct,
                               line_data=line_data,
-                              tel=tel)
+                              tel=tel,
+                              excluded_games=excluded_games)
         while now_plus_delta > now:
             await operator.run_crawler()
             try:
