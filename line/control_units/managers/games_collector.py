@@ -63,7 +63,9 @@ class AllGamesCollector:
 
                         coeff_manager = CoefficientDataManager(driver=self.driver)
                         coeff_manager.get_coefficients_data()
-
+                        # coeff_manager_data = None
+                        from pprint import pprint
+                        pprint(coeff_manager.get_data)
                         referee_manager = RefereeCollector(driver=self.driver, league=league)
                         try:
                             referee_manager.collect_referee_data()

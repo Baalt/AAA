@@ -6,7 +6,6 @@ from line.analytics.struct2live import FromStructureToLiveDict
 from line.control_units.filters.structure_valid import ValidStructureFilter
 from utils.pickle_manager import PickleHandler
 from utils.error import LiveDictBuilderError, ValidStructureError
-from utils.championships import championships
 
 
 class LiveDictBuilder(FromDictToStructure):
@@ -134,10 +133,11 @@ class LiveDictBuilder(FromDictToStructure):
                         try:
                             structures = ValidStructureFilter(home_structure=home_structure,
                                                               away_structure=away_structure)
-                            if self.league_name not in championships:
-                                structures.valid_and_create()
-                            else:
-                                structures.championship_valid_and_create()
+                            structures.championship_valid_and_create()
+                            # if self.league_name not in championships:
+                            #     structures.valid_and_create()
+                            # else:
+                            #     structures.championship_valid_and_create()
 
                             live_data_manager.calculate(
                                 home_structure=home_structure,

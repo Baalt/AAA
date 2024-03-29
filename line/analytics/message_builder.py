@@ -146,3 +146,38 @@ _____L15: {self.last15:3.2f} %
  
 allcount: {self.length}
 __avg_15: {self.average}"""
+
+
+class ManualSearchPrinter:
+    def __init__(self, league, big_match_data: dict, data: dict,
+                 category, statistic_name):
+        self.league = league
+        self.big_match_data = big_match_data
+        self.data = data
+        self.category = category
+        self.statistic_name = statistic_name
+
+    def create_message(self):
+        return f"""
+__League: {self.league}
+ST Teams: {self.big_match_data['home_command_name']} - {self.big_match_data['away_command_name']}
+Category: {self.category}
+
+StatName: {self.statistic_name}
+
+
+RefAll: {self.data['ref_all_under']['+2'] if 'TU' in self.category else self.data['ref_all_over']['+2']}{self.data['ref_all_len']}
+Ref15: {self.data['ref_15_under']['+2'] if 'TU' in self.category else self.data['ref_15_over']['+2']}{self.data['ref_15_len']}
+Big Data: {self.data['home_all_under']['+2'] if 'TU' in self.category else self.data['home_all_over']}{self.data['home_all_len']}
+LastYear: 
+__Similar:
+SimlLow: 
+SimiHigh: 
+_____L15: 
+L10___HA: 
+_____L10: 
+______L5: 
+
+
+
+"""

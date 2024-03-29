@@ -12,9 +12,8 @@ class ValidStructureFilter:
             self.adding_away_structures_for_the_latest_games()
 
     def championship_valid_and_create(self):
-        if self.is_championships_home_structure_valid() and self.is_championships_away_structure_valid():
-            self.adding_home_structures_for_the_latest_games()
-            self.adding_away_structures_for_the_latest_games()
+        self.adding_home_structures_for_the_latest_games()
+        self.adding_away_structures_for_the_latest_games()
 
     def adding_home_structures_for_the_latest_games(self):
         # last20 home-away games
