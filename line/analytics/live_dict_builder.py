@@ -144,7 +144,7 @@ class LiveDictBuilder(FromDictToStructure):
                                 away_structure=away_structure,
                                 statistic_name=statistic_name)
 
-                            if home_structure.last_20_games_total_current_home_by_year_in_home_away_games and \
+                            if home_structure.last_20_games_total_current_home_by_year_in_home_away_games or \
                                     away_structure.last_20_games_total_current_away_by_year_in_home_away_games:
                                 compare = DataMetrics(
                                     telegram=self.telegram,

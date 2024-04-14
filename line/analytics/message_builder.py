@@ -1,5 +1,6 @@
 class KushMessageBuilder:
-    def __init__(self, statistic_name: str, league_name: str, big_match_data: dict, big_data_percent: float,
+    def __init__(self, len_struct_dct, statistic_name: str, league_name: str, big_match_data: dict,
+                 big_data_percent: float,
                  last_year_percent: float, similar_percent, similar_percent_low: float, similar_percent_high: float,
                  last_20_percent: float, last_12_percent: float, last_8_percent: float, last_4_percent: float,
                  coefficients: dict, coeff_total: float, coeff_value: float, rate_direction: str, category: str,
@@ -15,6 +16,7 @@ class KushMessageBuilder:
                  last_12_current_percent: float, last_12_opposing_percent: float,
                  last_8_current_percent: float, last_8_opposing_percent: float,
                  last_4_current_percent: float, last_4_opposing_percent: float):
+        self.len_struct_dct = len_struct_dct
         self.statistic_name = statistic_name or ''
         self.league_name = league_name or ''
 
@@ -104,15 +106,15 @@ RateType: {'Part for combine rate' if float(self.coeff_value) < 1.683 else 'Sing
 _____Bet: {self.coeff_total} {self.rate_direction}  
 ____Coeff: {self.coeff_value}
     
-Big Data: {self.big_data_kush_by_rate:3.2f} kush
-LastYear: {self.last_year_kush_by_rate:3.2f} kush
-__Similar: {self.similar_kush_by_rate:3.2f} kush
-SimlLow: {self.similar_kush_by_rate_low:3.2f} kush
-SimiHigh: {self.similar_kush_by_rate_high:3.2f} kush
-_____L15: {self.last_20_kush_by_rate:3.2f} kush
-L10___HA: {self.last_12_kush_by_rate:3.2f} kush
-_____L10: {self.last_8_kush_by_rate:3.2f} kush
-______L5: {self.last_4_kush_by_rate:3.2f} kush 
+Big Data: {self.big_data_kush_by_rate:3.2f} kush {self.len_struct_dct['big_data_home_result_len']:03d} | {self.len_struct_dct['big_data_away_result_len']:03d}
+LastYear: {self.last_year_kush_by_rate:3.2f} kush {self.len_struct_dct['last_year_home_result_len']:03d} | {self.len_struct_dct['last_year_away_result_len']:03d}
+__Similar: {self.similar_kush_by_rate:3.2f} kush 
+SimlLow: {self.similar_kush_by_rate_low:3.2f} kush {self.len_struct_dct['similar_home_result_low_len']:03d} | {self.len_struct_dct['similar_away_result_low_len']:03d}
+SimiHigh: {self.similar_kush_by_rate_high:3.2f} kush {self.len_struct_dct['similar_home_result_high_len']:03d} | {self.len_struct_dct['similar_away_result_high_len']:03d}
+_____L15: {self.last_20_kush_by_rate:3.2f} kush {self.len_struct_dct['last_20_home_result_len']:03d} | {self.len_struct_dct['last_20_away_result_len']:03d}
+L10___HA: {self.last_12_kush_by_rate:3.2f} kush {self.len_struct_dct['last_12_home_result_len']:03d} | {self.len_struct_dct['last_12_away_result_len']:03d}
+_____L10: {self.last_8_kush_by_rate:3.2f} kush {self.len_struct_dct['last_8_home_result_len']:03d} | {self.len_struct_dct['last_8_away_result_len']:03d}
+______L5: {self.last_4_kush_by_rate:3.2f} kush {self.len_struct_dct['last_4_home_result_len']:03d} | {self.len_struct_dct['last_4_away_result_len']:03d}
     
 Big Data: {big_data_current_str} __ {big_data_opposing_str} __ {big_data_percent_str}%
 LastYear: {last_year_current_str} __ {last_year_opposing_str} __ {last_year_percent_str}%

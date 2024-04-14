@@ -29,7 +29,6 @@ class MatrixDataGenerator:
             if goal_data['team_name'][:10] not in teams:
                 teams.add(goal_data['team_name'][:10])
 
-
         for team_name in teams:
             matrix_entry = {
                 'team_name': team_name,
@@ -65,7 +64,8 @@ class MatrixDataGenerator:
             matrix_entry['away_collections'] = {}
 
             for primary_key in primary_keys:
-                if not primary_key.startswith('home') and not primary_key.startswith('away'):
+                if not primary_key.startswith('home') and not primary_key.startswith(
+                        'away') and not primary_key.startswith('Все'):
                     matrix_entry['home_collections'][stats_dict[primary_key]] = {
                         'total': [],
                         'ind': [],
@@ -86,7 +86,8 @@ class MatrixDataGenerator:
         primary_keys = list(self.big_data.keys())  # Primary keys like 'Goals', 'Fouls', etc.
 
         for primary_key in primary_keys:
-            if not primary_key.startswith('home') and not primary_key.startswith('away'):
+            if not primary_key.startswith('home') and not primary_key.startswith('away') \
+                    and not primary_key.startswith('Все'):
                 home_collections = self.big_data[primary_key]['home_collections']
                 away_collections = self.big_data[primary_key]['away_collections']
 

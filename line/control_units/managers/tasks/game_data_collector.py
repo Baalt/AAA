@@ -93,9 +93,9 @@ class GameCollector:
             statistics_name = self.scraper.scrap_statistic_name(soup=soup)
 
             if self.full_league_name in championships:
-                self.validation_goal_data(statistics_name=statistics_name, threshold=7)
+                self.validation_goal_data(statistics_name=statistics_name, threshold=5)
             else:
-                self.validation_goal_data(statistics_name=statistics_name)
+                self.validation_goal_data(statistics_name=statistics_name, threshold=5)
 
             for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
                 button.click()

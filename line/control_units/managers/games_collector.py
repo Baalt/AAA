@@ -30,7 +30,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'Scotland: Championship' in full_league_name:
+            # if 'England: League Two' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
@@ -63,9 +63,6 @@ class AllGamesCollector:
 
                         coeff_manager = CoefficientDataManager(driver=self.driver)
                         coeff_manager.get_coefficients_data()
-                        # coeff_manager_data = None
-                        from pprint import pprint
-                        pprint(coeff_manager.get_data)
                         referee_manager = RefereeCollector(driver=self.driver, league=league)
                         try:
                             referee_manager.collect_referee_data()

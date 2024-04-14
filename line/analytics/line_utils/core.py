@@ -6,6 +6,7 @@ from graph.matrix_stats_viz import ScatterPlotBuilder
 from line.analytics.message_builder import KushMessageBuilder, RefereeMessageBuilder
 from line.analytics.structures import HomeDataStructure, AwayDataStructure
 from utils.stat_switcher import stats_dict
+from utils.func import custom_round
 
 
 class Catcher:
@@ -44,6 +45,42 @@ class Catcher:
             self.statistic_name = stats_dict[statistic_name]
         else:
             self.statistic_name = statistic_name
+        self.len_struct_dct = self.create_len_structures_dct()
+
+    def create_len_structures_dct(self):
+        return {'big_data_home_result_len': len(self.home_structure.
+                                                big_data_total_current_home_in_home_away_games),
+                'big_data_away_result_len': len(self.away_structure.
+                                                big_data_total_current_away_in_home_away_games),
+                'last_year_home_result_len': len(self.home_structure.
+                                                 last_year_total_current_home_command_in_home_away_games),
+                'last_year_away_result_len': len(self.away_structure.
+                                                 last_year_total_current_away_command_in_home_away_games),
+                'similar_home_result_low_len': len(self.home_structure.
+                                                   similar_command_total_current_home_big_data_home_away_games_low),
+                'similar_away_result_low_len': len(self.away_structure.
+                                                   similar_command_total_current_away_big_data_home_away_games_low),
+                'similar_home_result_high_len': len(self.home_structure.
+                                                    similar_command_total_current_home_big_data_home_away_games_high),
+                'similar_away_result_high_len': len(self.away_structure.
+                                                    similar_command_total_current_away_big_data_home_away_games_high),
+                'last_20_home_result_len': len(self.home_structure.
+                                               last_20_games_total_current_home_by_year_in_home_away_games),
+                'last_20_away_result_len': len(self.away_structure.
+                                               last_20_games_total_current_away_by_year_in_home_away_games),
+                'last_12_home_result_len': len(self.home_structure.
+                                               last_12_games_total_current_home_command_by_year_in_home_games),
+                'last_12_away_result_len': len(self.away_structure.
+                                               last_12_games_total_current_away_command_by_year_in_away_games[:12]),
+                'last_8_home_result_len': len(self.home_structure.
+                                              last_8_games_total_current_home_by_year_in_home_away_games),
+                'last_8_away_result_len': len(self.away_structure.
+                                              last_8_games_total_current_away_by_year_in_home_away_games),
+                'last_4_home_result_len': len(self.home_structure.
+                                              last_4_games_total_current_home_by_year_in_home_away_games),
+                'last_4_away_result_len': len(self.away_structure.
+                                              last_4_games_total_current_away_by_year_in_home_away_games)
+                }
 
     def calculate_percentage(self, coeff_set, seq, double=None):
         try:
@@ -159,7 +196,7 @@ class Catcher:
         except TypeError:
             last_year_percent = None
 
-        high_percent_1, low_percent, low_coeff = 90, 66.6, 1.17
+        high_percent_1, low_percent, low_coeff = 90, 66.6, 1.24
 
         big_data_kush_by_rate = self.kush_calculate(big_data_percent, coeff_set[coeff_under_over_key])
         last_year_kush_by_rate = self.kush_calculate(last_year_percent, coeff_set[coeff_under_over_key])
@@ -179,17 +216,13 @@ class Catcher:
             return
 
         if statistic_name == 'ЖК' or statistic_name == 'Фолы':
-            if referee_15 and self.referee_data[statistic_name]['count'] > 9 and (
-                    rate_direction == 'TU' or rate_direction == 'TO'):
+            if referee_15 and (rate_direction == 'TU' or rate_direction == 'TO'):
                 is_high_percent = referee_15 > high_percent_1 and coeff > low_coeff
-                is_fouls_stat = statistic_name == 'Фолы'
-                is_total_under = rate_direction == 'Total_Under'
-                is_total_over = rate_direction == 'Total_Over'
-                is_coeff_above_avg = self.coeff_total > self.referee_data[statistic_name]['avg'] + 7
-                is_coeff_below_avg = self.coeff_total < self.referee_data[statistic_name]['avg'] - 7
-                if is_high_percent or (is_fouls_stat and is_total_under and is_coeff_above_avg) or (
-                        is_fouls_stat and is_total_over and is_coeff_below_avg):
+                ref_count = len(self.referee_data[statistic_name]['first_15_elements'])
+                is_filter_list = round(ref_count - (referee_15 * ref_count / 100)) <= custom_round(ref_count / 10)
+                if is_high_percent or (is_filter_list and coeff > low_coeff):
                     await self.process_kush_message(
+                        len_struct_dct=self.len_struct_dct,
                         statistic_name=statistic_name,
                         league_name=league_name,
                         coefficients=coefficients,
@@ -240,8 +273,9 @@ class Catcher:
         except TypeError:
             return
 
-        if percent_1 > low_percent and min_kush > 0.23:
+        if (percent_1 > low_percent and min_kush > 0.24) and similar_kush_by_rate > 0.29:
             await self.process_kush_message(
+                len_struct_dct=self.len_struct_dct,
                 statistic_name=statistic_name,
                 league_name=league_name,
                 coefficients=coefficients,
@@ -285,53 +319,7 @@ class Catcher:
                 last_8_kush_by_rate=last_8_kush_by_rate,
                 last_4_kush_by_rate=last_4_kush_by_rate)
 
-        if percent_1 > high_percent_1 and coeff > low_coeff:
-            await self.process_kush_message(
-                statistic_name=statistic_name,
-                league_name=league_name,
-                coefficients=coefficients,
-                coeff_set=coeff_set,
-                rate_direction=rate_direction,
-                coeff_under_over_key=coeff_under_over_key,
-                big_data_percent=big_data_percent,
-                last_year_percent=last_year_percent,
-                similar_percent=similar_percent,
-                similar_percent_low=similar_percent_low,
-                similar_percent_high=similar_percent_high,
-                last_20_percent=last_20_percent,
-                last_12_percent=last_12_percent,
-                last_8_percent=last_8_percent,
-                last_4_percent=last_4_percent,
-                referee_all=referee_all,
-                referee_15=referee_15,
-                big_data_current_percent=big_data_current_percent,
-                big_data_opposing_percent=big_data_opposing_percent,
-                last_year_current_percent=last_year_current_percent,
-                last_year_opposing_percent=last_year_opposing_percent,
-                similar_current_percent_low=similar_current_percent_low,
-                similar_opposing_percent_low=similar_opposing_percent_low,
-                similar_current_percent_high=similar_current_percent_high,
-                similar_opposing_percent_high=similar_opposing_percent_high,
-                last_20_current_percent=last_20_current_percent,
-                last_20_opposing_percent=last_20_opposing_percent,
-                last_12_current_percent=last_12_current_percent,
-                last_12_opposing_percent=last_12_opposing_percent,
-                last_8_current_percent=last_8_current_percent,
-                last_8_opposing_percent=last_8_opposing_percent,
-                last_4_current_percent=last_4_current_percent,
-                last_4_opposing_percent=last_4_opposing_percent,
-                big_data_kush_by_rate=big_data_kush_by_rate,
-                last_year_kush_by_rate=last_year_kush_by_rate,
-                similar_kush_by_rate_low=similar_kush_by_rate_low,
-                similar_kush_by_rate_high=similar_kush_by_rate_high,
-                similar_kush_by_rate=similar_kush_by_rate,
-                last_20_kush_by_rate=last_20_kush_by_rate,
-                last_12_kush_by_rate=last_12_kush_by_rate,
-                last_8_kush_by_rate=last_8_kush_by_rate,
-                last_4_kush_by_rate=last_4_kush_by_rate)
-
-
-    async def process_kush_message(self, statistic_name: str, league_name: str, coeff_set,
+    async def process_kush_message(self, len_struct_dct, statistic_name: str, league_name: str, coeff_set,
                                    coeff_under_over_key, coefficients: dict, rate_direction: str,
                                    big_data_percent: float, last_year_percent: float,
                                    similar_percent, similar_percent_low: float, similar_percent_high: float,
@@ -351,6 +339,7 @@ class Catcher:
                                    last_4_current_percent: float, last_4_opposing_percent: float,
                                    referee_all, referee_15):
         kush_message = KushMessageBuilder(
+            len_struct_dct=len_struct_dct,
             statistic_name=statistic_name,
             league_name=league_name,
             big_data_percent=big_data_percent,
@@ -410,7 +399,6 @@ class Catcher:
         self.__plot_graphs()
         await self.telegram.send_message_with_files(message, *self.files)
 
-
     def kush_calculate(self, percent, coefficient):
         if not isinstance(percent, float):
             try:
@@ -422,7 +410,6 @@ class Catcher:
             coefficient = float(coefficient)
         kush = ((percent * (coefficient - 1)) - (100 - percent)) / 100
         return kush
-
 
     def __plot_graphs(self):
         self.delete_files_in_folder(folder_path='graph/data')
@@ -459,7 +446,6 @@ class Catcher:
                                       bet_direction=self.bet_direction,
                                       season='previous_season')
         time.sleep(3)
-
 
     def delete_files_in_folder(self, folder_path):
         """

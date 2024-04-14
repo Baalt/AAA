@@ -36,22 +36,6 @@ class TotalCatcher(Catcher):
                 self.calculate_percentage(coeff_set=coeff_set,
                                           seq=self.away_structure.
                                           similar_command_total_current_away_big_data_home_away_games_high)
-            to_similar_home_result_low = \
-                self.calculate_percentage(coeff_set=coeff_set,
-                                          seq=self.home_structure.
-                                          similar_command_total_current_home_big_data_home_away_games_low)
-            to_similar_away_result_low = \
-                self.calculate_percentage(coeff_set=coeff_set,
-                                          seq=self.away_structure.
-                                          similar_command_total_current_away_big_data_home_away_games_low)
-            to_similar_home_result_high = \
-                self.calculate_percentage(coeff_set=coeff_set,
-                                          seq=self.home_structure.
-                                          similar_command_total_current_home_big_data_home_away_games_high)
-            to_similar_away_result_high = \
-                self.calculate_percentage(coeff_set=coeff_set,
-                                          seq=self.away_structure.
-                                          similar_command_total_current_away_big_data_home_away_games_high)
             last_20_home_result = \
                 self.calculate_percentage(coeff_set=coeff_set,
                                           seq=self.home_structure.
@@ -91,15 +75,10 @@ class TotalCatcher(Catcher):
             last_year_home_under_percent, last_year_home_over_percent = last_year_home_result
             last_year_away_under_percent, last_year_away_over_percent = last_year_away_result
 
-            tu_similar_home_under_percent_low, similar_home_over_percent_low = tu_similar_home_result_low
-            tu_similar_away_under_percent_low, similar_away_over_percent_low = tu_similar_away_result_low
-            tu_similar_home_under_percent_high, similar_home_over_percent_high = tu_similar_home_result_high
-            tu_similar_away_under_percent_high, similar_away_over_percent_high = tu_similar_away_result_high
-
-            similar_home_under_percent_low, to_similar_home_over_percent_low = to_similar_home_result_low
-            similar_away_under_percent, to_similar_away_over_percent_low = to_similar_away_result_low
-            similar_home_under_percent_low, to_similar_home_over_percent_high = to_similar_home_result_high
-            similar_away_under_percent, to_similar_away_over_percent_high = to_similar_away_result_high
+            tu_similar_home_under_percent_low, to_similar_home_over_percent_low = tu_similar_home_result_low
+            tu_similar_away_under_percent_low, to_similar_away_over_percent_low = tu_similar_away_result_low
+            tu_similar_home_under_percent_high, to_similar_home_over_percent_high = tu_similar_home_result_high
+            tu_similar_away_under_percent_high, to_similar_away_over_percent_high = tu_similar_away_result_high
 
             last_20_home_under_percent, last_20_home_over_percent = last_20_home_result
             last_20_away_under_percent, last_20_away_over_percent = last_20_away_result
