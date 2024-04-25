@@ -30,7 +30,7 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if 'England: League Two' in full_league_name:
+            # if 'Azerbaijan: Liqa 1' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
@@ -42,7 +42,8 @@ class AllGamesCollector:
                             driver=self.driver,
                             league=league,
                             full_league_name=full_league_name)
-                    except AttributeError:
+                    except AttributeError as e:
+                        print('GameCollectorAttributeError:', e)
                         continue
                     try:
                         game_manager.filter_out()
@@ -52,7 +53,7 @@ class AllGamesCollector:
                     try:
                         is_match_data = game_manager.get_match_data()
                     except (AttributeError, IndexError) as e:
-                        print('game_manager.get_match_data() ERROR: ', e)
+                        print('game_manager.get_match_data() ERROR:', e)
                         continue
 
                     if is_match_data:
@@ -105,5 +106,5 @@ class AllGamesCollector:
                         try:
                             await math_collector.run()
                         except LiveDictBuilderError as e:
-                            print('LiveDictBuilderError: ', e)
+                            print('LiveDictBuilderError:', e)
                             continue

@@ -52,6 +52,38 @@ class RefereeButtons:
             f'(//div[@id="refCompetitions"])/button[normalize-space(text())=\'{league}\']')
         button.click()
 
+    # def click_dropdown_button(self):
+    #     try:
+    #         # Find the div with the class 'dropdown'
+    #         dropdown = self.browser.find_element(By.CLASS_NAME, "dropdown")
+    #         # Find the button inside the div
+    #         button = dropdown.find_element(By.TAG_NAME, "button")
+    #         button.click()
+    #     except NoSuchElementException:
+    #         print("Button inside 'dropdown' div not found or could not be clicked.")
+    #
+    # def click_checkbox_with_text(self, text):
+    #     try:
+    #         WebDriverWait(self.browser, 10).until(
+    #             EC.presence_of_element_located((By.CLASS_NAME, "dropdown-menu"))
+    #         )
+    #
+    #         # Get all checkboxes
+    #         checkboxes = self.browser.find_elements(By.CLASS_NAME, "form-check-input")
+    #
+    #         # Iterate over the checkboxes
+    #         for checkbox in checkboxes:
+    #             # Get the label of the checkbox
+    #             label = checkbox.find_element(By.XPATH, "./following-sibling::label")
+    #             print(label)
+    #
+    #             # If the label text contains the desired text, click the checkbox
+    #             if text in label.text:
+    #                 checkbox.click()
+    #                 break
+    #     except NoSuchElementException:
+    #         print(f"Checkbox with text '{text}' not found or could not be clicked.")
+
     def click_all_season_button(self):
         button = self.browser.find_element(
             By.XPATH,

@@ -22,7 +22,7 @@ class CoefficientDataManager:
         return self.coefficients_data
 
     def _create_dict_structure(self, soup: BeautifulSoup):
-        self.coefficients_data[self.scraper.get_statistic_name(soup=soup, tooltip=False)] = {
+        self.coefficients_data[self.scraper.get_statistic_name(soup=soup)] = {
             'total&coefficient': [],
             'total_1_&coefficient': [],
             'total_2_&coefficient': [],
@@ -37,7 +37,7 @@ class CoefficientDataManager:
             time.sleep(0.5)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             self._create_dict_structure(soup=soup)
-            self.scraper.get_totals_data(soup=soup, coefficient_data=self.coefficients_data, tooltip=True)
+            self.scraper.get_totals_data(soup=soup, coefficient_data=self.coefficients_data)
         except TimeoutException:
             pass
 

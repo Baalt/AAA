@@ -2,23 +2,19 @@ from bs4 import BeautifulSoup
 
 
 class ScraperMethods:
-    def scrap_statistic_name(self, soup: BeautifulSoup, tooltip=False) -> str:
-        button_class = 'btn btn-sm btn-light active'
-        if tooltip:
-            button_class = button_class + ' has-tooltip'
-
-        current_statistic_button_name = soup.find(
-            'button', attrs={'class': button_class}
-        ).get_text(strip=True)
-
-        return current_statistic_button_name
+    def scrap_statistic_name(self, soup: BeautifulSoup) -> str:
+        div = soup.find('div', attrs={'class': 'btn-group py-1 mr-2 stat-picker'})
+        button = div.find('button', attrs={'class': 'btn btn-sm btn-light filter-button__span active'}) or div.find(
+            'button', attrs={'class': 'btn btn-sm btn-light filter-button__span active has-tooltip'})
+        button_name = button.get_text(strip=True)
+        return button_name
 
     def scrap_accordion_statistic_name(self, soup: BeautifulSoup) -> str:
         current_statistic_button_name = soup.find('button', attrs={'id': "filterTypeStat"}).get_text(strip=True)
         return current_statistic_button_name
 
-    def get_statistic_name(self, soup, tooltip):
-        staistic_name = self.scrap_statistic_name(soup=soup, tooltip=tooltip)
+    def get_statistic_name(self, soup):
+        staistic_name = self.scrap_statistic_name(soup=soup)
         if staistic_name == 'Уд. от ворот':
             staistic_name = 'Удары от ворот'
         return staistic_name
@@ -26,9 +22,9 @@ class ScraperMethods:
 
 class CoefficientsScraper(ScraperMethods):
 
-    def get_totals_data(self, soup: BeautifulSoup, coefficient_data: dict, tooltip=False):
+    def get_totals_data(self, soup: BeautifulSoup, coefficient_data: dict):
         # Get the statistic name
-        statistic_name = self.get_statistic_name(soup=soup, tooltip=tooltip)
+        statistic_name = self.get_statistic_name(soup=soup)
         # Find all divs containing the data
         data_divs = soup.find('div', attrs={'class': "card-body align-middle"}).find_all('div', attrs={'class': "col"})
 
@@ -82,9 +78,9 @@ class CoefficientsScraper(ScraperMethods):
                          'coefficient_under': max(coefficient_under_list),
                          'coefficient_over': max(coefficient_over_list)})
 
-    def get_handicap_data(self, soup: BeautifulSoup, coefficient_data: dict, tooltip=False):
+    def get_handicap_data(self, soup: BeautifulSoup, coefficient_data: dict):
         # Get the statistic name
-        statistic_name = self.get_statistic_name(soup=soup, tooltip=tooltip)
+        statistic_name = self.get_statistic_name(soup=soup)
 
         # Find all divs containing the data
         data_divs = soup.find('div', attrs={'class': "card-body align-middle"}).find_all('div', attrs={'class': "col"})

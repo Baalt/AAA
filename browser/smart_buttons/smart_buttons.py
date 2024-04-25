@@ -27,6 +27,11 @@ class SmartStatButtons:
         button = wait.until(EC.element_to_be_clickable((By.XPATH, selector)))
         return button
 
+    def get_all_season_button(self):
+        button = self.browser.find_element(By.XPATH, "//div[@id='teamsSeasons']//button[contains(text(), 'Все')]")
+        return button
+
+
     def get_previous_season_buttons(self):
         buttons = self.browser.find_elements(By.XPATH, "//div[@id='teamsSeasons']//button")
         matching_buttons = []

@@ -1,8 +1,9 @@
 from bs4 import BeautifulSoup
 from line.control_units.filters.game_data_normalizer import GameDataNormalizer
+from line.control_units.scrapers.coefficient_scraper import ScraperMethods
 
 
-class GameScraper:
+class GameScraper(ScraperMethods):
     def __init__(self, all_match_data: dict):
         self.all_match_data: dict = all_match_data
 
@@ -12,21 +13,6 @@ class GameScraper:
     @property
     def match_data(self):
         return self.all_match_data
-
-    def scrap_statistic_name(self, soup: BeautifulSoup, tooltip=False) -> str:
-        button_class = 'btn btn-sm btn-light active'
-        if tooltip:
-            button_class = button_class + ' has-tooltip'
-
-        current_statistic_button_name = soup.find(
-            'button', attrs={'class': button_class}
-        ).get_text(strip=True)
-
-        return current_statistic_button_name
-
-    def scrap_accordion_statistic_name(self, soup: BeautifulSoup) -> str:
-        current_statistic_button_name = soup.find('button', attrs={'id': "filterTypeStat"}).get_text(strip=True)
-        return current_statistic_button_name
 
     def scrap_commands_name(self, soup: BeautifulSoup):
         self.home_command_name = soup.find_all('div',
@@ -46,7 +32,7 @@ class GameScraper:
                                    id='table')[1].find('tbody').find_all('tr',
                                                                          attrs={'class': "match-row"})
 
-        self.statistic_name = self.scrap_statistic_name(soup=soup, tooltip=tooltip)
+        self.statistic_name = self.scrap_statistic_name(soup=soup)
         self.all_match_data[self.statistic_name] = {'home_collections': list(), 'away_collections': list()}
         self.dmy = GameDataNormalizer()
         [self.scrap_them_collect_to_global_storage(row, 'home_collections') for row in home_table]

@@ -52,11 +52,11 @@ class GameCollector:
         self.season_home_button_all.click()
         self.season_away_button_all.click()
 
-        self.clear_league_home_command_buttons.click()
-        self.clear_league_away_command_buttons.click()
-
-        self.current_league_home_command_button.click()
-        self.current_league_away_command_button.click()
+        # self.clear_league_home_command_buttons.click()
+        # self.clear_league_away_command_buttons.click()
+        #
+        # self.current_league_home_command_button.click()
+        # self.current_league_away_command_button.click()
 
         self.driver.buttons.get_refresh_button().click()
         time.sleep(1)
@@ -111,8 +111,6 @@ class GameCollector:
 
         except IndexError as err:
             raise err
-
-
 
     def validation_goal_data(self, statistics_name, threshold=20):
         if not (len(self.all_match_data[statistics_name]['home_collections']) > threshold and len(
