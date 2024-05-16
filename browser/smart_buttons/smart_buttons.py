@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class SmartStatButtons:
     def __init__(self):
         self.browser = None
@@ -30,7 +31,6 @@ class SmartStatButtons:
     def get_all_season_button(self):
         button = self.browser.find_element(By.XPATH, "//div[@id='teamsSeasons']//button[contains(text(), 'Все')]")
         return button
-
 
     def get_previous_season_buttons(self):
         buttons = self.browser.find_elements(By.XPATH, "//div[@id='teamsSeasons']//button")

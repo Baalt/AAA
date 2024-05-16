@@ -20,7 +20,10 @@ class MatrixDataGenerator:
         matrix_data = []
 
         current_season_goals = self.league_data['current_season']['goals']
-        previous_season_goals = self.league_data['previous_season']['goals']
+        try:
+            previous_season_goals = self.league_data['previous_season']['goals']
+        except KeyError:
+            previous_season_goals = self.league_data['current_season']['goals']
 
         teams = set()
         for goal_data in current_season_goals:

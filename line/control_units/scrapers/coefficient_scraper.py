@@ -1,3 +1,5 @@
+import time
+
 from bs4 import BeautifulSoup
 
 
@@ -14,10 +16,14 @@ class ScraperMethods:
         return current_statistic_button_name
 
     def get_statistic_name(self, soup):
-        staistic_name = self.scrap_statistic_name(soup=soup)
-        if staistic_name == 'Уд. от ворот':
-            staistic_name = 'Удары от ворот'
-        return staistic_name
+        try:
+            statistic_name = self.scrap_statistic_name(soup=soup)
+        except AttributeError:
+            time.sleep(1)
+            statistic_name = self.scrap_statistic_name(soup=soup)
+        if statistic_name == 'Уд. от ворот':
+            statistic_name = 'Удары от ворот'
+        return statistic_name
 
 
 class CoefficientsScraper(ScraperMethods):

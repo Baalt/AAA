@@ -31,8 +31,11 @@ class LeagueDataCollector:
         # self.driver.driver.refresh()
         try:
             self.driver.buttons.get_all_season_button().click()
+            time.sleep(2)
+            self.driver.buttons.get_all_season_button().click()
             self.driver.buttons.get_previous_season_buttons()[-2].click()
             # self.driver.buttons.get_previous_season_buttons()[-1].click()
+            # time.sleep(1)
             self.scrape_season('previous_season')
         except IndexError:
             pass
@@ -40,17 +43,17 @@ class LeagueDataCollector:
     def scrape_season(self, season_key: str) -> None:
         self.data[season_key] = {}
         self.scraper = LeagueScraper(data=self.data[season_key])
-        for button in self.driver.buttons.get_smart_stats_buttons():
-            button.click()
-            self.refresh_page()
-            self.wait_for_elements()
-            time.sleep(1)
-            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            try:
-                self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
-            except KeyError as err:
-                print('I try to catch League xG key err', err)
-            break
+        # for button in self.driver.buttons.get_smart_stats_buttons():
+            # button.click()
+        self.refresh_page()
+        self.wait_for_elements()
+        time.sleep(1)
+        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+        try:
+            self.scraper.from_soup(soup=soup, key='goals') # stats_dict[button.text.strip()]
+        except KeyError as err:
+            print('I try to catch League xG key err', err)
+            # break
         # try:
         #     self.handle_button_and_soup('Ауты')
         # except TimeoutException:
