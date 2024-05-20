@@ -21,7 +21,7 @@ class RefereeCollector:
             except ElementClickInterceptedException:
                 self.filter_out()
 
-            self.driver.buttons.get_smart_stats_buttons()[0].click()
+            self.driver.buttons.get_smart_stats_buttons()[1].click()
             self.driver.buttons.get_refresh_button().click()
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
@@ -29,7 +29,7 @@ class RefereeCollector:
                 self.scraper.scrape_table(soup, 'ЖК')
             except AttributeError:
                 pass
-            self.driver.buttons.get_smart_stats_buttons()[4].click()
+            self.driver.buttons.get_smart_stats_buttons()[2].click()
             self.driver.buttons.get_refresh_button().click()
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')

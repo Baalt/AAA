@@ -35,10 +35,10 @@ class Catcher:
         self.files = [
             "graph/data/current_season_points.png",
             "graph/data/previous_season_points.png",
-            "graph/data/year_current_season_stat.png",
-            "graph/data/year_previous_season_stat.png",
             "graph/data/current_season_stat.png",
-            "graph/data/previous_season_stat.png"
+            "graph/data/previous_season_stat.png",
+            "graph/data/year_current_season_stat.png",
+            "graph/data/year_previous_season_stat.png"
         ]
 
         if statistic_name in stats_dict.keys():
@@ -266,58 +266,58 @@ class Catcher:
                         last_8_kush_by_rate=last_8_kush_by_rate,
                         last_4_kush_by_rate=last_4_kush_by_rate)
 
-        try:
-            percent_1 = min(similar_percent, last_20_percent, last_12_percent, last_8_percent, last_4_percent)
-            min_kush = min(similar_kush_by_rate, last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate,
-                           last_4_kush_by_rate)
-        except TypeError:
-            return
-
-        if (percent_1 > low_percent and min_kush > 0.24) and similar_kush_by_rate > 0.29:
-            await self.process_kush_message(
-                len_struct_dct=self.len_struct_dct,
-                statistic_name=statistic_name,
-                league_name=league_name,
-                coefficients=coefficients,
-                coeff_set=coeff_set,
-                rate_direction=rate_direction,
-                coeff_under_over_key=coeff_under_over_key,
-                big_data_percent=big_data_percent,
-                last_year_percent=last_year_percent,
-                similar_percent=similar_percent,
-                similar_percent_low=similar_percent_low,
-                similar_percent_high=similar_percent_high,
-                last_20_percent=last_20_percent,
-                last_12_percent=last_12_percent,
-                last_8_percent=last_8_percent,
-                last_4_percent=last_4_percent,
-                referee_all=referee_all,
-                referee_15=referee_15,
-                big_data_current_percent=big_data_current_percent,
-                big_data_opposing_percent=big_data_opposing_percent,
-                last_year_current_percent=last_year_current_percent,
-                last_year_opposing_percent=last_year_opposing_percent,
-                similar_current_percent_low=similar_current_percent_low,
-                similar_opposing_percent_low=similar_opposing_percent_low,
-                similar_current_percent_high=similar_current_percent_high,
-                similar_opposing_percent_high=similar_opposing_percent_high,
-                last_20_current_percent=last_20_current_percent,
-                last_20_opposing_percent=last_20_opposing_percent,
-                last_12_current_percent=last_12_current_percent,
-                last_12_opposing_percent=last_12_opposing_percent,
-                last_8_current_percent=last_8_current_percent,
-                last_8_opposing_percent=last_8_opposing_percent,
-                last_4_current_percent=last_4_current_percent,
-                last_4_opposing_percent=last_4_opposing_percent,
-                big_data_kush_by_rate=big_data_kush_by_rate,
-                last_year_kush_by_rate=last_year_kush_by_rate,
-                similar_kush_by_rate_low=similar_kush_by_rate_low,
-                similar_kush_by_rate_high=similar_kush_by_rate_high,
-                similar_kush_by_rate=similar_kush_by_rate,
-                last_20_kush_by_rate=last_20_kush_by_rate,
-                last_12_kush_by_rate=last_12_kush_by_rate,
-                last_8_kush_by_rate=last_8_kush_by_rate,
-                last_4_kush_by_rate=last_4_kush_by_rate)
+        # try:
+        #     percent_1 = min(similar_percent, last_20_percent, last_12_percent, last_8_percent, last_4_percent)
+        #     min_kush = min(similar_kush_by_rate, last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate,
+        #                    last_4_kush_by_rate)
+        # except TypeError:
+        #     return
+        #
+        # if (percent_1 > low_percent and min_kush > 0.24) and similar_kush_by_rate > 0.29:
+        #     await self.process_kush_message(
+        #         len_struct_dct=self.len_struct_dct,
+        #         statistic_name=statistic_name,
+        #         league_name=league_name,
+        #         coefficients=coefficients,
+        #         coeff_set=coeff_set,
+        #         rate_direction=rate_direction,
+        #         coeff_under_over_key=coeff_under_over_key,
+        #         big_data_percent=big_data_percent,
+        #         last_year_percent=last_year_percent,
+        #         similar_percent=similar_percent,
+        #         similar_percent_low=similar_percent_low,
+        #         similar_percent_high=similar_percent_high,
+        #         last_20_percent=last_20_percent,
+        #         last_12_percent=last_12_percent,
+        #         last_8_percent=last_8_percent,
+        #         last_4_percent=last_4_percent,
+        #         referee_all=referee_all,
+        #         referee_15=referee_15,
+        #         big_data_current_percent=big_data_current_percent,
+        #         big_data_opposing_percent=big_data_opposing_percent,
+        #         last_year_current_percent=last_year_current_percent,
+        #         last_year_opposing_percent=last_year_opposing_percent,
+        #         similar_current_percent_low=similar_current_percent_low,
+        #         similar_opposing_percent_low=similar_opposing_percent_low,
+        #         similar_current_percent_high=similar_current_percent_high,
+        #         similar_opposing_percent_high=similar_opposing_percent_high,
+        #         last_20_current_percent=last_20_current_percent,
+        #         last_20_opposing_percent=last_20_opposing_percent,
+        #         last_12_current_percent=last_12_current_percent,
+        #         last_12_opposing_percent=last_12_opposing_percent,
+        #         last_8_current_percent=last_8_current_percent,
+        #         last_8_opposing_percent=last_8_opposing_percent,
+        #         last_4_current_percent=last_4_current_percent,
+        #         last_4_opposing_percent=last_4_opposing_percent,
+        #         big_data_kush_by_rate=big_data_kush_by_rate,
+        #         last_year_kush_by_rate=last_year_kush_by_rate,
+        #         similar_kush_by_rate_low=similar_kush_by_rate_low,
+        #         similar_kush_by_rate_high=similar_kush_by_rate_high,
+        #         similar_kush_by_rate=similar_kush_by_rate,
+        #         last_20_kush_by_rate=last_20_kush_by_rate,
+        #         last_12_kush_by_rate=last_12_kush_by_rate,
+        #         last_8_kush_by_rate=last_8_kush_by_rate,
+        #         last_4_kush_by_rate=last_4_kush_by_rate)
 
     async def process_kush_message(self, len_struct_dct, statistic_name: str, league_name: str, coeff_set,
                                    coeff_under_over_key, coefficients: dict, rate_direction: str,
@@ -427,6 +427,10 @@ class Catcher:
         previous_viz.plot_points(
             data_lst=self.all_league_data['previous_season']['goals'],
             season='previous_season')
+        current_viz.plot_team_stats(stat_key=self.statistic_name, season='current_season',
+                                    sort_by='avg_individual_team')
+        previous_viz.plot_team_stats(stat_key=self.statistic_name, season='previous_season',
+                                     sort_by='avg_individual_team')
         matrix_viz = ScatterPlotBuilder(matrix_data=self.year_matrix_data)
         matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
                                       bookmaker_value=self.coeff_total,
@@ -436,15 +440,15 @@ class Catcher:
                                       bookmaker_value=self.coeff_total,
                                       bet_direction=self.bet_direction,
                                       season='year_previous_season')
-        matrix_viz = ScatterPlotBuilder(matrix_data=self.big_matrix_data)
-        matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
-                                      bookmaker_value=self.coeff_total,
-                                      bet_direction=self.bet_direction,
-                                      season='current_season')
-        matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
-                                      bookmaker_value=self.coeff_total,
-                                      bet_direction=self.bet_direction,
-                                      season='previous_season')
+        # matrix_viz = ScatterPlotBuilder(matrix_data=self.big_matrix_data)
+        # matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
+        #                               bookmaker_value=self.coeff_total,
+        #                               bet_direction=self.bet_direction,
+        #                               season='current_season')
+        # matrix_viz.build_scatter_plot(stat_name=self.statistic_name,
+        #                               bookmaker_value=self.coeff_total,
+        #                               bet_direction=self.bet_direction,
+        #                               season='previous_season')
         time.sleep(3)
 
     def delete_files_in_folder(self, folder_path):

@@ -13,6 +13,7 @@ from browser.browser import LiveChromeDriver
 from live.control_units.scrapers.game_scraper import RealTimeGameScraper
 from live.analytics.match_analyzer import RedLiveCompare, SmartLiveCompare
 from utils.error import ContinueError
+from pprint import pprint
 
 
 class WebCrawler:
@@ -99,11 +100,11 @@ class WebCrawler:
                         self.collect_game_info(soup)
                     except AttributeError:
                         continue
-                    # pprint(self.scraper.get_game_info())
-                    await SmartLiveCompare(smart_data=self.smart_data[key],
-                                           live_data=self.scraper.get_game_info(),
-                                           league_data=self.league_data,
-                                           telegram=self.tel).compare()
+                    pprint(self.scraper.get_game_info())
+                    # await SmartLiveCompare(smart_data=self.smart_data[key],
+                    #                        live_data=self.scraper.get_game_info(),
+                    #                        league_data=self.league_data,
+                    #                        telegram=self.tel).compare()
                 try:
                     await self.stats_filter(key=key, smart=True)
                 except ContinueError:

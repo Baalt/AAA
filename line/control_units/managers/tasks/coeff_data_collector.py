@@ -34,40 +34,39 @@ class CoefficientDataManager:
         self.driver.buttons.open_coefficient_button().click()
         try:
             self._wait_for_elements("//table[@class='table-sm table table-bordered matches betting-table text-center']")
-            time.sleep(0.5)
-            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self._create_dict_structure(soup=soup)
-            self.scraper.get_totals_data(soup=soup, coefficient_data=self.coefficients_data)
+            time.sleep(1)
+            # soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+            # self._create_dict_structure(soup=soup)
+            # self.scraper.get_totals_data(soup=soup, coefficient_data=self.coefficients_data)
         except TimeoutException:
             pass
 
-        all_buttons = self.driver.buttons.get_smart_stats_buttons()
-        buttons = [all_buttons[1]] + all_buttons[2:10]
-        for button in buttons:
+
+        for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
             button.click()
             self.driver.buttons.get_refresh_button().click()
             try:
                 self._wait_for_elements()
-                time.sleep(0.5)
+                time.sleep(1)
             except TimeoutException:
                 continue
 
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             self.scraper.get_totals_data(soup=soup, coefficient_data=self.coefficients_data)
 
-        self.driver.buttons.coefficient_handicap_button().click()
-        buttons = all_buttons[0:2] + all_buttons[2:10]
-        for button in buttons:
-            button.click()
-            self.driver.buttons.get_refresh_button().click()
-            try:
-                self._wait_for_elements()
-                time.sleep(0.5)
-            except TimeoutException:
-                continue
-
-            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.get_handicap_data(soup=soup, coefficient_data=self.coefficients_data)
+        # self.driver.buttons.coefficient_handicap_button().click()
+        # buttons = all_buttons[0:2] + all_buttons[2:10]
+        # for button in buttons:
+        #     button.click()
+        #     self.driver.buttons.get_refresh_button().click()
+        #     try:
+        #         self._wait_for_elements()
+        #         time.sleep(0.5)
+        #     except TimeoutException:
+        #         continue
+        #
+        #     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+        #     self.scraper.get_handicap_data(soup=soup, coefficient_data=self.coefficients_data)
 
     def _wait_for_elements(self, selector="//div[@class='card' and @style='display: none;']"):
         WebDriverWait(self.driver.driver, 10).until(

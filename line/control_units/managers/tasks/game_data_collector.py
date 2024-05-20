@@ -61,26 +61,26 @@ class GameCollector:
         self.driver.buttons.get_refresh_button().click()
         time.sleep(1)
 
-    def scrap_accordion_data(self):
-        self.driver.buttons.get_other_button().click()
-        time.sleep(1)
-        self.driver.buttons.get_drop_down_button(button_text='Удары от ворот').click()
-        self.refresh_page()
-        self.wait_for_elements()
-        time.sleep(2)
-
-        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-        self.scraper.scrap_accordion_table_data(soup=soup)
-
-        self.driver.buttons.get_other_button().click()
-        time.sleep(1)
-        self.driver.buttons.get_drop_down_button(button_text='Удары').click()
-        self.refresh_page()
-        self.wait_for_elements()
-        time.sleep(2)
-
-        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-        self.scraper.scrap_accordion_table_data(soup=soup)
+    # def scrap_accordion_data(self):
+    #     self.driver.buttons.get_other_button().click()
+    #     time.sleep(1)
+    #     self.driver.buttons.get_drop_down_button(button_text='Удары от ворот').click()
+    #     self.refresh_page()
+    #     self.wait_for_elements()
+    #     time.sleep(2)
+    #
+    #     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+    #     self.scraper.scrap_accordion_table_data(soup=soup)
+    #
+    #     self.driver.buttons.get_other_button().click()
+    #     time.sleep(1)
+    #     self.driver.buttons.get_drop_down_button(button_text='Удары').click()
+    #     self.refresh_page()
+    #     self.wait_for_elements()
+    #     time.sleep(2)
+    #
+    #     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+    #     self.scraper.scrap_accordion_table_data(soup=soup)
 
     def get_match_data(self):
         self.wait_for_elements()
@@ -89,13 +89,13 @@ class GameCollector:
         self.scraper.scrap_commands_name(soup)
         try:
             self.scraper.get_name_and_count_of_games_with_last_trainer(soup=soup)
-            self.scraper.scrap_match_table_data(soup=soup)
-            statistics_name = self.scraper.scrap_statistic_name(soup=soup)
-
-            if self.full_league_name in championships:
-                self.validation_goal_data(statistics_name=statistics_name, threshold=5)
-            else:
-                self.validation_goal_data(statistics_name=statistics_name, threshold=5)
+            # self.scraper.scrap_match_table_data(soup=soup)
+            # statistics_name = self.scraper.scrap_statistic_name(soup=soup)
+            #
+            # if self.full_league_name in championships:
+            #     self.validation_goal_data(statistics_name=statistics_name, threshold=5)
+            # else:
+            #     self.validation_goal_data(statistics_name=statistics_name, threshold=5)
 
             for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
                 button.click()
@@ -105,7 +105,7 @@ class GameCollector:
                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                 self.scraper.scrap_match_table_data(soup=soup)
 
-            self.scrap_accordion_data()
+            # self.scrap_accordion_data()
 
             return True
 

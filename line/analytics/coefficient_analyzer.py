@@ -11,19 +11,19 @@ class DataMetrics(TotalCatcher,
             await self.search_total_rate(statistic_name=statistic_name, league_name=full_league_name)
         except KeyError:
             pass
-        try:
-            await self.search_individual_1_total_rate(statistic_name=statistic_name, league_name=full_league_name)
-        except KeyError:
-            pass
-        try:
-            await self.search_individual_2_total_rate(statistic_name=statistic_name, league_name=full_league_name)
-        except KeyError:
-            pass
-        try:
-            await self.search_handicap_1_rate(statistic_name=statistic_name, league_name=full_league_name)
-        except KeyError:
-            pass
-        try:
-            await self.search_handicap_2_rate(statistic_name=statistic_name, league_name=full_league_name)
-        except KeyError:
-            pass
+        # try:
+        #     await self.search_individual_1_total_rate(statistic_name=statistic_name, league_name=full_league_name)
+        # except KeyError:
+        #     pass
+        # try:
+        #     await self.search_individual_2_total_rate(statistic_name=statistic_name, league_name=full_league_name)
+        # except KeyError:
+        #     pass
+        # try:
+        #     await self.search_handicap_1_rate(statistic_name=statistic_name, league_name=full_league_name)
+        # except KeyError:
+        #     pass
+        # try:
+        #     await self.search_handicap_2_rate(statistic_name=statistic_name, league_name=full_league_name)
+        # except KeyError:
+        #     pass

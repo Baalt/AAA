@@ -18,6 +18,7 @@ class LeagueDataCollector:
     def __init__(self, driver: SmartChromeDriver):
         self.driver = driver
         self.data = {}
+        self.statistic_name = ['Голы', 'ЖК', 'Фолы']
 
     def show_data(self) -> None:
         from pprint import pprint
@@ -28,14 +29,13 @@ class LeagueDataCollector:
 
     def scrape_data(self) -> None:
         self.scrape_season('current_season')
-        # self.driver.driver.refresh()
         try:
             self.driver.buttons.get_all_season_button().click()
             time.sleep(2)
             self.driver.buttons.get_all_season_button().click()
             self.driver.buttons.get_previous_season_buttons()[-2].click()
-            # self.driver.buttons.get_previous_season_buttons()[-1].click()
-            # time.sleep(1)
+            self.driver.buttons.get_smart_stats_buttons()[0].click()
+            self.refresh_page()
             self.scrape_season('previous_season')
         except IndexError:
             pass
@@ -43,17 +43,24 @@ class LeagueDataCollector:
     def scrape_season(self, season_key: str) -> None:
         self.data[season_key] = {}
         self.scraper = LeagueScraper(data=self.data[season_key])
-        # for button in self.driver.buttons.get_smart_stats_buttons():
-            # button.click()
-        self.refresh_page()
-        self.wait_for_elements()
-        time.sleep(1)
+        time.sleep(2)
         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-        try:
-            self.scraper.from_soup(soup=soup, key='goals') # stats_dict[button.text.strip()]
-        except KeyError as err:
-            print('I try to catch League xG key err', err)
-            # break
+        self.scraper.from_soup(soup=soup, key='goals')
+        idx = 1
+        for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
+            button.click()
+            time.sleep(2)
+            button.click()
+            self.refresh_page()
+            self.wait_for_elements()
+            time.sleep(2)
+            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+            try:
+                self.scraper.from_soup(soup=soup,
+                                       key=stats_dict[self.statistic_name[idx]])  # stats_dict[button.text.strip()]
+            except KeyError as err:
+                print('I try to catch League xG key err', err)
+            idx += 1
         # try:
         #     self.handle_button_and_soup('Ауты')
         # except TimeoutException:
@@ -71,17 +78,17 @@ class LeagueDataCollector:
         #     self.refresh_page()
         #     self.handle_button_and_soup('Удары')
 
-    def handle_button_and_soup(self, button_text: str) -> None:
-        other_button = self.driver.buttons.get_other_button()
-        other_button.click()
-        time.sleep(1)
-        self.driver.buttons.get_drop_down_button(button_text=button_text).click()
-        self.refresh_page()
-        self.wait_for_elements()
-        time.sleep(1)
-        button = self.driver.buttons.get_other_button()
-        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-        self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
+    # def handle_button_and_soup(self, button_text: str) -> None:
+    #     other_button = self.driver.buttons.get_other_button()
+    #     other_button.click()
+    #     time.sleep(1)
+    #     self.driver.buttons.get_drop_down_button(button_text=button_text).click()
+    #     self.refresh_page()
+    #     self.wait_for_elements()
+    #     time.sleep(1)
+    #     button = self.driver.buttons.get_other_button()
+    #     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+    #     self.scraper.from_soup(soup=soup, key=stats_dict[button.text.strip()])
 
     def refresh_page(self) -> None:
         try:

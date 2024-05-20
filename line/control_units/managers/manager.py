@@ -25,7 +25,7 @@ if __name__ == '__main__':
     collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
     collector.run(address=SOURCE)
 
-    all_league_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesData.pkl")
+    all_league_data = PickleHandler().read_data("data/19.05_AllLeaguesData.pkl") #( f"data/{schedule_data['date']}_AllLeaguesData.pkl")
     collector = AllGamesCollector(driver=driver,
                                   schedule_data=scraper.get_schedule_data(),
                                   all_league_data=all_league_data)
@@ -33,3 +33,7 @@ if __name__ == '__main__':
     driver.close()
     all_games_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllGamesData.pkl")
     print('count of preparing game - ', len(all_games_data['lst']))
+
+    from pprint import pprint
+    league_data = PickleHandler().read_data(f"data/19.05_AllLeaguesData.pkl")
+    pprint(league_data)

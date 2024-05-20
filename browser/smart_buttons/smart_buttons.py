@@ -14,9 +14,11 @@ class SmartStatButtons:
         buttons = self.browser.find_elements(By.XPATH, selector)
         # Filter out buttons with specific texts
         filtered_buttons = [button for button in buttons if
-                            button.text.strip() not in ["xG", "Атаки", "Оп. атаки", "КК", "Другое", "Карточки"]]
+                            button.text.strip() in ['Голы', 'ЖК', 'Фолы']]
+        # Sort the buttons so that 'ЖК' is always first and 'Фолы' is second
+        sorted_buttons = sorted(filtered_buttons, key=lambda button: button.text.strip())
         # Return the sorted buttons list
-        return filtered_buttons
+        return sorted_buttons
 
     def get_other_button(self, selector="//button[contains(@class, 'dropdown-toggle')]"):
         button = self.browser.find_element(By.XPATH, selector)
