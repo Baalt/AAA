@@ -2,9 +2,11 @@ from collections import Counter
 
 import numpy as np
 
+from utils.func import custom_round
+
 
 class StatMath:
-    def search_under_total(self, seq: list, percent: int = 93):
+    def search_under_total(self, seq: list, percent: int = 90, ref=None):
         total_under = None
         try:
             total_count = len(seq)
@@ -24,6 +26,12 @@ class StatMath:
 
                 under_percent = round((quantity_win / total_count) * 100, 2)
 
+                if ref:
+                    is_filter_list = round(total_count - (under_percent * total_count / 100)) <= custom_round(
+                        total_count / 10)
+                    if is_filter_list or under_percent >= percent:
+                        total_under = search_total
+                        break
                 if under_percent >= percent:
                     total_under = search_total
                     break
@@ -59,7 +67,7 @@ class StatMath:
 
     def calculate_percent_by_total(self, seq: list, total: float):
         if not seq:
-            return None, None
+            return None
 
         less_than_total = 0
         greater_than_total = 0
@@ -72,6 +80,6 @@ class StatMath:
 
         total_count = len(seq)
         less_than_percentage = round((less_than_total / total_count) * 100, 2)
-        greater_than_percentage = round((greater_than_total / total_count) * 100, 2)
+        # greater_than_percentage = round((greater_than_total / total_count) * 100, 2)
 
-        return less_than_percentage, greater_than_percentage
+        return less_than_percentage

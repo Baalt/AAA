@@ -150,36 +150,47 @@ allcount: {self.length}
 __avg_15: {self.average}"""
 
 
-class ManualSearchPrinter:
-    def __init__(self, league, big_match_data: dict, data: dict,
-                 category, statistic_name):
-        self.league = league
-        self.big_match_data = big_match_data
-        self.data = data
-        self.category = category
-        self.statistic_name = statistic_name
+class LiveMessageBuilder:
+    def __init__(self, league_name, referee_name,
+                 home_command_name, away_command_name,
+                 statistic, live_dict):
+        self.league_name = league_name
+        self.home_command_name = home_command_name
+        self.away_command_name = away_command_name
+        self.referee_name = referee_name
+        self.statistic = statistic
+        self.live_dict = live_dict
 
-    def create_message(self):
-        return f"""
-__League: {self.league}
-ST Teams: {self.big_match_data['home_command_name']} - {self.big_match_data['away_command_name']}
-Category: {self.category}
+    def get_message(self):
+        return f"""         
+########## LIVE ##########
 
-StatName: {self.statistic_name}
+__League: {self.league_name}
+ST Teams: {self.home_command_name} - {self.away_command_name}
+StatName: {self.statistic}
+Ref Name: {self.referee_name}
 
+Ref15 T%: {self.live_dict['ref_15_under_t']} - {self.live_dict['ref_15_under_p']:03.2f}% 
+RefAllT%: {self.live_dict['ref_all_under_t']} - {self.live_dict['ref_all_under_p']:03.2f}% {self.live_dict['ref_all_len']:03d} | {self.live_dict['ref_avg']}
 
-RefAll: {self.data['ref_all_under']['+2'] if 'TU' in self.category else self.data['ref_all_over']['+2']}{self.data['ref_all_len']}
-Ref15: {self.data['ref_15_under']['+2'] if 'TU' in self.category else self.data['ref_15_over']['+2']}{self.data['ref_15_len']}
-Big Data: {self.data['home_all_under']['+2'] if 'TU' in self.category else self.data['home_all_over']}{self.data['home_all_len']}
-LastYear: 
-__Similar:
-SimlLow: 
-SimiHigh: 
-_____L15: 
-L10___HA: 
-_____L10: 
-______L5: 
+CYear T%: {self.live_dict['under_year_t']} - {self.live_dict['under_year_p']:03.2f}% {self.live_dict['len_under_year_1']:03d} | {self.live_dict['len_under_year_2']:03d}
+CSim  T%: {self.live_dict['under_sim_t']} - {self.live_dict['under_sim_p']:03.2f}% {self.live_dict['len_under_sim_1']:03d} | {self.live_dict['len_under_sim_2']:03d}
+CL15  T%: {self.live_dict['under_20_t']} - {self.live_dict['under_20_p']:03.2f}% {self.live_dict['len_under_20_1']:03d} | {self.live_dict['len_under_20_2']:03d}
+CHA   T%: {self.live_dict['under_ha_t']} - {self.live_dict['under_ha_p']:03.2f}% {self.live_dict['len_under_ha_1']:03d} | {self.live_dict['len_under_ha_2']:03d}
+----------------  + 1   ----------------
+Ref15 T%: {self.live_dict['ref_15_under_t1']} - {self.live_dict['ref_15_under_p1']:03.2f}% 
+RefAllT%: {self.live_dict['ref_all_under_t1']} - {self.live_dict['ref_all_under_p1']:03.2f}% 
 
+CYear T%: {self.live_dict['under_year_t1']} - {self.live_dict['under_year_p1']:03.2f}% 
+CSim  T%: {self.live_dict['under_sim_t1']} - {self.live_dict['under_sim_p1']:03.2f}% 
+CL15  T%: {self.live_dict['under_20_t1']} - {self.live_dict['under_20_p1']:03.2f}% 
+CHA   T%: {self.live_dict['under_ha_t1']} - {self.live_dict['under_ha_p1']:03.2f}% 
+----------------  + 2   ----------------
+Ref15 T%: {self.live_dict['ref_15_under_t2']} - {self.live_dict['ref_15_under_p2']:03.2f}% 
+RefAllT%: {self.live_dict['ref_all_under_t2']} - {self.live_dict['ref_all_under_p2']:03.2f}% 
 
-
+CYear T%: {self.live_dict['under_year_t2']} - {self.live_dict['under_year_p2']:03.2f}% 
+CSim  T%: {self.live_dict['under_sim_t2']} - {self.live_dict['under_sim_p2']:03.2f}% 
+CL15  T%: {self.live_dict['under_20_t2']} - {self.live_dict['under_20_p2']:03.2f}% 
+CHA   T%: {self.live_dict['under_ha_t2']} - {self.live_dict['under_ha_p2']:03.2f}% 
 """

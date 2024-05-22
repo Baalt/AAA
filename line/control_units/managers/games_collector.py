@@ -11,7 +11,7 @@ from line.control_units.filters.last_year_filter import LastYearFilter
 from graph.matrix_data_generator import MatrixDataGenerator
 from telega.telegram_bot import TelegramBot
 from telega import config
-from utils.error import LiveDictBuilderError
+from utils.error import LiveDictBuilderError, ContinueError
 
 
 class AllGamesCollector:
@@ -37,6 +37,11 @@ class AllGamesCollector:
                 league = full_league_name.split(':')[-1].strip()
                 for game_url in self.schedule_data[full_league_name]['match_url']:
                     self.driver.open_page(game_url)
+                    referee_manager = RefereeCollector(driver=self.driver, league=league)
+                    try:
+                        referee_manager.is_referee_button_exist()
+                    except ContinueError:
+                        continue
                     try:
                         game_manager = GameCollector(
                             driver=self.driver,
@@ -64,13 +69,11 @@ class AllGamesCollector:
 
                         coeff_manager = CoefficientDataManager(driver=self.driver)
                         coeff_manager.get_coefficients_data()
-                        referee_manager = RefereeCollector(driver=self.driver, league=league)
                         try:
                             referee_manager.collect_referee_data()
                             referee_data = referee_manager.scraper.get_data()
-                        except NoSuchElementException:
-                            referee_data = None
-
+                        except NoSuchElementException as e:
+                            raise e
                         self.game_number += 1
                         try:
                             league_data = self.all_league_data[full_league_name]

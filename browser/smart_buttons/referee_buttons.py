@@ -10,6 +10,14 @@ class RefereeButtons:
     def __init__(self):
         self.browser = None
 
+    def check_button_exists(self, selector="//a[starts-with(normalize-space(), 'Рефери')]"):
+        try:
+            # Find the button element by searching for the anchor tag with specific text
+            self.browser.find_element(By.XPATH, selector)
+            return True
+        except NoSuchElementException:
+            return False
+
     def check_and_press_referee_button(self, selector="//a[starts-with(normalize-space(), 'Рефери')]"):
         try:
             # Find the button element by searching for the anchor tag with specific text

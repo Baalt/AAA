@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 
 from browser.browser import SmartChromeDriver
 from line.control_units.scrapers.referee_scraper import RefereeScraper
+from utils.error import ContinueError
 
 
 class RefereeCollector:
@@ -12,6 +13,10 @@ class RefereeCollector:
         self.driver = driver
         self.league = league
         self.scraper = RefereeScraper()
+
+    def is_referee_button_exist(self):
+        if not self.driver.buttons.check_button_exists():
+            raise ContinueError
 
     def collect_referee_data(self):
         is_referee_button = self.driver.buttons.check_and_press_referee_button()

@@ -98,12 +98,14 @@ class LiveDictBuilder(FromDictToStructure):
                 self.similar_away_commands_list_high and self.similar_away_commands_list_low:
             live_data_manager = FromStructureToLiveDict(
                 league=self.league_name,
+                league_data=self.all_league_data,
                 team1_name=main_home_command_name,
                 team2_name=main_away_command_name,
                 game_number=self.game_number,
                 referee_data=self.referee_data,
                 big_matrix_data=self.big_matrix_data,
-                year_matrix_data=self.year_matrix_data)
+                year_matrix_data=self.year_matrix_data,
+                telegram=self.telegram)
 
             for statistic_name in self.big_match_data:
                 if not statistic_name.startswith('home') and not statistic_name.startswith('away'):
@@ -139,7 +141,7 @@ class LiveDictBuilder(FromDictToStructure):
                             # else:
                             #     structures.championship_valid_and_create()
 
-                            live_data_manager.calculate(
+                            await live_data_manager.calculate(
                                 home_structure=home_structure,
                                 away_structure=away_structure,
                                 statistic_name=statistic_name)

@@ -5,13 +5,17 @@ import numpy as np
 class BoundaryLiveValues:
     def __init__(self,
                  league: str,
+                 league_data,
                  team1_name: str,
                  team2_name: str,
                  game_number: str,
                  referee_data: dict,
                  big_matrix_data,
-                 year_matrix_data):
+                 year_matrix_data,
+                 telegram):
 
+        self.telegram = telegram
+        self.league_data = league_data
         self.big_matrix_data = big_matrix_data
         self.year_matrix_data = year_matrix_data
         self.referee_data = referee_data
@@ -36,15 +40,16 @@ class BoundaryLiveValues:
             'big_matrix_data': self.big_matrix_data,
             'year_matrix_data': self.year_matrix_data,
             'referee_name': self.referee_name,
-            'yellow cards_reff_15_over': None,
-            'yellow cards_reff_15_under': None,
-            'yellow cards_reff_all_over': None,
-            'yellow cards_reff_all_under': None,
-            'fouls_reff_15_over': None,
-            'fouls_reff_15_under': None,
-            'fouls_reff_all_over': None,
-            'fouls_reff_all_under': None
         }
+
+        self.files = [
+            "graph/data/current_season_points.png",
+            "graph/data/previous_season_points.png",
+            "graph/data/current_season_stat.png",
+            "graph/data/previous_season_stat.png",
+            "graph/data/year_current_season_stat.png",
+            "graph/data/year_previous_season_stat.png"
+        ]
 
     def total_calculation(self, seq: list, percent: int):
         total_under = None
@@ -53,7 +58,6 @@ class BoundaryLiveValues:
             total_count = len(seq)
         except TypeError:
             return None, None
-
 
         # Calculation for totals under a certain threshold
         if total_count:
