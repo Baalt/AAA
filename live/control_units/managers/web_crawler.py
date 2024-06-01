@@ -10,15 +10,17 @@ from selenium.common.exceptions import NoSuchElementException, ElementClickInter
 from bs4 import BeautifulSoup
 
 from browser.browser import LiveChromeDriver
+from live.control_units.managers.tasks.main_operations import FootballMenuHandler
 from live.control_units.scrapers.game_scraper import RealTimeGameScraper
 from live.analytics.match_analyzer import RedLiveCompare, SmartLiveCompare
 from utils.error import ContinueError
 from pprint import pprint
 
 
-class WebCrawler:
-    def __init__(self, driver: LiveChromeDriver, smart_data: dict, league_data: dict,
-                 line_data: dict, tel, excluded_games: dict):
+class WebCrawler(FootballMenuHandler):
+    def __init__(self, driver: LiveChromeDriver, smart_data: dict, league_data: dict, line_data: dict, tel,
+                 excluded_games: dict):
+        super().__init__(driver)
         self.driver = driver
         self.smart_data = smart_data
         self.league_data = league_data
@@ -26,6 +28,8 @@ class WebCrawler:
         self.tel = tel
         self.first_time_scanned = True
         self.excluded_games = excluded_games
+        self.scannable_games = []
+        self.games_xpath = '//a[contains(@class, "filter-item-event-container")]'
 
     async def run_crawler(self):
         start_time = time.time()
@@ -39,192 +43,202 @@ class WebCrawler:
 
     async def click_all_games(self):
         if self.first_time_scanned:
-            buttons_xpath = f'//a[contains(@class, "filter-item-event--20qx1S")]'
-            buttons = self.driver.driver.find_elements(By.XPATH, buttons_xpath)
-            for element in buttons:
-                try:
-                    key = element.text
-                except WebDriverException:
-                    continue
-                if self.is_valid_name(name=key) and key not in self.smart_data:
-                    if self.click_element(element):
+            first_time_lst = []
+            self.scroll_up()
+            time.sleep(2)
+            while True:
+                all_buttons = self.driver.driver.find_elements(
+                    By.XPATH,
+                    f'//a[contains(@class, "filter-item-event-container")]'
+                )
+                buttons = []
+                for button in all_buttons:
+                    try:
+                        if button.text not in first_time_lst:
+                            buttons.append(button)
+                    except StaleElementReferenceException:
+                        continue
+
+                if not buttons:
+                    self.scroll_page_down()
+                    time.sleep(2)
+                    all_buttons = self.driver.driver.find_elements(
+                        By.XPATH,
+                        '//a[contains(@class, "filter-item-event-container")]'
+                    )
+                    buttons = []
+                    for button in all_buttons:
                         try:
-                            self.wait_for_info_elements()
-                            self.scraper = RealTimeGameScraper()
-                            await self.stats_filter(key=key, first_time=True)
-                        except (ContinueError, KeyError):
+                            if button.text not in first_time_lst:
+                                buttons.append(button)
+                        except StaleElementReferenceException:
                             continue
-            print(f'number of scanned free games {len(self.excluded_games)}')
+                    if not buttons:
+                        break
+
+                for button in buttons:
+                    try:
+                        button.click()
+                        first_time_lst.append(button.text)
+                        self.browser.driver.execute_script(
+                            "arguments[0].scrollIntoView({block: 'center'});", button)
+                    except (StaleElementReferenceException, ElementClickInterceptedException):
+                        continue
+                    if not self.is_valid_name(button.text):
+                        continue
+                    try:
+                        time.sleep(1)
+                        stats_button = self.driver.buttons.get_stats_button()
+                    except NoSuchElementException:
+                        continue
+                    if stats_button:
+                        try:
+                            stats_button.click()
+                            time.sleep(1)
+                        except StaleElementReferenceException:
+                            continue
+                        try:
+                            if self.driver.buttons.is_cards_button('Yellow cards') or \
+                                    self.driver.buttons.is_cards_button('Fouls'):
+                                self.scannable_games.append(button.text)
+                                self.wait_for_elements()
+                                self.scraper = RealTimeGameScraper()
+                                soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                                self.collect_game_info(soup=soup)
+                                if self.driver.buttons.is_cards_button('Yellow cards'):
+                                    self.driver.buttons.get_cards_button('Yellow cards').click()
+                                    time.sleep(0.5)
+                                    self.wait_for_elements()
+                                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                                    for stat_key in RealTimeGameScraper.keys:
+                                        self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                                   **RealTimeGameScraper.keys[stat_key])
+
+                                if self.driver.buttons.is_cards_button('Fouls'):
+                                    self.driver.buttons.get_cards_button('Fouls').click()
+                                    time.sleep(0.5)
+                                    self.wait_for_elements()
+                                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                                    for stat_key in RealTimeGameScraper.keys:
+                                        self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                                   **RealTimeGameScraper.keys[stat_key])
+                        except NoSuchElementException as e:
+                            print('click_all_games.ERROR:', e)
+                            continue
             self.first_time_scanned = None
         else:
-            await self.click_filter_games(keys=self.smart_data, smart=True)
-            await self.click_filter_games(keys=self.excluded_games)
+            await self.click_scannable_games()
 
-    async def click_filter_games(self, keys, smart=None):
-        for key in keys:
-            xpath = f'//a[contains(@class, "filter-item-event--20qx1S") and starts-with(normalize-space(), "{key}")]'
-            if not self.click_element(xpath):
-                continue
-            if smart:
-                self.wait_for_elements()
-                time.sleep(0.5)
-                self.scraper = RealTimeGameScraper()
-                if self.driver.buttons.is_match_button_clicked():
-                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                    self.scrape_team_names(soup=soup)
-                    self.scraper.collect_stats(soup=soup, match_stat='goals', **RealTimeGameScraper.keys['goals'])
-                else:
+    async def click_scannable_games(self):
+        self.scroll_up()
+        time.sleep(2)
+        for game in self.scannable_games:
+            previous_scroll_position = self.driver.driver.execute_script("return window.pageYOffset;")
+            while True:
+                all_buttons = self.driver.driver.find_elements(
+                    By.XPATH,
+                    f'//a[contains(@class, "filter-item-event-container") and .//span[contains(@class, "filter-component-text") and contains(text(), "{game}")]]'
+                )
+
+                if all_buttons:
+                    button = all_buttons[0]
                     try:
-                        self.driver.buttons.get_match_button().click()
-                        self.wait_for_elements()
-                        # time.sleep(0.5)
-                        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                        button.click()
+                        self.driver.driver.execute_script(
+                            "arguments[0].scrollIntoView({block: 'center'});", button
+                        )
                         try:
-                            self.scraper.scrape_team_names(soup=soup)
-                        except AttributeError:
-                            try:
-                                time.sleep(1)
+                            time.sleep(1)
+                            stats_button = self.driver.buttons.get_stats_button()
+                        except NoSuchElementException:
+                            continue
+
+                        stats_button.click()
+
+                        if self.driver.buttons.is_cards_button('Yellow cards') or \
+                                self.driver.buttons.is_cards_button('Fouls'):
+                            self.wait_for_elements()
+                            self.scraper = RealTimeGameScraper()
+                            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                            self.collect_game_info(soup=soup)
+                            if self.driver.buttons.is_cards_button('Yellow cards'):
+                                self.driver.buttons.get_cards_button('Yellow cards').click()
+                                time.sleep(0.5)
+                                self.wait_for_elements()
                                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                self.scraper.scrape_team_names(soup=soup)
-                            except AttributeError as e:
-                                print('scrape_team_names error', e)
-                                continue
-                        self.scraper.collect_stats(soup=soup, match_stat='goals', **RealTimeGameScraper.keys['goals'])
-                    except (NoSuchElementException, StaleElementReferenceException):
-                        continue
-                try:
-                    self.driver.buttons.get_stats_button()
-                except NoSuchElementException:
-                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                    try:
-                        self.collect_game_info(soup)
-                    except AttributeError:
-                        continue
-                    pprint(self.scraper.get_game_info())
-                    # await SmartLiveCompare(smart_data=self.smart_data[key],
-                    #                        live_data=self.scraper.get_game_info(),
-                    #                        league_data=self.league_data,
-                    #                        telegram=self.tel).compare()
-                try:
-                    await self.stats_filter(key=key, smart=True)
-                except ContinueError:
-                    continue
-            else:
-                self.wait_for_elements()
-                self.scraper = RealTimeGameScraper()
-                try:
-                    await self.stats_filter(key=key)
-                except ContinueError:
-                    continue
+                                for stat_key in RealTimeGameScraper.keys:
+                                    self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                               **RealTimeGameScraper.keys[stat_key])
 
-    async def stats_filter(self, key, smart=None, first_time=None):
-        try:
-            stats_button = self.driver.buttons.get_stats_button()
-        except NoSuchElementException:
-            raise ContinueError
-        if stats_button:
-            try:
-                stats_button.click()
-            except StaleElementReferenceException:
-                raise ContinueError
-            time.sleep(0.5)
-            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            if not smart:
-                self.scrape_team_names(soup=soup)
-            for stat_key in RealTimeGameScraper.keys:
-                self.scraper.collect_stats(soup=soup, match_stat=stat_key, **RealTimeGameScraper.keys[stat_key])
-                self.scraper.scrape_match_stats(soup=soup)
-            try:
-                self.wait_for_info_elements()
-                self.collect_game_info(soup=soup)
-            except AttributeError:
-                raise ContinueError
+                            if self.driver.buttons.is_cards_button('Fouls'):
+                                self.driver.buttons.get_cards_button('Fouls').click()
+                                time.sleep(0.5)
+                                self.wait_for_elements()
+                                soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                                for stat_key in RealTimeGameScraper.keys:
+                                    self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                               **RealTimeGameScraper.keys[stat_key])
+                            pprint(self.scraper.get_game_info())
+                        break
+                    except (StaleElementReferenceException, ElementClickInterceptedException):
+                        self.scroll_page_down()
+                        time.sleep(2)
+                else:
+                    self.scroll_page_down()
+                    time.sleep(2)
+                    new_scroll_position = self.driver.driver.execute_script("return window.pageYOffset;")
+                    if new_scroll_position == previous_scroll_position:
+                        print(f"Game '{game}' not found. Removing from scannable_games.")
+                        self.scannable_games.remove(game)
+                        break
+                    previous_scroll_position = new_scroll_position
 
-            live_data = self.scraper.get_game_info()
-            if 'yellow cards' in live_data or 'fouls' in live_data:
-                if first_time:
-                    try:
-                       self.excluded_games[key]
-                    except KeyError:
-                        self.excluded_games[key] = {
-                            'red_foul': True,
-                            'red_yellow': True,
-                            'hand_yellow': True
-                        }
-                await RedLiveCompare(live_data=live_data,
-                                     line_data=self.line_data,
-                                     telegram=self.tel,
-                                     excluded_games=self.excluded_games,
-                                     game_key=key).compare()
-
-            if smart:
-                await SmartLiveCompare(smart_data=self.smart_data[key],
-                                       live_data=live_data,
-                                       league_data=self.league_data,
-                                       telegram=self.tel).compare()
-
-    def click_element(self, element_or_xpath):
-        try:
-            element = self.driver.driver.find_element(
-                By.XPATH, element_or_xpath) if isinstance(element_or_xpath, str) else element_or_xpath
-            try:
-                element.click()
-            except StaleElementReferenceException:
-                return
-            except ElementClickInterceptedException:
-                # Scroll to the element before clicking
-                self.driver.driver.execute_script("arguments[0].scrollIntoView();", element)
-                # Click on the element using an offset position
-                actions = ActionChains(self.driver.driver)
-                actions.move_to_element(element).move_by_offset(10, 10).click().perform()
-                element.click()
-        except (NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException):
-            return
-        return True
+    # async def stats_filter(self, key, smart=None, first_time=None):
+    #     if 'yellow cards' in live_data or 'fouls' in live_data:
+    #         if first_time:
+    #             try:
+    #                 self.excluded_games[key]
+    #             except KeyError:
+    #                 self.excluded_games[key] = {
+    #                     'red_foul': True,
+    #                     'red_yellow': True,
+    #                     'hand_yellow': True
+    #                 }
+    #         await RedLiveCompare(live_data=live_data,
+    #                              line_data=self.line_data,
+    #                              telegram=self.tel,
+    #                              excluded_games=self.excluded_games,
+    #                              game_key=key).compare()
+    #
+    #     if smart:
+    #         await SmartLiveCompare(smart_data=self.smart_data[key],
+    #                                live_data=live_data,
+    #                                league_data=self.league_data,
+    #                                telegram=self.tel).compare()
 
     def collect_game_info(self, soup):
         try:
-            self.scraper.scrape_league(soup=soup)
-            self.scraper.scrape_match_score(soup=soup)
-            self.scraper.scrape_match_time(soup=soup)
-            self.scraper.scrape_red_cards(soup=soup)
+            self.scraper.scrape_league(soup)
+            self.scraper.scrape_game_info(soup)
+            self.scraper.scrape_match_stats(soup)
         except AttributeError:
             time.sleep(1)
-            self.scraper.scrape_league(soup=soup)
-            self.scraper.scrape_match_score(soup=soup)
-            self.scraper.scrape_match_time(soup=soup)
-            self.scraper.scrape_red_cards(soup=soup)
-
-    def scrape_team_names(self, soup):
-        try:
-            self.scraper.scrape_team_names(soup=soup)
-        except AttributeError:
+            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             try:
-                time.sleep(1)
-                soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                self.scraper.scrape_team_names(soup=soup)
+                self.scraper.scrape_league(soup)
+                self.scraper.scrape_game_info(soup)
+                self.scraper.scrape_match_stats(soup)
             except AttributeError as e:
-                print('scrape_team_names error', e)
+                print('collect_game_info', e)
                 raise ContinueError
 
     def wait_for_elements(self):
         try:
             WebDriverWait(self.driver.driver, 10).until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, '//div[contains(@class, "tables--SkIhq")]')))
-        except TimeoutException:
-            pass
-
-    def wait_for_info_elements(self):
-        try:
-            WebDriverWait(self.driver.driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.XPATH, '//div[contains(@class, "event-view__header__scoreboard-container")]')))
+                    (By.XPATH, '//div[contains(@class, "sport-footer__wrap")]')))
         except TimeoutException:
             pass
 
     def get_live_data(self):
         self.scraper.get_game_info()
-
-    def is_valid_name(self, name):
-        return '(' not in name and '-pro' not in name and not re.search('U\d\d', name)

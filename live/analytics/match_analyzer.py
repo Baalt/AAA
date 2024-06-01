@@ -159,12 +159,12 @@ class SmartLiveCompare:
                     smart_dct = self.smart_data['smart_data'][statistic]
                     total_under = smart_dct['TU']
                     total_over = smart_dct['TO']
-                    total_1_under = smart_dct['TU_1']
-                    total_1_over = smart_dct['TO_1']
-                    total_2_under = smart_dct['TU_2']
-                    total_2_over = smart_dct['TO_2']
-                    handicap_1 = smart_dct['H1']
-                    handicap_2 = smart_dct['H2']
+                    # total_1_under = smart_dct['TU_1']
+                    # total_1_over = smart_dct['TO_1']
+                    # total_2_under = smart_dct['TU_2']
+                    # total_2_over = smart_dct['TO_2']
+                    # handicap_1 = smart_dct['H1']
+                    # handicap_2 = smart_dct['H2']
                 except KeyError:
                     # print('self.smart_dataError', err)
                     continue
@@ -177,33 +177,33 @@ class SmartLiveCompare:
                                           key_under='TU',
                                           key_over='TO')
 
-                await self.__search_total(statistic=statistic,
-                                          statistic_key='team1_totals',
-                                          total_under=total_1_under,
-                                          total_over=total_1_over,
-                                          rate_direction='total_1',
-                                          key_under='TU_1',
-                                          key_over='TO_1')
-
-                await self.__search_total(statistic=statistic,
-                                          statistic_key='team2_totals',
-                                          total_under=total_2_under,
-                                          total_over=total_2_over,
-                                          rate_direction='total_2',
-                                          key_under='TU_2',
-                                          key_over='TO_2')
-
-                await self.__search_handicap(statistic=statistic,
-                                             statistic_key='team1_handicaps',
-                                             handicap=handicap_1,
-                                             rate_direction='handicap_1',
-                                             key_handicap='H1')
-
-                await self.__search_handicap(statistic=statistic,
-                                             statistic_key='team2_handicaps',
-                                             handicap=handicap_2,
-                                             rate_direction='handicap_2',
-                                             key_handicap='H2')
+                # await self.__search_total(statistic=statistic,
+                #                           statistic_key='team1_totals',
+                #                           total_under=total_1_under,
+                #                           total_over=total_1_over,
+                #                           rate_direction='total_1',
+                #                           key_under='TU_1',
+                #                           key_over='TO_1')
+                #
+                # await self.__search_total(statistic=statistic,
+                #                           statistic_key='team2_totals',
+                #                           total_under=total_2_under,
+                #                           total_over=total_2_over,
+                #                           rate_direction='total_2',
+                #                           key_under='TU_2',
+                #                           key_over='TO_2')
+                #
+                # await self.__search_handicap(statistic=statistic,
+                #                              statistic_key='team1_handicaps',
+                #                              handicap=handicap_1,
+                #                              rate_direction='handicap_1',
+                #                              key_handicap='H1')
+                #
+                # await self.__search_handicap(statistic=statistic,
+                #                              statistic_key='team2_handicaps',
+                #                              handicap=handicap_2,
+                #                              rate_direction='handicap_2',
+                #                              key_handicap='H2')
 
     async def __search_total(self, statistic, statistic_key,
                              total_under, total_over,

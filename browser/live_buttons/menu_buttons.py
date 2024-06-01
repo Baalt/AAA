@@ -22,14 +22,15 @@ class FootballMenuButtons:
     def __init__(self):
         self.browser = None
 
-    def get_football_category_button(
-            self,
-            selector='//div[contains(@class, "vertical-panel__grow")]'
-                     '//div[contains(@class, "filter-component-row-container")][1]'
-                     '//span[contains(@class, "filter-item-sport__expander")]'):
-        button = WebDriverWait(self.browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, selector)))
-        return button
+    def get_football_category_button(self):
+        selector = '//div[contains(@class, "filter-component-row") and contains(@class, "filter-item-sport")]'
+        football_div = WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.XPATH, selector)))
+        football_text_span = football_div.find_element(By.XPATH, './/span[contains(@class, "filter-component-text")]')
+        if 'Football' in football_text_span.text:
+            button = football_div.find_element(By.XPATH, './/span[contains(@class, "filter-component-expander")]')
+            return button
+        else:
+            return None
 
     def get_show_all_button(self, selector='//span[text()="Show all"]'):
         button = self.browser.find_element(By.XPATH, selector)
@@ -37,7 +38,6 @@ class FootballMenuButtons:
 
     def get_all_leagues_buttons(
             self,
-            selector='//div[contains(@class, "filter-component-row-container--jBqNU") and contains(@class, "selected")]'
-                     '//span[contains(@class, "filter-component-expander--fx9FJ")]'):
+            selector='//span[@class="filter-component-expander--fx9FJ _dropDownMode--KDf2N filter-item-competition__expander--qq1th"]'):
         buttons = self.browser.find_elements(By.XPATH, selector)
         return buttons

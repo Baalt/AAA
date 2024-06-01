@@ -1,6 +1,5 @@
 from live.control_units.managers.tasks.main_operations import FootballMenuHandler
 from live.control_units.managers.tasks.team_browser_list_collector import MatchCollector
-from live.control_units.scrapers.schedule_data_collector import LiveScheduleScraper
 
 
 class ScheduleManager:
@@ -15,9 +14,8 @@ class ScheduleManager:
         controller.open_full_leagues_list()
         controller.open_all_football_leagues()
 
-        controller_1 = LiveScheduleScraper(html=self.driver.get_page_html())
         controller_2 = MatchCollector(matches=self.matches)
-        controller_2.collect_matches(schedule_dict=controller_1.extract_commands_to_dict(),
+        controller_2.collect_matches(schedule_dict=controller.get_commands_dict(),
                                      smart_dict=self.smart_dict)
         return controller_2.get_matches()
 

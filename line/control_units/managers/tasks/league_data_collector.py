@@ -37,7 +37,7 @@ class LeagueDataCollector:
             self.driver.buttons.get_smart_stats_buttons()[0].click()
             self.refresh_page()
             self.scrape_season('previous_season')
-        except IndexError:
+        except (IndexError, NoSuchElementException):
             pass
 
     def scrape_season(self, season_key: str) -> None:

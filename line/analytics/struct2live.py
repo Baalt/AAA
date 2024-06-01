@@ -104,10 +104,13 @@ class FromStructureToLiveDict(LiveTotalCalculation, StatMath):
                 under_list_20_t = [last_20_home_t, last_20_away_t]
                 under_list_ha_t = [last_12_home_t, last_12_away_t]
 
-                under_year_t = max([var for var in under_list_year_t if var is not None])
-                under_sim_t = max([var for var in under_list_sim_t if var is not None])
-                under_20_t = max([var for var in under_list_20_t if var is not None])
-                under_ha_t = max([var for var in under_list_ha_t if var is not None])
+                try:
+                    under_year_t = max([var for var in under_list_year_t if var is not None])
+                    under_sim_t = max([var for var in under_list_sim_t if var is not None])
+                    under_20_t = max([var for var in under_list_20_t if var is not None])
+                    under_ha_t = max([var for var in under_list_ha_t if var is not None])
+                except ValueError:
+                    return
 
                 under_year_home_p = self.calculate_percent_by_total(
                     seq=home_structure.last_year_total_current_home_command_in_home_away_games,

@@ -73,7 +73,8 @@ class AllGamesCollector:
                             referee_manager.collect_referee_data()
                             referee_data = referee_manager.scraper.get_data()
                         except NoSuchElementException as e:
-                            raise e
+                            print("refereeError:", e)
+                            continue
                         self.game_number += 1
                         try:
                             league_data = self.all_league_data[full_league_name]
