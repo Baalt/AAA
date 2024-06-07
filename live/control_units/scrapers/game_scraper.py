@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from pprint import pprint
 
 
 class RealTimeGameScraper:
@@ -14,7 +15,6 @@ class RealTimeGameScraper:
         self.game_info = {'match_stats': {}}
 
     def show_game_info(self):
-        from pprint import pprint
         pprint(self.game_info)
 
     def get_game_info(self):

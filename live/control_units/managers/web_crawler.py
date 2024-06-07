@@ -1,8 +1,8 @@
 import re
 import time
+from pprint import pprint
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, \
@@ -14,7 +14,6 @@ from live.control_units.managers.tasks.main_operations import FootballMenuHandle
 from live.control_units.scrapers.game_scraper import RealTimeGameScraper
 from live.analytics.match_analyzer import RedLiveCompare, SmartLiveCompare
 from utils.error import ContinueError
-from pprint import pprint
 
 
 class WebCrawler(FootballMenuHandler):
@@ -36,9 +35,9 @@ class WebCrawler(FootballMenuHandler):
         await self.click_all_games()
         end_time = time.time()
         elapsed_time = end_time - start_time
-        if elapsed_time < 30:
-            time.sleep(30 - elapsed_time)
-        elif elapsed_time >= 30:
+        if elapsed_time < 60:
+            time.sleep(60 - elapsed_time)
+        elif elapsed_time >= 60:
             print(f"click_filter_games took {elapsed_time} seconds to complete")
 
     async def click_all_games(self):
@@ -79,12 +78,13 @@ class WebCrawler(FootballMenuHandler):
                 for button in buttons:
                     try:
                         button.click()
-                        first_time_lst.append(button.text)
+                        key = button.text
+                        first_time_lst.append(key)
                         self.browser.driver.execute_script(
                             "arguments[0].scrollIntoView({block: 'center'});", button)
                     except (StaleElementReferenceException, ElementClickInterceptedException):
                         continue
-                    if not self.is_valid_name(button.text):
+                    if not self.is_valid_name(key):
                         continue
                     try:
                         time.sleep(1)
@@ -95,12 +95,18 @@ class WebCrawler(FootballMenuHandler):
                         try:
                             stats_button.click()
                             time.sleep(1)
-                        except StaleElementReferenceException:
+                        except (StaleElementReferenceException, ElementClickInterceptedException):
                             continue
                         try:
                             if self.driver.buttons.is_cards_button('Yellow cards') or \
                                     self.driver.buttons.is_cards_button('Fouls'):
-                                self.scannable_games.append(button.text)
+                                try:
+                                    self.excluded_games[key]
+                                except KeyError:
+                                    self.excluded_games[key] = {
+                                        'red_yellow': True,
+                                    }
+                                self.scannable_games.append(key)
                                 self.wait_for_elements()
                                 self.scraper = RealTimeGameScraper()
                                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
@@ -114,6 +120,12 @@ class WebCrawler(FootballMenuHandler):
                                         self.scraper.collect_stats(soup=soup, match_stat=stat_key,
                                                                    **RealTimeGameScraper.keys[stat_key])
 
+                                    if key in self.smart_data:
+                                        await SmartLiveCompare(smart_data=self.smart_data[key],
+                                                               live_data=self.scraper.get_game_info(),
+                                                               league_data=self.league_data,
+                                                               telegram=self.tel).compare()
+
                                 if self.driver.buttons.is_cards_button('Fouls'):
                                     self.driver.buttons.get_cards_button('Fouls').click()
                                     time.sleep(0.5)
@@ -122,39 +134,102 @@ class WebCrawler(FootballMenuHandler):
                                     for stat_key in RealTimeGameScraper.keys:
                                         self.scraper.collect_stats(soup=soup, match_stat=stat_key,
                                                                    **RealTimeGameScraper.keys[stat_key])
-                        except NoSuchElementException as e:
-                            print('click_all_games.ERROR:', e)
+
+                                    if self.excluded_games[key]['red_yellow']:
+                                        await RedLiveCompare(live_data=self.scraper.get_game_info(),
+                                                             telegram=self.tel,
+                                                             excluded_games=self.excluded_games,
+                                                             game_key=key).compare()
+                                if key in self.smart_data:
+                                    await SmartLiveCompare(smart_data=self.smart_data[key],
+                                                           live_data=self.scraper.get_game_info(),
+                                                           league_data=self.league_data,
+                                                           telegram=self.tel).compare()
+                        except NoSuchElementException:
+                            # print('click_all_games.ERROR:', e)
                             continue
             self.first_time_scanned = None
         else:
             await self.click_scannable_games()
 
     async def click_scannable_games(self):
+        round_lst = []
         self.scroll_up()
         time.sleep(2)
-        for game in self.scannable_games:
-            previous_scroll_position = self.driver.driver.execute_script("return window.pageYOffset;")
-            while True:
+        while True:
+            all_buttons = self.driver.driver.find_elements(
+                By.XPATH,
+                f'//a[contains(@class, "filter-item-event-container")]'
+            )
+            buttons = []
+            for button in all_buttons:
+                try:
+                    if button.text not in round_lst:
+                        buttons.append(button)
+                except StaleElementReferenceException:
+                    continue
+
+            if not buttons:
+                self.scroll_page_down()
+                time.sleep(2)
                 all_buttons = self.driver.driver.find_elements(
                     By.XPATH,
-                    f'//a[contains(@class, "filter-item-event-container") and .//span[contains(@class, "filter-component-text") and contains(text(), "{game}")]]'
+                    '//a[contains(@class, "filter-item-event-container")]'
                 )
-
-                if all_buttons:
-                    button = all_buttons[0]
+                buttons = []
+                for button in all_buttons:
                     try:
-                        button.click()
-                        self.driver.driver.execute_script(
-                            "arguments[0].scrollIntoView({block: 'center'});", button
-                        )
+                        if button.text not in round_lst:
+                            buttons.append(button)
+                    except StaleElementReferenceException:
+                        continue
+                if not buttons:
+                    # Try clicking the last button
+                    try:
+                        last_button = all_buttons[-1]
+                        self.browser.driver.execute_script(
+                            "arguments[0].scrollIntoView({block: 'center'});", last_button)
+                        last_button.click()
+                    except IndexError:
+                        pass
+                    except (StaleElementReferenceException, ElementClickInterceptedException):
+                        # If the last button fails, try the penultimate button
                         try:
-                            time.sleep(1)
-                            stats_button = self.driver.buttons.get_stats_button()
-                        except NoSuchElementException:
-                            continue
+                            penultimate_button = all_buttons[-2]
+                            self.browser.driver.execute_script(
+                                "arguments[0].scrollIntoView({block: 'center'});", penultimate_button)
+                            penultimate_button.click()
+                        except IndexError:
+                            pass
+                        except (StaleElementReferenceException, ElementClickInterceptedException):
+                            pass
+                    break
 
+            for button in buttons:
+                try:
+                    self.browser.driver.execute_script(
+                        "arguments[0].scrollIntoView({block: 'center'});", button)
+                    key = button.text
+                    if key in self.scannable_games:
+                        button.click()
+                        round_lst.append(key)
+                    else:
+                        round_lst.append(key)
+                        continue
+                except (StaleElementReferenceException, ElementClickInterceptedException):
+                    continue
+                try:
+                    time.sleep(1)
+                    stats_button = self.driver.buttons.get_stats_button()
+                except NoSuchElementException:
+                    continue
+                if stats_button:
+                    try:
                         stats_button.click()
-
+                        time.sleep(1)
+                    except (StaleElementReferenceException, ElementClickInterceptedException):
+                        continue
+                    try:
                         if self.driver.buttons.is_cards_button('Yellow cards') or \
                                 self.driver.buttons.is_cards_button('Fouls'):
                             self.wait_for_elements()
@@ -170,6 +245,12 @@ class WebCrawler(FootballMenuHandler):
                                     self.scraper.collect_stats(soup=soup, match_stat=stat_key,
                                                                **RealTimeGameScraper.keys[stat_key])
 
+                                if key in self.smart_data:
+                                    await SmartLiveCompare(smart_data=self.smart_data[key],
+                                                           live_data=self.scraper.get_game_info(),
+                                                           league_data=self.league_data,
+                                                           telegram=self.tel).compare()
+
                             if self.driver.buttons.is_cards_button('Fouls'):
                                 self.driver.buttons.get_cards_button('Fouls').click()
                                 time.sleep(0.5)
@@ -178,43 +259,21 @@ class WebCrawler(FootballMenuHandler):
                                 for stat_key in RealTimeGameScraper.keys:
                                     self.scraper.collect_stats(soup=soup, match_stat=stat_key,
                                                                **RealTimeGameScraper.keys[stat_key])
-                            pprint(self.scraper.get_game_info())
-                        break
-                    except (StaleElementReferenceException, ElementClickInterceptedException):
-                        self.scroll_page_down()
-                        time.sleep(2)
-                else:
-                    self.scroll_page_down()
-                    time.sleep(2)
-                    new_scroll_position = self.driver.driver.execute_script("return window.pageYOffset;")
-                    if new_scroll_position == previous_scroll_position:
-                        print(f"Game '{game}' not found. Removing from scannable_games.")
-                        self.scannable_games.remove(game)
-                        break
-                    previous_scroll_position = new_scroll_position
 
-    # async def stats_filter(self, key, smart=None, first_time=None):
-    #     if 'yellow cards' in live_data or 'fouls' in live_data:
-    #         if first_time:
-    #             try:
-    #                 self.excluded_games[key]
-    #             except KeyError:
-    #                 self.excluded_games[key] = {
-    #                     'red_foul': True,
-    #                     'red_yellow': True,
-    #                     'hand_yellow': True
-    #                 }
-    #         await RedLiveCompare(live_data=live_data,
-    #                              line_data=self.line_data,
-    #                              telegram=self.tel,
-    #                              excluded_games=self.excluded_games,
-    #                              game_key=key).compare()
-    #
-    #     if smart:
-    #         await SmartLiveCompare(smart_data=self.smart_data[key],
-    #                                live_data=live_data,
-    #                                league_data=self.league_data,
-    #                                telegram=self.tel).compare()
+                                if self.excluded_games[key]['red_yellow']:
+                                    await RedLiveCompare(live_data=self.scraper.get_game_info(),
+                                                         telegram=self.tel,
+                                                         excluded_games=self.excluded_games,
+                                                         game_key=key).compare()
+                            if key in self.smart_data:
+                                await SmartLiveCompare(smart_data=self.smart_data[key],
+                                                       live_data=self.scraper.get_game_info(),
+                                                       league_data=self.league_data,
+                                                       telegram=self.tel).compare()
+
+                    except NoSuchElementException:
+                        # print('click_all_games.ERROR:', e)
+                        continue
 
     def collect_game_info(self, soup):
         try:

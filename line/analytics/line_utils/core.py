@@ -266,59 +266,6 @@ class Catcher:
                         last_8_kush_by_rate=last_8_kush_by_rate,
                         last_4_kush_by_rate=last_4_kush_by_rate)
 
-        # try:
-        #     percent_1 = min(similar_percent, last_20_percent, last_12_percent, last_8_percent, last_4_percent)
-        #     min_kush = min(similar_kush_by_rate, last_20_kush_by_rate, last_12_kush_by_rate, last_8_kush_by_rate,
-        #                    last_4_kush_by_rate)
-        # except TypeError:
-        #     return
-        #
-        # if (percent_1 > low_percent and min_kush > 0.24) and similar_kush_by_rate > 0.29:
-        #     await self.process_kush_message(
-        #         len_struct_dct=self.len_struct_dct,
-        #         statistic_name=statistic_name,
-        #         league_name=league_name,
-        #         coefficients=coefficients,
-        #         coeff_set=coeff_set,
-        #         rate_direction=rate_direction,
-        #         coeff_under_over_key=coeff_under_over_key,
-        #         big_data_percent=big_data_percent,
-        #         last_year_percent=last_year_percent,
-        #         similar_percent=similar_percent,
-        #         similar_percent_low=similar_percent_low,
-        #         similar_percent_high=similar_percent_high,
-        #         last_20_percent=last_20_percent,
-        #         last_12_percent=last_12_percent,
-        #         last_8_percent=last_8_percent,
-        #         last_4_percent=last_4_percent,
-        #         referee_all=referee_all,
-        #         referee_15=referee_15,
-        #         big_data_current_percent=big_data_current_percent,
-        #         big_data_opposing_percent=big_data_opposing_percent,
-        #         last_year_current_percent=last_year_current_percent,
-        #         last_year_opposing_percent=last_year_opposing_percent,
-        #         similar_current_percent_low=similar_current_percent_low,
-        #         similar_opposing_percent_low=similar_opposing_percent_low,
-        #         similar_current_percent_high=similar_current_percent_high,
-        #         similar_opposing_percent_high=similar_opposing_percent_high,
-        #         last_20_current_percent=last_20_current_percent,
-        #         last_20_opposing_percent=last_20_opposing_percent,
-        #         last_12_current_percent=last_12_current_percent,
-        #         last_12_opposing_percent=last_12_opposing_percent,
-        #         last_8_current_percent=last_8_current_percent,
-        #         last_8_opposing_percent=last_8_opposing_percent,
-        #         last_4_current_percent=last_4_current_percent,
-        #         last_4_opposing_percent=last_4_opposing_percent,
-        #         big_data_kush_by_rate=big_data_kush_by_rate,
-        #         last_year_kush_by_rate=last_year_kush_by_rate,
-        #         similar_kush_by_rate_low=similar_kush_by_rate_low,
-        #         similar_kush_by_rate_high=similar_kush_by_rate_high,
-        #         similar_kush_by_rate=similar_kush_by_rate,
-        #         last_20_kush_by_rate=last_20_kush_by_rate,
-        #         last_12_kush_by_rate=last_12_kush_by_rate,
-        #         last_8_kush_by_rate=last_8_kush_by_rate,
-        #         last_4_kush_by_rate=last_4_kush_by_rate)
-
     async def process_kush_message(self, len_struct_dct, statistic_name: str, league_name: str, coeff_set,
                                    coeff_under_over_key, coefficients: dict, rate_direction: str,
                                    big_data_percent: float, last_year_percent: float,

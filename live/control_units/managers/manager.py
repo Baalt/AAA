@@ -47,9 +47,9 @@ if __name__ == '__main__':
                               excluded_games=excluded_games)
         while now_plus_delta > now:
             await operator.run_crawler()
-        #     try:
-        #         await tel.change_data_and_delete_messages(lv_smrt_data=lv_smrt_dct)
-        #     except NetworkError as err:
-        #         print('change_data_and_delete_messages.ERROR: ', err)
+            try:
+                await tel.change_data_and_delete_messages(lv_smrt_data=lv_smrt_dct)
+            except NetworkError as err:
+                print('change_data_and_delete_messages.ERROR: ', err)
             now = datetime.datetime.now()
         driver.open_page(LIVE_SOURCE)

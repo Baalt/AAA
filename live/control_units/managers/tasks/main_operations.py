@@ -59,7 +59,7 @@ class FootballMenuHandler:
                     ActionChains(self.browser.driver).move_to_element(button).perform()
                     button.click()
                     self.browser.driver.execute_script(
-                            "arguments[0].scrollIntoView({block: 'center'});", button)
+                        "arguments[0].scrollIntoView({block: 'center'});", button)
                 except (StaleElementReferenceException, ElementClickInterceptedException):
                     pass
 
@@ -70,6 +70,10 @@ class FootballMenuHandler:
         body = self.browser.driver.find_element(By.CSS_SELECTOR, 'body')
         # Scroll down
         body.send_keys(Keys.HOME)
+
+    # def scroll_up(self):
+    #     # Use JavaScript to scroll to the top
+    #     self.browser.driver.execute_script("window.scrollTo(0, 0);")
 
     def scroll_page_down(self):
         body = self.browser.driver.find_element(By.CSS_SELECTOR, 'body')
