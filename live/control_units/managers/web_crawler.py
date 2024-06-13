@@ -1,18 +1,16 @@
-import re
 import time
-from pprint import pprint
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, \
-    StaleElementReferenceException, TimeoutException, WebDriverException
+    StaleElementReferenceException, TimeoutException
 from bs4 import BeautifulSoup
 
 from browser.browser import LiveChromeDriver
 from live.control_units.managers.tasks.main_operations import FootballMenuHandler
 from live.control_units.scrapers.game_scraper import RealTimeGameScraper
-from live.analytics.match_analyzer import RedLiveCompare, SmartLiveCompare
+from live.analytics.match_analyzer import RedLiveCompare, SmartLiveCompare, ScoreCompare
 from utils.error import ContinueError
 
 
@@ -105,6 +103,7 @@ class WebCrawler(FootballMenuHandler):
                                 except KeyError:
                                     self.excluded_games[key] = {
                                         'red_yellow': True,
+                                        'score_under': True
                                     }
                                 self.scannable_games.append(key)
                                 self.wait_for_elements()
@@ -236,6 +235,12 @@ class WebCrawler(FootballMenuHandler):
                             self.scraper = RealTimeGameScraper()
                             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                             self.collect_game_info(soup=soup)
+                            if self.excluded_games[key]['score_under']:
+                                await ScoreCompare(live_data=self.scraper.get_game_info(),
+                                                   telegram=self.tel,
+                                                   excluded_games=self.excluded_games,
+                                                   game_key=key).compare()
+
                             if self.driver.buttons.is_cards_button('Yellow cards'):
                                 self.driver.buttons.get_cards_button('Yellow cards').click()
                                 time.sleep(0.5)

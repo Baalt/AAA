@@ -19,7 +19,7 @@ class FromStructureToLiveDict(LiveTotalCalculation, StatMath):
                         home_structure: HomeDataStructure,
                         away_structure: AwayDataStructure,
                         statistic_name: str):
-        if statistic_name in ['ЖК', 'Фолы']:
+        if statistic_name in ['ЖК', 'Фолы'] and self.referee_data[statistic_name]['count'] > 5:
             try:
                 ref_all_under_t = self.search_under_total(seq=self.referee_data[statistic_name]['all'], ref=True)
             except KeyError:
@@ -291,13 +291,13 @@ class FromStructureToLiveDict(LiveTotalCalculation, StatMath):
                 if not self.main_data['check']:
                     self.main_data['check'] = True
 
-                message = LiveMessageBuilder(league_name=self.league, referee_name=self.referee_name,
-                                             home_command_name=self.team1_name, away_command_name=self.team2_name,
-                                             live_dict=live_dict[stats_dict[statistic_name]],
-                                             statistic=stats_dict[statistic_name]).get_message()
-                print(message)
-                self.__plot_graphs(statistic_name=stats_dict[statistic_name], total=ref_15_under_t)
-                await self.telegram.send_message_with_files(message, *self.files)
+                # message = LiveMessageBuilder(league_name=self.league, referee_name=self.referee_name,
+                #                              home_command_name=self.team1_name, away_command_name=self.team2_name,
+                #                              live_dict=live_dict[stats_dict[statistic_name]],
+                #                              statistic=stats_dict[statistic_name]).get_message()
+                # print(message)
+                # self.__plot_graphs(statistic_name=stats_dict[statistic_name], total=ref_15_under_t)
+                # await self.telegram.send_message_with_files(message, *self.files)
 
     def __plot_graphs(self, statistic_name, total):
         self.delete_files_in_folder(folder_path='graph/data')

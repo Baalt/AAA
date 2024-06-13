@@ -57,9 +57,10 @@ class FootballMenuHandler:
             for button in buttons:
                 try:
                     ActionChains(self.browser.driver).move_to_element(button).perform()
-                    button.click()
                     self.browser.driver.execute_script(
                         "arguments[0].scrollIntoView({block: 'center'});", button)
+                    button.click()
+
                 except (StaleElementReferenceException, ElementClickInterceptedException):
                     pass
 

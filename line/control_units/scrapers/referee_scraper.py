@@ -28,7 +28,7 @@ class RefereeScraper:
             except ValueError:
                 continue
 
-        values15 = values[:20] if len(values) >= 20 else values
+        values15 = values[:15] if len(values) >= 15 else values
         self.data[key] = {
             'all': values,
             'count': len(values),

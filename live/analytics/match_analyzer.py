@@ -2,7 +2,7 @@ import os
 import time
 
 from graph.matrix_stats_viz import ScatterPlotBuilder
-from live.analytics.game_info import GameInfo, RedYellowCardInfo
+from live.analytics.game_info import GameInfo, ScoreInfo, RedYellowCardInfo
 from telega.telegram_bot import TelegramBot
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
@@ -11,6 +11,28 @@ from utils.stat_switcher import stats_dict
 from graph.match_stats_viz import MatchStatsVisualizer
 from graph.teams_stats_viz import TeamsStatsVisualizer
 
+
+class ScoreCompare:
+    def __init__(self, live_data: dict, telegram: TelegramBot, excluded_games: dict, game_key: str):
+        self.live_data = live_data
+        self.excluded_games = excluded_games
+        self.game_key = game_key
+        self.telegram = telegram
+
+    async def compare(self):
+        try:
+            if ':' in self.live_data['match_score']:
+                parts = self.live_data['match_score'].split(':')
+                score1 = int(parts[0].strip())
+                score2 = int(parts[1].strip())
+                if (score1 - score2) > 3.5 or (score2 - score1) > 3.5:
+                    info = ScoreInfo(live_data=self.live_data)
+                    message = info.get_game_info()
+                    print(message)
+                    await self.telegram.send_message_with_files(message)
+                    self.excluded_games[self.game_key]['score_under'] = None
+        except KeyError as e:
+            print('ScoreCompare.compare.ERROR:', e)
 
 class RedLiveCompare:
     def __init__(self, live_data: dict, telegram: TelegramBot, excluded_games: dict, game_key: str):
@@ -37,8 +59,6 @@ class RedLiveCompare:
         except KeyError as e:
             print('RedLiveCompare.compare.ERROR:', e)
 
-
-
     async def _process_and_send_message(self):
         """
         Processes the live data to extract necessary information and sends a message via Telegram.
@@ -62,7 +82,6 @@ class SmartLiveCompare:
         self.league_data = league_data
         self.telegram = telegram
         self.files = [
-            "graph/data/live_stats.png",
             "graph/data/current_season_points.png",
             "graph/data/previous_season_points.png",
             "graph/data/current_season_stat.png",

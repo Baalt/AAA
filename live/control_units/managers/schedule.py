@@ -1,3 +1,5 @@
+import time
+
 from live.control_units.managers.tasks.main_operations import FootballMenuHandler
 from live.control_units.managers.tasks.team_browser_list_collector import MatchCollector
 
@@ -10,8 +12,14 @@ class ScheduleManager:
 
     def run(self):
         controller = FootballMenuHandler(driver=self.driver)
+        time.sleep(1)
         controller.open_main_football_menu()
+        time.sleep(1)
         controller.open_full_leagues_list()
+        time.sleep(1)
+        controller.open_all_football_leagues()
+        controller.scroll_up()
+        time.sleep(1)
         controller.open_all_football_leagues()
 
         controller_2 = MatchCollector(matches=self.matches)

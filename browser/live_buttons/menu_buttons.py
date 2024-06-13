@@ -38,6 +38,12 @@ class FootballMenuButtons:
 
     def get_all_leagues_buttons(
             self,
-            selector='//span[@class="filter-component-expander--fx9FJ _dropDownMode--KDf2N filter-item-competition__expander--qq1th"]'):
+            selector='//span[contains(@class, "filter-component-expander") and contains(@class, "filter-item-competition") and not(contains(@class, "expanded"))]'):
         buttons = self.browser.find_elements(By.XPATH, selector)
         return buttons
+
+    # def get_all_leagues_buttons(
+    #         self,
+    #         selector='//span[@class="filter-component-expander--fx9FJ _dropDownMode--KDf2N filter-item-competition__expander--qq1th"]'):
+    #     buttons = self.browser.find_elements(By.XPATH, selector)
+    #     return buttons

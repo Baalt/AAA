@@ -31,14 +31,14 @@ class GameCollector:
         except NoSuchElementException:
             raise AttributeError
 
-        try:
-            self.current_league_home_command_button, \
-                self.current_league_away_command_button = self.driver.buttons.current_league_command_buttons(
-                league=self.league)
-        except AttributeError:
-            print('GameCollectorError address: line/control_units/managers/games_collector/GameCollector.__init__(...)'
-                  'current_league_home_command_button, current_league_away_command_button NOT FOUND!!!')
-            raise AttributeError
+        # try:
+        #     self.current_league_home_command_button, \
+        #         self.current_league_away_command_button = self.driver.buttons.current_league_command_buttons(
+        #         league=self.league)
+        # except AttributeError:
+        #     print('GameCollectorError address: line/control_units/managers/games_collector/GameCollector.__init__(...)'
+        #           'current_league_home_command_button, current_league_away_command_button NOT FOUND!!!')
+        #     raise AttributeError
 
     @property
     def get_data(self):

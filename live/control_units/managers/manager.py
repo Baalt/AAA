@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from selenium.common.exceptions import TimeoutException
 from telegram.error import NetworkError
@@ -34,6 +35,7 @@ if __name__ == '__main__':
     while True:
         now_plus_delta = now + datetime.timedelta(minutes=10)
         try:
+            time.sleep(2)
             browser = ScheduleManager(driver=driver, smart_dict=smart_dict)
             lv_smrt_dct = browser.run()
         except TimeoutException:
@@ -53,3 +55,4 @@ if __name__ == '__main__':
                 print('change_data_and_delete_messages.ERROR: ', err)
             now = datetime.datetime.now()
         driver.open_page(LIVE_SOURCE)
+
