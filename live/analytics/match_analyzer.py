@@ -48,7 +48,6 @@ class RedLiveCompare:
                 print(self.game_key, 'match_time == 45:00')
                 if ':' in self.live_data['red_score'] and self.live_data['red_score'] != '0 : 0':
                     await self._process_and_send_message()
-
                 if self.live_data['match_stats']['Yellow cards']:
                     yellow_1 = int(self.live_data['match_stats']['Yellow cards']['team1'])
                     yellow_2 = int(self.live_data['match_stats']['Yellow cards']['team2'])

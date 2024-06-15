@@ -1,7 +1,8 @@
 import re
 import time
 
-from selenium.common import StaleElementReferenceException, ElementClickInterceptedException, NoSuchElementException
+from selenium.common import StaleElementReferenceException, ElementClickInterceptedException, NoSuchElementException, \
+    ElementNotInteractableException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -60,21 +61,18 @@ class FootballMenuHandler:
                     self.browser.driver.execute_script(
                         "arguments[0].scrollIntoView({block: 'center'});", button)
                     button.click()
-
+                    soup = BeautifulSoup(self.browser.get_page_html(), 'lxml')
+                    self.extract_commands_to_dict(soup)
                 except (StaleElementReferenceException, ElementClickInterceptedException):
                     pass
-
-                soup = BeautifulSoup(self.browser.get_page_html(), 'lxml')
-                self.extract_commands_to_dict(soup)
+                except ElementNotInteractableException as e:
+                    print('FootballMenuHandler.open_all_football_leagues.ERROR', e)
+                    return
 
     def scroll_up(self):
         body = self.browser.driver.find_element(By.CSS_SELECTOR, 'body')
         # Scroll down
         body.send_keys(Keys.HOME)
-
-    # def scroll_up(self):
-    #     # Use JavaScript to scroll to the top
-    #     self.browser.driver.execute_script("window.scrollTo(0, 0);")
 
     def scroll_page_down(self):
         body = self.browser.driver.find_element(By.CSS_SELECTOR, 'body')
