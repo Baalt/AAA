@@ -216,7 +216,7 @@ class Catcher:
             return
 
         if statistic_name == 'ЖК' or statistic_name == 'Фолы':
-            if referee_15 and (rate_direction == 'TU' or rate_direction == 'TO'):
+            if referee_15 and rate_direction == 'TU' and self.referee_data[statistic_name]['count'] > 5:
                 is_high_percent = referee_15 > high_percent_1 and coeff > low_coeff
                 ref_count = len(self.referee_data[statistic_name]['first_15_elements'])
                 is_filter_list = round(ref_count - (referee_15 * ref_count / 100)) <= custom_round(ref_count / 10)

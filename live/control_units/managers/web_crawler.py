@@ -1,4 +1,5 @@
 import time
+# from pprint import pprint
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -103,13 +104,21 @@ class WebCrawler(FootballMenuHandler):
                                 except KeyError:
                                     self.excluded_games[key] = {
                                         'red_yellow': True,
-                                        'score_under': True
+                                        'score_under': True,
+                                        'score_mix': True
                                     }
                                 self.scannable_games.append(key)
                                 self.wait_for_elements()
                                 self.scraper = RealTimeGameScraper()
                                 soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                                 self.collect_game_info(soup=soup)
+
+                                if self.excluded_games[key]['score_under']:
+                                    await ScoreCompare(live_data=self.scraper.get_game_info(),
+                                                       telegram=self.tel,
+                                                       excluded_games=self.excluded_games,
+                                                       game_key=key).compare()
+
                                 if self.driver.buttons.is_cards_button('Yellow cards'):
                                     self.driver.buttons.get_cards_button('Yellow cards').click()
                                     time.sleep(0.5)
@@ -133,17 +142,21 @@ class WebCrawler(FootballMenuHandler):
                                     for stat_key in RealTimeGameScraper.keys:
                                         self.scraper.collect_stats(soup=soup, match_stat=stat_key,
                                                                    **RealTimeGameScraper.keys[stat_key])
+                                    c = RedLiveCompare(live_data=self.scraper.get_game_info(),
+                                                       telegram=self.tel,
+                                                       excluded_games=self.excluded_games,
+                                                       game_key=key)
 
                                     if self.excluded_games[key]['red_yellow']:
-                                        await RedLiveCompare(live_data=self.scraper.get_game_info(),
-                                                             telegram=self.tel,
-                                                             excluded_games=self.excluded_games,
-                                                             game_key=key).compare()
-                                if key in self.smart_data:
-                                    await SmartLiveCompare(smart_data=self.smart_data[key],
-                                                           live_data=self.scraper.get_game_info(),
-                                                           league_data=self.league_data,
-                                                           telegram=self.tel).compare()
+                                        await c.compare()
+                                    if self.excluded_games[key]['score_mix']:
+                                        await c.compare_mix()
+
+                                    if key in self.smart_data:
+                                        await SmartLiveCompare(smart_data=self.smart_data[key],
+                                                               live_data=self.scraper.get_game_info(),
+                                                               league_data=self.league_data,
+                                                               telegram=self.tel).compare()
                         except NoSuchElementException:
                             # print('click_all_games.ERROR:', e)
                             continue
@@ -265,17 +278,21 @@ class WebCrawler(FootballMenuHandler):
                                     self.scraper.collect_stats(soup=soup, match_stat=stat_key,
                                                                **RealTimeGameScraper.keys[stat_key])
 
-                                if self.excluded_games[key]['red_yellow']:
-                                    await RedLiveCompare(live_data=self.scraper.get_game_info(),
-                                                         telegram=self.tel,
-                                                         excluded_games=self.excluded_games,
-                                                         game_key=key).compare()
-                            if key in self.smart_data:
-                                await SmartLiveCompare(smart_data=self.smart_data[key],
-                                                       live_data=self.scraper.get_game_info(),
-                                                       league_data=self.league_data,
-                                                       telegram=self.tel).compare()
+                                c = RedLiveCompare(live_data=self.scraper.get_game_info(),
+                                                   telegram=self.tel,
+                                                   excluded_games=self.excluded_games,
+                                                   game_key=key)
 
+                                if self.excluded_games[key]['red_yellow']:
+                                    await c.compare()
+                                if self.excluded_games[key]['score_mix']:
+                                    await c.compare_mix()
+                                if key in self.smart_data:
+                                    await SmartLiveCompare(smart_data=self.smart_data[key],
+                                                           live_data=self.scraper.get_game_info(),
+                                                           league_data=self.league_data,
+                                                           telegram=self.tel).compare()
+                            # pprint(self.scraper.get_game_info())
                     except NoSuchElementException:
                         # print('click_all_games.ERROR:', e)
                         continue

@@ -65,9 +65,9 @@ class FootballMenuHandler:
                     self.extract_commands_to_dict(soup)
                 except (StaleElementReferenceException, ElementClickInterceptedException):
                     pass
-                except ElementNotInteractableException as e:
-                    print('FootballMenuHandler.open_all_football_leagues.ERROR', e)
-                    return
+                except ElementNotInteractableException:
+                    self.scroll_page_down()
+
 
     def scroll_up(self):
         body = self.browser.driver.find_element(By.CSS_SELECTOR, 'body')

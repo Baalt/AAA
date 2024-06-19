@@ -37,7 +37,6 @@ if __name__ == '__main__':
             browser = ScheduleManager(driver=driver, smart_dict=smart_dict)
             lv_smrt_dct = browser.run()
         except (TimeoutException, AttributeError):
-            driver.open_page(LIVE_SOURCE)
             continue
         print(f'number of scanned smart games {len(lv_smrt_dct.keys())}')
         operator = WebCrawler(driver=browser.get_driver(),
