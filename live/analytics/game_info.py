@@ -36,18 +36,18 @@ ST: {self.smart_data['smart_data']['team1_name']} - {self.smart_data['smart_data
 Ref15 T%: {self.smart_data_dct['ref_15_under_t']} - {self.smart_data_dct['ref_15_under_p']:03.2f}% 
 RefAllT%: {self.smart_data_dct['ref_all_under_t']} - {self.smart_data_dct['ref_all_under_p']:03.2f}% {self.smart_data_dct['ref_all_len']:03d} | {self.smart_data_dct['ref_avg']}
 
-CYear T%: {self.smart_data_dct['under_year_t']} - {self.smart_data_dct['under_year_p']:03.2f}% {self.smart_data_dct['len_under_year_1']:03d} | {self.smart_data_dct['len_under_year_2']:03d}
-CSim  T%: {self.smart_data_dct['under_sim_t']} - {self.smart_data_dct['under_sim_p']:03.2f}% {self.smart_data_dct['len_under_sim_1']:03d} | {self.smart_data_dct['len_under_sim_2']:03d}
-CL15  T%: {self.smart_data_dct['under_20_t']} - {self.smart_data_dct['under_20_p']:03.2f}% {self.smart_data_dct['len_under_20_1']:03d} | {self.smart_data_dct['len_under_20_2']:03d}
-CHA   T%: {self.smart_data_dct['under_ha_t']} - {self.smart_data_dct['under_ha_p']:03.2f}% {self.smart_data_dct['len_under_ha_1']:03d} | {self.smart_data_dct['len_under_ha_2']:03d}
+CYear T%: {self.smart_data_dct['ref_15_under_t']} - {self.smart_data_dct['under_year_p']:03.2f}% {self.smart_data_dct['len_under_year_1']:03d} | {self.smart_data_dct['len_under_year_2']:03d}
+CSim  T%: {self.smart_data_dct['ref_15_under_t']} - {self.smart_data_dct['under_sim_p']:03.2f}% {self.smart_data_dct['len_under_sim_1']:03d} | {self.smart_data_dct['len_under_sim_2']:03d}
+CL15  T%: {self.smart_data_dct['ref_15_under_t']} - {self.smart_data_dct['under_20_p']:03.2f}% {self.smart_data_dct['len_under_20_1']:03d} | {self.smart_data_dct['len_under_20_2']:03d}
+CHA   T%: {self.smart_data_dct['ref_15_under_t']} - {self.smart_data_dct['under_ha_p']:03.2f}% {self.smart_data_dct['len_under_ha_1']:03d} | {self.smart_data_dct['len_under_ha_2']:03d}
 ----------------  + 1   ----------------
 Ref15 T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['ref_15_under_p1']:03.2f}% 
 RefAllT%: {self.smart_data_dct['ref_all_under_t1']} - {self.smart_data_dct['ref_all_under_p1']:03.2f}% 
 
-CYear T%: {self.smart_data_dct['under_year_t1']} - {self.smart_data_dct['under_year_p1']:03.2f}% 
-CSim  T%: {self.smart_data_dct['under_sim_t1']} - {self.smart_data_dct['under_sim_p1']:03.2f}% 
-CL15  T%: {self.smart_data_dct['under_20_t1']} - {self.smart_data_dct['under_20_p1']:03.2f}% 
-CHA   T%: {self.smart_data_dct['under_ha_t1']} - {self.smart_data_dct['under_ha_p1']:03.2f}% 
+CYear T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['under_year_p1']:03.2f}% 
+CSim  T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['under_sim_p1']:03.2f}% 
+CL15  T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['under_20_p1']:03.2f}% 
+CHA   T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['under_ha_p1']:03.2f}% 
 """
         except KeyError as e:
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")

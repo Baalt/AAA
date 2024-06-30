@@ -37,6 +37,23 @@ class ScoreCompare:
         except KeyError as e:
             print('ScoreCompare.compare.ERROR:', e)
 
+    def yellow_cards_max_total(self):
+        live_total_lst = []
+        try:
+            coeff_box = self.live_data['yellow cards']['totals']
+        except KeyError:
+            # print('SmartLiveCompare.search_total_coeff_box error: ', e)
+            return
+        for coeff_set in coeff_box:
+            try:
+                live_total = float(coeff_set['total_number'])
+                live_total_lst.append(live_total)
+            except (KeyError, ValueError) as e:
+                print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
+                continue
+        if live_total_lst:
+            return max(live_total_lst)
+
     def _get_total_yellow_cards(self):
         try:
             yellow_cards = self.live_data['match_stats']['Yellow cards']
@@ -53,14 +70,15 @@ class ScoreCompare:
         return None
 
     def _should_handle_case(self, score_diff, total_yellows, red_score):
-        if score_diff > 3.5:
-            return True
-        if score_diff > 2.5:
-            if red_score or (total_yellows and total_yellows > 3.5):
+        yellow_total = self.yellow_cards_max_total()
+        if yellow_total and yellow_total > (total_yellows + 1):
+            if score_diff > 3.5:
                 return True
-        if score_diff > 1.5 and red_score and total_yellows and total_yellows > 3.5:
-            return True
-        return False
+            if score_diff > 2.5:
+                if red_score or total_yellows > 3.5:
+                    return True
+            if score_diff > 1.5 and red_score and total_yellows > 3.5:
+                return True
 
     async def _handle_case(self):
         info = ScoreInfo(live_data=self.live_data)
@@ -102,12 +120,14 @@ class RedLiveCompare:
                 total_yellows = self._get_total_yellow_cards()
                 red_score = self._is_red_score()
 
-                if score_diff > 2.5:
+                if score_diff > 3.5:
+                    await self._process_and_send_message()
+                    self.excluded_games[self.game_key]['score_mix'] = None
+                elif score_diff > 2.5:
                     await self._handle_case(total_yellows, red_score, 3.5)
-                elif score_diff > 1.5:
-                    await self._handle_case(total_yellows, red_score, 5.5)
                 else:
                     await self._full_handle_case(total_yellows, red_score, 6.5)
+
         except KeyError as e:
             print('RedLiveCompare.compare_mix.ERROR:', e)
 
@@ -217,7 +237,10 @@ class SmartLiveCompare:
                 self.__plot_graphs(statistic=statistic,
                                    live_total=live_total,
                                    rate_direction='TU')
-                message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                try:
+                    message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+                except TypeError:
+                    return
                 print(message)
                 await self.telegram.send_message_with_files(message, *self.files)
                 self.close_bet(key=info.get_correction_key())

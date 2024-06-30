@@ -30,7 +30,8 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            # if '' in full_league_name:
+            if 'International: Club Friendlies' in full_league_name:
+                continue
             #     flag = True
             if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
