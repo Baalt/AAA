@@ -54,7 +54,11 @@ class FootballMenuHandler:
                 time.sleep(2)
                 buttons = self.browser.buttons.get_all_leagues_buttons()
                 if not buttons:
-                    break
+                    self.scroll_page_down()
+                    time.sleep(2)
+                    buttons = self.browser.buttons.get_all_leagues_buttons()
+                    if not buttons:
+                        break
             for button in buttons:
                 try:
                     ActionChains(self.browser.driver).move_to_element(button).perform()

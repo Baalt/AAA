@@ -151,6 +151,7 @@ class WebCrawler(FootballMenuHandler):
                                                            live_data=self.scraper.get_game_info(),
                                                            league_data=self.league_data,
                                                            telegram=self.tel).compare()
+                                # pprint(self.scraper.get_game_info())
                         except NoSuchElementException:
                             # print('click_all_games.ERROR:', e)
                             continue

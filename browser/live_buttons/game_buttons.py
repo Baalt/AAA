@@ -1,4 +1,4 @@
-from selenium.common import NoSuchElementException
+from selenium.common import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
 
@@ -39,7 +39,7 @@ class LiveGameButtons:
                 f"//span[contains(@class, 'button') and contains(text(), '{statistic}')]")
             if yellow_cards_span:
                 return True
-        except NoSuchElementException:
+        except (NoSuchElementException, StaleElementReferenceException):
             return
 
     def get_cards_button(self, statistic):

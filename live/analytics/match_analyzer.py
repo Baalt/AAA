@@ -71,13 +71,10 @@ class ScoreCompare:
 
     def _should_handle_case(self, score_diff, total_yellows, red_score):
         yellow_total = self.yellow_cards_max_total()
-        if yellow_total and yellow_total > (total_yellows + 1):
-            if score_diff > 3.5:
+        if yellow_total:
+            if score_diff > 3.5 and (yellow_total > 3.5) and yellow_total > (total_yellows + 1):
                 return True
-            if score_diff > 2.5:
-                if red_score or total_yellows > 3.5:
-                    return True
-            if score_diff > 1.5 and red_score and total_yellows > 3.5:
+            if score_diff > 2.5 and yellow_total > 4.5 and yellow_total > (total_yellows + 1):
                 return True
 
     async def _handle_case(self):
@@ -101,11 +98,10 @@ class RedLiveCompare:
             if self.live_data['match_time'] == '45:00' and self.is_fouls:
                 print(self.game_key, 'match_time == 45:00')
                 red_score = self._is_red_score()
-                if red_score:
-                    await self._process_and_send_message()
                 total_yellows = self._get_total_yellow_cards()
-                if total_yellows and total_yellows > 3.5:
-                    await self._process_and_send_message()
+                if total_yellows:
+                    if total_yellows > 3.5 or (total_yellows > 1.5 and red_score):
+                        await self._process_and_send_message()
 
                 self.excluded_games[self.game_key]['red_yellow'] = None
         except KeyError as e:
@@ -147,7 +143,7 @@ class RedLiveCompare:
         return None
 
     async def _handle_case(self, total_yellows, red_score, yellow_card_threshold):
-        if (total_yellows and total_yellows > yellow_card_threshold) or red_score:
+        if (total_yellows and total_yellows > yellow_card_threshold) or (total_yellows > 2.5 and red_score):
             await self._process_and_send_message()
             self.excluded_games[self.game_key]['score_mix'] = None
 
@@ -156,7 +152,7 @@ class RedLiveCompare:
             if total_yellows > yellow_card_threshold:
                 await self._process_and_send_message()
                 self.excluded_games[self.game_key]['score_mix'] = None
-            elif total_yellows > 2.5 and red_score:
+            elif total_yellows > 3.5 and red_score:
                 await self._process_and_send_message()
                 self.excluded_games[self.game_key]['score_mix'] = None
 
@@ -218,32 +214,45 @@ class SmartLiveCompare:
             try:
                 live_total = float(coeff_set['total_number'])
                 coeff_under = float(coeff_set['coefficient_under'])
+
             except (KeyError, ValueError) as e:
                 print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
                 continue
 
             if not isinstance(total_under, float):
                 total_under = float(total_under)
-            if live_total >= total_under and coeff_under > 1.3:
-                full_rate_direction = rate_direction + '_under'
-                info = GameInfo(
-                    live_data=self.live_data,
-                    smart_data=self.smart_data,
-                    statistic_name=statistic,
-                    rate_direction=full_rate_direction,
-                    live_total=live_total,
-                    live_coeff=coeff_under,
-                    smart_total=total_under)
-                self.__plot_graphs(statistic=statistic,
-                                   live_total=live_total,
-                                   rate_direction='TU')
-                try:
-                    message = '\n'.join([info.get_game_info(), info.get_correction_key()])
-                except TypeError:
-                    return
-                print(message)
-                await self.telegram.send_message_with_files(message, *self.files)
-                self.close_bet(key=info.get_correction_key())
+            if statistic == 'fouls':
+                # print(f'{live_total} >= {total_under} and {coeff_under} > 1.65')
+                if live_total >= total_under and coeff_under > 1.65:
+                    await self.__send_message(rate_direction=rate_direction, statistic=statistic,
+                                        live_total=live_total, coeff_under=coeff_under,
+                                        total_under=total_under)
+            else:
+                # print(f'{live_total} >= {total_under} and {coeff_under} > 1.3')
+                if live_total >= total_under and coeff_under > 1.3:
+                    await self.__send_message(rate_direction=rate_direction, statistic=statistic,
+                                        live_total=live_total, coeff_under=coeff_under,
+                                        total_under=total_under)
+    async def __send_message(self, rate_direction, statistic, live_total, coeff_under, total_under):
+        full_rate_direction = rate_direction + '_under'
+        info = GameInfo(
+            live_data=self.live_data,
+            smart_data=self.smart_data,
+            statistic_name=statistic,
+            rate_direction=full_rate_direction,
+            live_total=live_total,
+            live_coeff=coeff_under,
+            smart_total=total_under)
+        self.__plot_graphs(statistic=statistic,
+                           live_total=live_total,
+                           rate_direction='TU')
+        try:
+            message = '\n'.join([info.get_game_info(), info.get_correction_key()])
+        except TypeError:
+            return
+        print(message)
+        await self.telegram.send_message_with_files(message, *self.files)
+        self.close_bet(key=info.get_correction_key())
 
     def __plot_graphs(self, statistic, live_total, rate_direction):
         self.delete_files_in_folder(folder_path='graph/data')

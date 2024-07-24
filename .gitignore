@@ -127,6 +127,7 @@ dmypy.json
 
 # Pyre type checker
 test.py
+result.py
 config_smrt.py
 .pyre/
 data

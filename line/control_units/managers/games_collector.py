@@ -32,6 +32,7 @@ class AllGamesCollector:
         for full_league_name in self.schedule_data:
             if 'International: Club Friendlies' in full_league_name:
                 continue
+            # if 'USA: Major League Soccer' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
