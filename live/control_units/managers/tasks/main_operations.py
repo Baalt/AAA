@@ -47,6 +47,8 @@ class FootballMenuHandler:
             pass
 
     def open_all_football_leagues(self):
+        single_button_counter = 0  # Initialize the counter
+
         while True:
             buttons = self.browser.buttons.get_all_leagues_buttons()
             if not buttons:
@@ -59,6 +61,15 @@ class FootballMenuHandler:
                     buttons = self.browser.buttons.get_all_leagues_buttons()
                     if not buttons:
                         break
+
+            # Check the number of buttons found
+            if len(buttons) == 1:
+                single_button_counter += 1
+                if single_button_counter > 2:
+                    break
+            else:
+                single_button_counter = 0  # Reset the counter if more than one button is found
+
             for button in buttons:
                 try:
                     ActionChains(self.browser.driver).move_to_element(button).perform()
@@ -71,7 +82,6 @@ class FootballMenuHandler:
                     pass
                 except ElementNotInteractableException:
                     self.scroll_page_down()
-
 
     def scroll_up(self):
         body = self.browser.driver.find_element(By.CSS_SELECTOR, 'body')

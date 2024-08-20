@@ -1,6 +1,6 @@
 import copy
 
-from selenium.common import ElementClickInterceptedException, NoSuchElementException
+from selenium.common import ElementClickInterceptedException, NoSuchElementException, TimeoutException
 
 from browser.browser import SmartChromeDriver
 from line.analytics.live_dict_builder import LiveDictBuilder
@@ -32,7 +32,7 @@ class AllGamesCollector:
         for full_league_name in self.schedule_data:
             if 'International: Club Friendlies' in full_league_name:
                 continue
-            # if 'USA: Major League Soccer' in full_league_name:
+            # if 'Serbia: Super Liga' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
@@ -74,7 +74,7 @@ class AllGamesCollector:
                         try:
                             referee_manager.collect_referee_data()
                             referee_data = referee_manager.scraper.get_data()
-                        except NoSuchElementException as e:
+                        except (NoSuchElementException, TimeoutException) as e:
                             print("refereeError:", e)
                             continue
                         self.game_number += 1

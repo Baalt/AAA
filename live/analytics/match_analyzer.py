@@ -116,10 +116,7 @@ class RedLiveCompare:
                 total_yellows = self._get_total_yellow_cards()
                 red_score = self._is_red_score()
 
-                if score_diff > 3.5:
-                    await self._process_and_send_message()
-                    self.excluded_games[self.game_key]['score_mix'] = None
-                elif score_diff > 2.5:
+                if score_diff > 2.5:
                     await self._handle_case(total_yellows, red_score, 3.5)
                 else:
                     await self._full_handle_case(total_yellows, red_score, 6.5)
@@ -143,9 +140,10 @@ class RedLiveCompare:
         return None
 
     async def _handle_case(self, total_yellows, red_score, yellow_card_threshold):
-        if (total_yellows and total_yellows > yellow_card_threshold) or (total_yellows > 2.5 and red_score):
-            await self._process_and_send_message()
-            self.excluded_games[self.game_key]['score_mix'] = None
+        if total_yellows:
+            if (total_yellows > yellow_card_threshold) or (total_yellows > 2.5 and red_score):
+                await self._process_and_send_message()
+                self.excluded_games[self.game_key]['score_mix'] = None
 
     async def _full_handle_case(self, total_yellows, red_score, yellow_card_threshold):
         if total_yellows:
@@ -229,7 +227,7 @@ class SmartLiveCompare:
                                         total_under=total_under)
             else:
                 # print(f'{live_total} >= {total_under} and {coeff_under} > 1.3')
-                if live_total >= total_under and coeff_under > 1.3:
+                if live_total >= total_under and coeff_under > 1.4:
                     await self.__send_message(rate_direction=rate_direction, statistic=statistic,
                                         live_total=live_total, coeff_under=coeff_under,
                                         total_under=total_under)
