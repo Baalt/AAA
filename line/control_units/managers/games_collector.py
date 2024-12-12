@@ -30,9 +30,9 @@ class AllGamesCollector:
     async def run(self):
         # flag = False
         for full_league_name in self.schedule_data:
-            if 'International: Club Friendlies' in full_league_name:
+            if 'International: Club Friendlies' in full_league_name or "Women's" in full_league_name:
                 continue
-            # if 'Serbia: Super Liga' in full_league_name:
+            # if 'Italy: Serie A' in full_league_name:
             #     flag = True
             if ':' in full_league_name:
                 full_league_name = full_league_name.strip()
@@ -64,7 +64,12 @@ class AllGamesCollector:
                         continue
 
                     if is_match_data:
+                        from pprint import pprint
+                        pprint(game_manager.get_data)
+                        break
+
                         copy_match_data = copy.deepcopy(game_manager.get_data)
+
                         last_year_data = LastYearFilter(all_match_data=copy_match_data, all_referee_data=None)
                         last_year_data.filter_home_away_collections('home_collections')
                         last_year_data.filter_home_away_collections('away_collections')

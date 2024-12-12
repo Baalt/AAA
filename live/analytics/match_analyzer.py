@@ -2,7 +2,7 @@ import os
 import time
 
 from graph.matrix_stats_viz import ScatterPlotBuilder
-from live.analytics.game_info import GameInfo, ScoreInfo, RedYellowCardInfo
+from live.analytics.game_info import GameInfo, Info
 from telega.telegram_bot import TelegramBot
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
@@ -12,158 +12,63 @@ from graph.match_stats_viz import MatchStatsVisualizer
 from graph.teams_stats_viz import TeamsStatsVisualizer
 
 
-class ScoreCompare:
-    def __init__(self, live_data: dict, telegram: TelegramBot, excluded_games: dict, game_key: str):
-        self.live_data = live_data
+class MatchAnalyzer:
+    def __init__(self, info_dict, excluded_games, game_key, tel):
+        self.info_dict = info_dict
+        self.league = info_dict['league']
+        self.match_score = info_dict['match_score']
+        self.match_time = info_dict['match_time']
+        self.team1_name = info_dict['team1_name']
+        self.team2_name = info_dict['team2_name']
+        self.total_teams = info_dict['total_teams']
+        self.tournament_info = info_dict['tournament_info']
+        self.team1_info = None
+        self.team2_info = None
         self.excluded_games = excluded_games
         self.game_key = game_key
-        self.telegram = telegram
+        self.telegram = tel
+        self.__assign_teams()
 
-    async def compare(self):
-        try:
-            match_score = self.live_data.get('match_score', '')
-            if not match_score or ':' not in match_score:
-                return
+    def __assign_teams(self):
+        for team_info in self.tournament_info:
+            if team_info['name'] == self.team1_name:
+                self.team1_info = team_info
+            elif team_info['name'] == self.team2_name:
+                self.team2_info = team_info
 
-            score1, score2 = map(int, map(str.strip, match_score.split(':')))
-            score_diff = abs(score1 - score2)
+    async def check_conditions(self):
+        if not self.team1_info or not self.team2_info:
+            return False
 
-            total_yellows = self._get_total_yellow_cards()
-            red_score = self._is_red_score()
+        percentage = self.total_teams * 0.15
 
-            if self._should_handle_case(score_diff, total_yellows, red_score):
-                await self._handle_case()
+        team1_rank = int(self.team1_info['rank'])
+        team2_rank = int(self.team2_info['rank'])
 
-        except KeyError as e:
-            print('ScoreCompare.compare.ERROR:', e)
+        score1, score2 = map(int, self.match_score.split(':'))
 
-    def yellow_cards_max_total(self):
-        live_total_lst = []
-        try:
-            coeff_box = self.live_data['yellow cards']['totals']
-        except KeyError:
-            # print('SmartLiveCompare.search_total_coeff_box error: ', e)
-            return
-        for coeff_set in coeff_box:
-            try:
-                live_total = float(coeff_set['total_number'])
-                live_total_lst.append(live_total)
-            except (KeyError, ValueError) as e:
-                print('SmartLiveCompare.search_total_engine coeff_set error: ', e)
-                continue
-        if live_total_lst:
-            return max(live_total_lst)
+        if team1_rank <= percentage and team2_rank >= self.total_teams - percentage:
+            if score1 < score2 and self.check_match_time(self.match_time):
+                await self._process_and_send_message()
+                self.excluded_games[self.game_key]['check'] = None
+            elif self.match_time == '45:00' and score1 == score2:
+                await self._process_and_send_message()
+                self.excluded_games[self.game_key]['check'] = None
+        elif (team2_rank - team1_rank) >= self.total_teams / 2:
+            if self.match_time == '45:00' and score1 < score2:
+                await self._process_and_send_message()
+                self.excluded_games[self.game_key]['check'] = None
 
-    def _get_total_yellow_cards(self):
-        try:
-            yellow_cards = self.live_data['match_stats']['Yellow cards']
-            yellow_1 = int(yellow_cards['team1'])
-            yellow_2 = int(yellow_cards['team2'])
-            return yellow_1 + yellow_2
-        except KeyError:
-            return None
-
-    def _is_red_score(self):
-        red_score = self.live_data.get('red_score', '0 : 0')
-        if ':' in red_score and red_score != '0 : 0':
-            return True
-        return None
-
-    def _should_handle_case(self, score_diff, total_yellows, red_score):
-        yellow_total = self.yellow_cards_max_total()
-        if yellow_total:
-            if score_diff > 3.5 and (yellow_total > 3.5) and yellow_total > (total_yellows + 1):
+    def check_match_time(self, match_time: str, max_minute=65):
+        if match_time and ':' in match_time:
+            minutes = int(match_time.split(':')[0])
+            if minutes < max_minute:
                 return True
-            if score_diff > 2.5 and yellow_total > 4.5 and yellow_total > (total_yellows + 1):
-                return True
-
-    async def _handle_case(self):
-        info = ScoreInfo(live_data=self.live_data)
-        message = info.get_game_info()
-        print(message)
-        await self.telegram.send_message_with_files(message)
-        self.excluded_games[self.game_key]['score_under'] = None
-
-
-class RedLiveCompare:
-    def __init__(self, live_data: dict, telegram: TelegramBot, excluded_games: dict, game_key: str):
-        self.live_data = live_data
-        self.telegram = telegram
-        self.excluded_games = excluded_games
-        self.game_key = game_key
-        self.is_fouls = 'fouls' in self.live_data
-
-    async def compare(self):
-        try:
-            if self.live_data['match_time'] == '45:00' and self.is_fouls:
-                print(self.game_key, 'match_time == 45:00')
-                red_score = self._is_red_score()
-                total_yellows = self._get_total_yellow_cards()
-                if total_yellows:
-                    if total_yellows > 3.5 or (total_yellows > 1.5 and red_score):
-                        await self._process_and_send_message()
-
-                self.excluded_games[self.game_key]['red_yellow'] = None
-        except KeyError as e:
-            print('RedLiveCompare.compare.ERROR:', e)
-
-    async def compare_mix(self):
-        try:
-            match_score = self.live_data.get('match_score', '')
-            if ':' in match_score:
-                score1, score2 = map(int, map(str.strip, match_score.split(':')))
-                score_diff = abs(score1 - score2)
-                total_yellows = self._get_total_yellow_cards()
-                red_score = self._is_red_score()
-
-                if score_diff > 2.5:
-                    await self._handle_case(total_yellows, red_score, 3.5)
-                else:
-                    await self._full_handle_case(total_yellows, red_score, 6.5)
-
-        except KeyError as e:
-            print('RedLiveCompare.compare_mix.ERROR:', e)
-
-    def _get_total_yellow_cards(self):
-        try:
-            yellow_cards = self.live_data['match_stats']['Yellow cards']
-            yellow_1 = int(yellow_cards['team1'])
-            yellow_2 = int(yellow_cards['team2'])
-            return yellow_1 + yellow_2
-        except KeyError:
-            return None
-
-    def _is_red_score(self):
-        red_score = self.live_data.get('red_score', '0 : 0')
-        if ':' in red_score and red_score != '0 : 0':
-            return True
         return None
-
-    async def _handle_case(self, total_yellows, red_score, yellow_card_threshold):
-        if total_yellows:
-            if (total_yellows > yellow_card_threshold) or (total_yellows > 2.5 and red_score):
-                await self._process_and_send_message()
-                self.excluded_games[self.game_key]['score_mix'] = None
-
-    async def _full_handle_case(self, total_yellows, red_score, yellow_card_threshold):
-        if total_yellows:
-            if total_yellows > yellow_card_threshold:
-                await self._process_and_send_message()
-                self.excluded_games[self.game_key]['score_mix'] = None
-            elif total_yellows > 3.5 and red_score:
-                await self._process_and_send_message()
-                self.excluded_games[self.game_key]['score_mix'] = None
 
     async def _process_and_send_message(self):
-        """
-        Processes the live data to extract necessary information and sends a message via Telegram.
-        """
-        live_list = [float(data['total_number']) for data in self.live_data['fouls']['totals']]
-        fouls = max(live_list) if live_list else None
-        info = RedYellowCardInfo(
-            live_data=self.live_data,
-            yellow_cards=self.live_data['yellow_score'],
-            fouls=fouls
+        info = Info(
+            live_data=self.info_dict,
         )
         message = info.get_game_info()
         print(message)
@@ -219,18 +124,12 @@ class SmartLiveCompare:
 
             if not isinstance(total_under, float):
                 total_under = float(total_under)
-            if statistic == 'fouls':
-                # print(f'{live_total} >= {total_under} and {coeff_under} > 1.65')
-                if live_total >= total_under and coeff_under > 1.65:
-                    await self.__send_message(rate_direction=rate_direction, statistic=statistic,
-                                        live_total=live_total, coeff_under=coeff_under,
-                                        total_under=total_under)
-            else:
-                # print(f'{live_total} >= {total_under} and {coeff_under} > 1.3')
-                if live_total >= total_under and coeff_under > 1.4:
-                    await self.__send_message(rate_direction=rate_direction, statistic=statistic,
-                                        live_total=live_total, coeff_under=coeff_under,
-                                        total_under=total_under)
+
+            if live_total >= total_under and coeff_under > 1.65:
+                await self.__send_message(rate_direction=rate_direction, statistic=statistic,
+                                          live_total=live_total, coeff_under=coeff_under,
+                                          total_under=total_under)
+
     async def __send_message(self, rate_direction, statistic, live_total, coeff_under, total_under):
         full_rate_direction = rate_direction + '_under'
         info = GameInfo(

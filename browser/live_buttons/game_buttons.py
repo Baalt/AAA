@@ -31,9 +31,9 @@ class LiveGameButtons:
     def get_group_anchor_div(self):
         return self.browser.find_element(By.XPATH, "//div[contains(@class, 'group-anchor')]")
 
-    def is_cards_button(self, statistic):
-        group_anchor_div = self.get_group_anchor_div()
+    def is_statistic_button(self, statistic):
         try:
+            group_anchor_div = self.get_group_anchor_div()
             yellow_cards_span = group_anchor_div.find_element(
                 By.XPATH,
                 f"//span[contains(@class, 'button') and contains(text(), '{statistic}')]")
@@ -42,9 +42,25 @@ class LiveGameButtons:
         except (NoSuchElementException, StaleElementReferenceException):
             return
 
-    def get_cards_button(self, statistic):
+    def get_statistic_button(self, statistic):
         group_anchor_div = self.get_group_anchor_div()
         yellow_cards_span = group_anchor_div.find_element(
             By.XPATH,
             f"//span[contains(@class, 'button') and contains(text(), '{statistic}')]")
         return yellow_cards_span
+
+    def get_info_button(self):
+        panel = self.browser.find_element(By.XPATH, "//div[contains(@class, 'horizontal-overflow-panel')]/div[contains(@class, 'tab-wrapper')]")
+        # tab_wrappers = panel.find_elements(By.XPATH, ".//div[contains(@class, 'tab-wrapper')]")
+        if panel:
+            return panel
+        else:
+            return None
+
+    def get_tournament_button(self):
+        sport_stats_div = self.browser.find_element(By.XPATH, "//div[contains(@class, 'sport-stats-component')]")
+        tournament_button = sport_stats_div.find_element(
+            By.XPATH,
+            ".//span[contains(@class, 'button') and contains(text(), 'Tournament')]"
+        )
+        return tournament_button

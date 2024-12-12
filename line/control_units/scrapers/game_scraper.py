@@ -68,7 +68,8 @@ class GameScraper(ScraperMethods):
                             'home_command': home_command,
                             'away_command': away_command,
                             'home_command_individual_total': home_command_individual_total,
-                            'away_command_individual_total': away_command_individual_total}
+                            'away_command_individual_total': away_command_individual_total,
+                            'season': season}
 
             self.all_match_data[self.statistic_name][home_away_key].append(data_collect)
 

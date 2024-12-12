@@ -343,7 +343,10 @@ class Catcher:
                 rate_direction=rate_direction)
             message = '\n'.join([message, referee_message.get_message()])
         print(message)
-        self.__plot_graphs()
+        try:
+            self.__plot_graphs()
+        except ValueError:
+            print('core 347 self.__plot_graphs()')
         await self.telegram.send_message_with_files(message, *self.files)
 
     def kush_calculate(self, percent, coefficient):

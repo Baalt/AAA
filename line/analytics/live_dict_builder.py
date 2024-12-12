@@ -141,6 +141,7 @@ class LiveDictBuilder(FromDictToStructure):
                             # else:
                             #     structures.championship_valid_and_create()
 
+
                             await live_data_manager.calculate(
                                 home_structure=home_structure,
                                 away_structure=away_structure,

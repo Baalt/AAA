@@ -53,11 +53,9 @@ CHA   T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['under
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
 
 
-class RedYellowCardInfo:
-    def __init__(self, live_data, yellow_cards, fouls):
+class Info:
+    def __init__(self, live_data):
         self.live_data = live_data
-        self.yellow_cards = yellow_cards
-        self.fouls = fouls
 
     def get_game_info(self):
         try:
@@ -69,10 +67,8 @@ LT: {self.live_data['team1_name']} - {self.live_data['team2_name']}
 
                       TIME: {self.live_data['match_time']}
                   SCORE: {self.live_data['match_score']}
-         RED CARDS: {self.live_data['red_score']}
     
-      Yellow Cards: {self.yellow_cards}                
-      FOULS UNDER {self.fouls}!!!
+THROW-INS!
         """
         except KeyError as e:
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")

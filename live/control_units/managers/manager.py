@@ -6,7 +6,7 @@ from telegram.error import NetworkError
 from browser.browser import LiveChromeDriver
 from live.control_units.managers.schedule import ScheduleManager
 from live.control_units.managers.tasks.main_operations import BrowserPreparer
-from live.control_units.managers.web_crawler import WebCrawler
+from live.control_units.managers.web_crawler_light import WebCrawlerLight
 from telega.telegram_bot import TelegramBot
 from telega import config
 from utils.pickle_manager import PickleHandler
@@ -38,13 +38,13 @@ if __name__ == '__main__':
             lv_smrt_dct = browser.run()
         except (TimeoutException, AttributeError):
             continue
-        print(f'number of scanned smart games {len(lv_smrt_dct.keys())}')
-        operator = WebCrawler(driver=browser.get_driver(),
-                              smart_data=lv_smrt_dct,
-                              league_data=leagues_dct,
-                              line_data=line_data,
-                              tel=tel,
-                              excluded_games=excluded_games)
+        # print(f'number of scanned smart games {len(lv_smrt_dct.keys())}')
+        operator = WebCrawlerLight(driver=browser.get_driver(),
+                                   smart_data=lv_smrt_dct,
+                                   league_data=leagues_dct,
+                                   line_data=line_data,
+                                   tel=tel,
+                                   excluded_games=excluded_games)
         while now_plus_delta > now:
             await operator.run_crawler()
             try:
