@@ -3,6 +3,15 @@ from pprint import pprint
 
 
 class GameScraperLight:
+    keys = {
+        'yellow cards': {
+            'total_text': 'Total yellow cards',
+            'handicap_text': 'Yellow cards handicap',
+        },
+        'fouls': {
+            'total_text': 'Total fouls', }
+    }
+
     def __init__(self):
         self.game_info = {}
 
@@ -18,7 +27,6 @@ class GameScraperLight:
         # Extract the text content of the <a> tag, which should contain the league information
         league_info = league_tag.text.strip()
         self.game_info['league'] = league_info
-
 
     def scrape_game_info(self, soup: BeautifulSoup):
         scoreboard_div = self.get_scoreboard_div(soup)
@@ -79,3 +87,48 @@ class GameScraperLight:
                 continue
         self.game_info['tournament_info'] = tournament_info
         self.game_info['total_teams'] = total_teams
+
+    def collect_stats(self, soup, match_stat, total_text, handicap_text=None):
+        # Find all market-group-box elements and loop through each one
+        market_boxes = soup.select('div[class*=market-group-box]')
+        for box in market_boxes:
+            # Find all text-new elements and check for Total goals
+            scoring_category = box.select_one('div[class*=text]')
+            if scoring_category:
+                category = scoring_category.text
+                if category == total_text:
+                    self.__add_totals_info(info_box=box,
+                                           match_stat=match_stat,
+                                           key='totals')
+
+    def __add_totals_info(self, info_box, match_stat, key):
+        statistic_key_dict = []
+
+        for row in info_box.select('div[class*=normal-row]'):
+            self.__extract_total_sets(row, statistic_key_dict)
+
+        if statistic_key_dict:
+            self.game_info.setdefault(match_stat, {}).update({key: statistic_key_dict})
+
+
+    def __extract_total_sets(self, info_box, statistic_key_dict, total_text='Total'):
+        over_under, total, over, under = None, None, None, None
+        for cell in info_box.select('div[class*="cell--NEHKQ"]'):
+            cell_text = cell.text.strip()
+            if total_text in cell_text:
+                total = cell_text.split()[-1]
+                over_under = 'over'
+            elif over_under == 'over':
+                over = cell_text
+                over_under = 'under'
+            elif over_under == 'under':
+                under = cell_text
+                over_under = None
+            if total and over and under:
+                bet_set = {
+                    'total_number': total,
+                    'coefficient_over': over,
+                    'coefficient_under': under
+                }
+                statistic_key_dict.append(bet_set)
+                total, over, under = None, None, None

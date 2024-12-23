@@ -1,10 +1,10 @@
 import time
+import math
 
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, \
     StaleElementReferenceException
 from bs4 import BeautifulSoup
-
 
 from live.control_units.scrapers.game_scraper_light import GameScraperLight
 from live.analytics.match_analyzer import MatchAnalyzer
@@ -58,8 +58,8 @@ class WebCrawlerLight(WebCrawler):
                             "arguments[0].scrollIntoView({block: 'center'});", button)
                     except (StaleElementReferenceException, ElementClickInterceptedException):
                         continue
-                    # if not self.is_valid_name(key):
-                    #     continue
+                    if not self.is_valid_name(key):
+                        continue
                     try:
                         time.sleep(1)
                         stats_button = self.driver.buttons.get_stats_button()
@@ -72,8 +72,49 @@ class WebCrawlerLight(WebCrawler):
                         except (StaleElementReferenceException, ElementClickInterceptedException):
                             continue
                         try:
-                            if self.driver.buttons.is_statistic_button('Throw-ins'):
+                            self.excluded_games[key]
+                        except KeyError:
+                            dct = {'yellow_cards': '?',
+                                   'fouls': '?',
+                                   'fouls_line': True,
+                                   'throws': True}
+                            self.excluded_games[key] = dct
+
+                        market = {
+                            'yellow_market': None,
+                            'foul_market': None,
+                            'throw_market': None}
+
+                        self.scraper = GameScraperLight()
+                        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                        self.collect_game_info(soup)
+                        try:
+                            if self.driver.buttons.is_statistic_button('Yellow cards') and self.excluded_games[key][
+                                'yellow_cards']:
+                                self.driver.buttons.get_statistic_button('Yellow cards').click()
                                 time.sleep(1)
+                                self.wait_for_elements()
+                                soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                                for stat_key in GameScraperLight.keys:
+                                    self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                               **GameScraperLight.keys[stat_key])
+                                market['yellow_market'] = True
+
+                            if self.driver.buttons.is_statistic_button('Foul') and self.excluded_games[key]['fouls']:
+                                self.driver.buttons.get_statistic_button('Fouls').click()
+                                time.sleep(1)
+                                self.wait_for_elements()
+                                soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                                for stat_key in GameScraperLight.keys:
+                                    self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                               **GameScraperLight.keys[stat_key])
+                                market['foul_market'] = True
+
+                            if self.driver.buttons.is_statistic_button('Throw-ins') and self.excluded_games[key][
+                                'throws']:
+                                market['throw_market'] = True
+
+                            if self.check_markets(market):
                                 info_button = self.driver.buttons.get_info_button()
                                 if info_button:
                                     info_button.click()
@@ -82,29 +123,37 @@ class WebCrawlerLight(WebCrawler):
                                     if tournament_button:
                                         tournament_button.click()
                                         time.sleep(1)
-
-                                        self.scraper = GameScraperLight()
                                         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                        self.collect_game_info(soup=soup)
-                                        self.scraper.show_game_info()
-                                        if self.check_match_time(self.scraper.get_game_info()):
-                                            try:
-                                                self.excluded_games[key]
-                                            except KeyError:
-                                                self.excluded_games[key] = {'check': True}
-                                            if self.excluded_games['check']:
-                                                await MatchAnalyzer(
-                                                    info_dict=self.scraper.game_info(),
-                                                    excluded_games=self.excluded_games,
-                                                    game_key=key,
-                                                    tel=self.tel
-                                                ).check_conditions()
-                                                if self.excluded_games['check']:
-                                                    self.scannable_games.append(key)
+                                        self.scraper.extract_tournament_info(soup)
 
-                        except NoSuchElementException:
-                            # print('click_all_games.ERROR:', e)
+                                        if self.check_team_ranks(self.scraper.get_game_info()):
+                                            await MatchAnalyzer(
+                                                info_dict=self.scraper.get_game_info(),
+                                                market=market,
+                                                excluded_games=self.excluded_games,
+                                                game_key=key,
+                                                tel=self.tel
+                                            ).search()
+                                            if self.check_scannable_game(market, key):
+                                                self.scannable_games.append(key)
+                                        else:
+                                            self.excluded_games[key]['yellow_cards'] = None
+                                            self.excluded_games[key]['fouls'] = None
+
+                                        if market['throw_market'] and self.excluded_games[key]['throws']:
+                                            await MatchAnalyzer(
+                                                info_dict=self.scraper.get_game_info(),
+                                                market=market,
+                                                excluded_games=self.excluded_games,
+                                                game_key=key,
+                                                tel=self.tel
+                                            ).check_wide_throws()
+                                            if self.excluded_games[key]['throws'] and key not in self.scannable_games:
+                                                self.scannable_games.append(key)
+
+                        except (NoSuchElementException, StaleElementReferenceException):
                             continue
+
             self.first_time_scanned = None
             print(f'{len(self.scannable_games)} scanning_games')
         else:
@@ -187,9 +236,40 @@ class WebCrawlerLight(WebCrawler):
                         time.sleep(1)
                     except (StaleElementReferenceException, ElementClickInterceptedException):
                         continue
+                    market = {
+                        'yellow_market': None,
+                        'foul_market': None,
+                        'throw_market': None}
+
+                    self.scraper = GameScraperLight()
+                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                    self.collect_game_info(soup)
                     try:
-                        if self.driver.buttons.is_statistic_button('Throw-ins'):
+                        if self.driver.buttons.is_statistic_button('Yellow cards') and self.excluded_games[key][
+                            'yellow_cards']:
+                            self.driver.buttons.get_statistic_button('Yellow cards').click()
                             time.sleep(1)
+                            self.wait_for_elements()
+                            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                            for stat_key in GameScraperLight.keys:
+                                self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                           **GameScraperLight.keys[stat_key])
+                            market['yellow_market'] = True
+
+                        if self.driver.buttons.is_statistic_button('Foul') and self.excluded_games[key]['fouls']:
+                            self.driver.buttons.get_statistic_button('Fouls').click()
+                            time.sleep(1)
+                            self.wait_for_elements()
+                            soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                            for stat_key in GameScraperLight.keys:
+                                self.scraper.collect_stats(soup=soup, match_stat=stat_key,
+                                                           **GameScraperLight.keys[stat_key])
+                            market['foul_market'] = True
+
+                        if self.driver.buttons.is_statistic_button('Throw-ins') and self.excluded_games[key]['throws']:
+                            market['throw_market'] = True
+
+                        if self.check_markets(market):
                             info_button = self.driver.buttons.get_info_button()
                             if info_button:
                                 info_button.click()
@@ -198,43 +278,96 @@ class WebCrawlerLight(WebCrawler):
                                 if tournament_button:
                                     tournament_button.click()
                                     time.sleep(1)
-
-                                    self.scraper = GameScraperLight()
                                     soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                    self.collect_game_info(soup=soup)
-                                    self.scraper.show_game_info()
-                                    if self.excluded_games[key]['check'] and self.check_match_time(
-                                        self.scraper.get_game_info()):
+                                    self.scraper.extract_tournament_info(soup)
+
+                                    if self.check_team_ranks(self.scraper.get_game_info()):
                                         await MatchAnalyzer(
-                                            info_dict=self.scraper.game_info(),
+                                            info_dict=self.scraper.get_game_info(),
+                                            market=market,
                                             excluded_games=self.excluded_games,
                                             game_key=key,
                                             tel=self.tel
-                                        ).check_conditions()
+                                        ).search()
+
+                                    if market['throw_market'] and self.excluded_games[key]['throws']:
+                                        await MatchAnalyzer(
+                                            info_dict=self.scraper.get_game_info(),
+                                            market=market,
+                                            excluded_games=self.excluded_games,
+                                            game_key=key,
+                                            tel=self.tel
+                                        ).check_wide_throws()
+
                     except NoSuchElementException:
                         # print('click_all_games.ERROR:', e)
                         continue
 
-    def check_match_time(self, data: dict, max_minute=60):
+    def check_markets(self, dct):
+        if dct['yellow_market'] or dct['foul_market'] or dct['throw_market']:
+            return True
+
+    def check_scannable_game(self, dct, key):
+        if (self.excluded_games[key]['yellow_cards'] and dct[
+            'yellow_market']) or (self.excluded_games[key]['fouls'] and dct[
+            'foul_market']) or (self.excluded_games[key]['throws'] and dct['throw_market']):
+            return True
+
+    def check_match_time(self, data: dict, max_minute=75):
         match_time = data.get('match_time')
         if match_time and ':' in match_time:
             minutes = int(match_time.split(':')[0])
             if minutes < max_minute:
                 return True
-        return None
+
+    # def check_team_ranks(self, data, percent=0.25):
+    #     total_teams = data.get("total_teams")
+    #     tournament_info = data.get("tournament_info", [])
+    #
+    #     if not total_teams or not tournament_info:
+    #         return
+    #
+    #     upper_rank_threshold = math.ceil(total_teams * percent)
+    #     bottom_ranks = {total_teams, total_teams - 1}
+    #
+    #     has_top_team = any(int(team["rank"]) <= upper_rank_threshold for team in tournament_info)
+    #     has_bottom_team = any(int(team["rank"]) in bottom_ranks for team in tournament_info)
+    #
+    #     if has_top_team and has_bottom_team:
+    #         return True
+
+    def check_team_ranks(self, data, percent=0.25):
+        total_teams = data.get("total_teams")
+        tournament_info = data.get("tournament_info", [])
+
+        if not total_teams or not tournament_info:
+            return
+
+        upper_rank_threshold = math.ceil(total_teams * percent)
+        lower_rank_threshold = total_teams - upper_rank_threshold + 1
+
+        top_ranks = {1, 2}  # Две верхние команды
+        bottom_ranks = {total_teams, total_teams - 1}  # Две нижние команды
+
+        has_top_team = any(int(team["rank"]) in top_ranks for team in tournament_info)
+        has_bottom_team = any(int(team["rank"]) in bottom_ranks for team in tournament_info)
+
+        has_upper_rank_team = any(int(team["rank"]) <= upper_rank_threshold for team in tournament_info)
+        has_lower_rank_team = any(int(team["rank"]) >= lower_rank_threshold for team in tournament_info)
+
+        if (has_top_team and has_bottom_team) or (has_upper_rank_team and has_lower_rank_team):
+            return True
 
     def collect_game_info(self, soup):
         try:
             self.scraper.scrape_league(soup)
             self.scraper.scrape_game_info(soup)
-            self.scraper.extract_tournament_info(soup)
         except AttributeError:
             time.sleep(1)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
             try:
                 self.scraper.scrape_league(soup)
                 self.scraper.scrape_game_info(soup)
-                self.scraper.extract_tournament_info(soup)
             except AttributeError as e:
                 print('collect_game_info', e)
                 raise ContinueError

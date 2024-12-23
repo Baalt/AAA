@@ -32,7 +32,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now()
     excluded_games = {}
     while True:
-        now_plus_delta = now + datetime.timedelta(minutes=10)
+        now_plus_delta = now + datetime.timedelta(minutes=7)
         try:
             browser = ScheduleManager(driver=driver, smart_dict=smart_dict)
             lv_smrt_dct = browser.run()

@@ -54,8 +54,9 @@ CHA   T%: {self.smart_data_dct['ref_15_under_t1']} - {self.smart_data_dct['under
 
 
 class Info:
-    def __init__(self, live_data):
+    def __init__(self, live_data, message):
         self.live_data = live_data
+        self.message = message
 
     def get_game_info(self):
         try:
@@ -68,7 +69,7 @@ LT: {self.live_data['team1_name']} - {self.live_data['team2_name']}
                       TIME: {self.live_data['match_time']}
                   SCORE: {self.live_data['match_score']}
     
-THROW-INS!
+{self.message}
         """
         except KeyError as e:
             print(f"GameInfo.get_game_info Key Error: {e} is missing in the data.")
