@@ -5,6 +5,7 @@ import math
 from graph.matrix_stats_viz import ScatterPlotBuilder
 from live.analytics.game_info import GameInfo, Info
 from telega.telegram_bot import TelegramBot
+from utils.error import QuantityError
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
 from utils.stat_switcher import stats_dict
@@ -17,21 +18,10 @@ class MatchAnalyzer:
     def __init__(self, info_dict, market, excluded_games, game_key, tel):
         self.info_dict = info_dict
         self.market = market
-        try:
-            self.match_score = info_dict['match_score']
-        except KeyError:
-            self.match_score = '0:0'
-        try:
-            self.match_time = info_dict['match_time']
-        except KeyError:
-            self.match_time = 'live'
-        try:
-            self.team1_name = info_dict['team1_name']
-            self.team2_name = info_dict['team2_name']
-        except KeyError:
-            print(self.team1_name, self.team2_name)
-            self.team1_name = info_dict['team1_name']
-            self.team2_name = info_dict['team2_name']
+        self.match_score = info_dict['match_score']
+        self.match_time = info_dict['match_time']
+        self.team1_name = info_dict['team1_name']
+        self.team2_name = info_dict['team2_name']
         self.total_teams = info_dict['total_teams']
         self.tournament_info = info_dict['tournament_info']
         self.team1_info = None
@@ -40,6 +30,9 @@ class MatchAnalyzer:
         self.game_key = game_key
         self.telegram = tel
         self.__assign_teams()
+        self.check_quantity_games(quantity=9)
+        if ':' not in self.match_time:
+            print(self.team1_name, self.team2_name)
 
     def __assign_teams(self):
         for team_info in self.tournament_info:
@@ -49,40 +42,34 @@ class MatchAnalyzer:
                 self.team2_info = team_info
 
     async def search(self):
-        if self.check_quantity_games(quantity=9):
-            if self.market['yellow_market'] and self.excluded_games[self.game_key]['yellow_cards']:
-                self.set_values(key='yellow_cards')
-            if self.market['foul_market'] and self.excluded_games[self.game_key]['fouls']:
-                self.set_values(key='fouls')
+        if self.market['yellow_market'] and self.excluded_games[self.game_key]['yellow_cards']:
+            self.set_values(key='yellow_cards')
+        if self.market['foul_market'] and self.excluded_games[self.game_key]['fouls']:
+            self.set_values(key='fouls')
 
-            await self.foul_line_message()
+        await self.foul_line_message()
 
-            if self.market['yellow_market'] and self.excluded_games[self.game_key]['yellow_cards']:
-                if self.check_match_time(self.info_dict, max_minute=75):
-                    await self.check_and_compare('yellow_cards')
-                else:
-                    self.excluded_games[self.game_key]['yellow_cards'] = None
+        if self.market['yellow_market'] and self.excluded_games[self.game_key]['yellow_cards']:
+            if self.check_match_time(self.match_time, max_minute=75):
+                await self.check_and_compare('yellow_cards')
+            else:
+                self.excluded_games[self.game_key]['yellow_cards'] = None
 
-            if self.market['foul_market'] and self.excluded_games[self.game_key]['fouls']:
-                if self.match_time == '45:00':
-                    await self.check_and_compare('fouls')
-                elif self.check_match_time(self.info_dict, max_minute=60):
-                    self.excluded_games[self.game_key]['fouls'] = None
+        if self.market['foul_market'] and self.excluded_games[self.game_key]['fouls']:
+            if self.match_time == '45:00':
+                await self.check_and_compare('fouls')
+            elif self.check_match_time(self.match_time, max_minute=60):
+                self.excluded_games[self.game_key]['fouls'] = None
 
-            if self.market['throw_market'] and self.excluded_games[self.game_key]['throws']:
-                await self.analyze_throws()
-
-        else:
-            self.excluded_games[self.game_key]['yellow_cards'] = None
-            self.excluded_games[self.game_key]['fouls'] = None
-            self.excluded_games[self.game_key]['throws'] = None
+        if self.market['throw_market'] and self.excluded_games[self.game_key]['throws']:
+            await self.analyze_throws()
 
     async def analyze_throws(self):
         score1, score2 = map(int, self.info_dict['match_score'].split(':'))
         team1_rank = int(self.info_dict['tournament_info'][0]['rank'])
         team2_rank = int(self.info_dict['tournament_info'][1]['rank'])
 
-        if self.check_match_time(self.info_dict, max_minute=81):
+        if self.check_match_time(self.match_time, max_minute=81):
             if team1_rank < team2_rank and score1 < score2:
                 await self._process_and_send_message(text='LIVE THROWS FAST')
                 self.excluded_games[self.game_key]['throws'] = None
@@ -99,7 +86,7 @@ class MatchAnalyzer:
 
     async def check_and_compare(self, key):
         value = self.excluded_games[self.game_key].get(key)
-        if isinstance(value, (float, int)):
+        if isinstance(value, int):
             key_data = self.info_dict.get(key, {})
             if isinstance(key_data, dict) and 'totals' in key_data:
                 totals = key_data['totals']
@@ -115,16 +102,13 @@ class MatchAnalyzer:
                         continue
 
                 if min_total is not None:
-                    min_total_rounded = math.floor(min_total)
-                    if value > min_total_rounded:
+                    if value < min_total:
                         await self._process_and_send_message(f'LIVE {key.upper()} RATE')
                         self.excluded_games[self.game_key][key] = None
 
     def set_values(self, key):
         if self.excluded_games[self.game_key].get(key) == '?':
-            print('да ?')
-            if not ':' in self.match_time or self.check_match_time(self.info_dict, max_minute=13):
-                print('время подошло')
+            if ':' not in self.match_time or self.check_match_time(self.match_time, max_minute=13):
                 key_data = self.info_dict.get(key, {})
                 if isinstance(key_data, dict) and 'totals' in key_data:
                     totals = key_data['totals']
@@ -142,46 +126,45 @@ class MatchAnalyzer:
 
                     if max_total is not None:
                         if key == 'yellow cards':
-                            self.excluded_games[self.game_key][key] = max_total + 1
+                            self.excluded_games[self.game_key][key] = math.floor(max_total + 1)
                             print('yellow set')
                         elif key == 'fouls':
-                            self.excluded_games[self.game_key][key] = max_total + 3
+                            self.excluded_games[self.game_key][key] = math.floor(max_total + 3)
                             print('foul set')
                         return True
             else:
                 self.excluded_games[self.game_key][key] = None
-                print('слишком поздно устанавливать')
 
     def check_quantity_games(self, quantity):
         if not self.team1_info or not self.team2_info:
-            return
+            raise QuantityError
         team1_games = int(self.team1_info['game_played'])
         team2_games = int(self.team2_info['game_played'])
-        if team1_games > quantity and team2_games > quantity:
-            return True
+        if not team1_games > quantity or not team2_games > quantity:
+            self.excluded_games[self.game_key]['yellow_cards'] = None
+            self.excluded_games[self.game_key]['fouls'] = None
+            self.excluded_games[self.game_key]['throws'] = None
+            raise QuantityError
 
     async def check_wide_throws(self):
-        if self.check_quantity_games(quantity=7):
-            percentage = math.ceil(self.total_teams * 0.20)
-            team1_rank = int(self.team1_info['rank'])
-            team2_rank = int(self.team2_info['rank'])
+        percentage = math.ceil(self.total_teams * 0.20)
+        team1_rank = int(self.team1_info['rank'])
+        team2_rank = int(self.team2_info['rank'])
+        score1, score2 = map(int, self.match_score.split(':'))
 
-            score1, score2 = map(int, self.match_score.split(':'))
-
-            if team1_rank <= percentage and team2_rank >= self.total_teams - percentage:
-                if score1 < score2:
-                    await self._process_and_send_message(text='THROW-INS?')
-                    self.excluded_games[self.game_key]['throws'] = None
-            elif team2_rank <= percentage and team1_rank >= self.total_teams - percentage:
-                if score1 > score2:
-                    await self._process_and_send_message(text='THROW-INS?')
-                    self.excluded_games[self.game_key]['throws'] = None
-            elif team2_rank + 1 - team1_rank >= self.total_teams / 2:
-                if self.match_time == '45:00' and score1 < score2:
-                    await self._process_and_send_message(text='THROW-INS?')
-                    self.excluded_games[self.game_key]['throws'] = None
-            else:
+        if team1_rank <= percentage and team2_rank >= self.total_teams - percentage:
+            if score1 < score2:
+                await self._process_and_send_message(text='THROW-INS?')
                 self.excluded_games[self.game_key]['throws'] = None
+        elif team2_rank <= percentage and team1_rank >= self.total_teams - percentage:
+            if score1 > score2:
+                await self._process_and_send_message(text='THROW-INS?')
+                self.excluded_games[self.game_key]['throws'] = None
+        elif team2_rank + 1 - team1_rank >= self.total_teams / 2:
+            if self.match_time == '45:00' and score1 < score2:
+                await self._process_and_send_message(text='THROW-INS?')
+                self.excluded_games[self.game_key]['throws'] = None
+
         else:
             self.excluded_games[self.game_key]['throws'] = None
 
@@ -194,16 +177,15 @@ class MatchAnalyzer:
         print(message)
         await self.telegram.send_message_with_files(message)
 
-    def check_match_time(self, data: dict, max_minute=75):
-        match_time = data.get('match_time')
-        if match_time and ':' in match_time:
-            minutes = int(match_time.split(':')[0])
+    def check_match_time(self, time: str, max_minute=75):
+        if time and ':' in time:
+            minutes = int(time.split(':')[0])
             if minutes < max_minute:
                 return True
 
     async def foul_line_message(self):
-        if self.market['foul_market'] and self.excluded_games['fouls_line']:
-            if not ':' in self.match_time or self.check_match_time(self.info_dict, max_minute=13):
+        if self.market['foul_market'] and self.excluded_games[self.game_key]['fouls_line']:
+            if not ':' in self.match_time or self.check_match_time(self.match_time, max_minute=13):
                 await self._process_and_send_message(text='LINE FOULS LOOK REF AND TEAMS')
                 self.excluded_games[self.game_key]['fouls_line'] = None
             else:

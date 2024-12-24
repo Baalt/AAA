@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 from live.control_units.scrapers.game_scraper_light import GameScraperLight
 from live.analytics.match_analyzer import MatchAnalyzer
-from utils.error import ContinueError
+from utils.error import ContinueError, QuantityError
 
 from live.control_units.managers.web_crawler import WebCrawler
 
@@ -125,15 +125,17 @@ class WebCrawlerLight(WebCrawler):
                                         time.sleep(1)
                                         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                                         self.scraper.extract_tournament_info(soup)
-
                                         if self.check_team_ranks(self.scraper.get_game_info()):
-                                            await MatchAnalyzer(
-                                                info_dict=self.scraper.get_game_info(),
-                                                market=market,
-                                                excluded_games=self.excluded_games,
-                                                game_key=key,
-                                                tel=self.tel
-                                            ).search()
+                                            try:
+                                                analyzer = MatchAnalyzer(
+                                                    info_dict=self.scraper.get_game_info(),
+                                                    market=market,
+                                                    excluded_games=self.excluded_games,
+                                                    game_key=key,
+                                                    tel=self.tel)
+                                            except QuantityError:
+                                                continue
+                                            await analyzer.search()
                                             if self.check_scannable_game(market, key):
                                                 self.scannable_games.append(key)
                                         else:
@@ -141,21 +143,24 @@ class WebCrawlerLight(WebCrawler):
                                             self.excluded_games[key]['fouls'] = None
 
                                         if market['throw_market'] and self.excluded_games[key]['throws']:
-                                            await MatchAnalyzer(
-                                                info_dict=self.scraper.get_game_info(),
-                                                market=market,
-                                                excluded_games=self.excluded_games,
-                                                game_key=key,
-                                                tel=self.tel
-                                            ).check_wide_throws()
+                                            try:
+                                                await MatchAnalyzer(
+                                                    info_dict=self.scraper.get_game_info(),
+                                                    market=market,
+                                                    excluded_games=self.excluded_games,
+                                                    game_key=key,
+                                                    tel=self.tel).check_wide_throws()
+                                            except QuantityError:
+                                                continue
                                             if self.excluded_games[key]['throws'] and key not in self.scannable_games:
                                                 self.scannable_games.append(key)
+                                                self.only_wide_throw_games.append(key)
 
                         except (NoSuchElementException, StaleElementReferenceException):
                             continue
 
             self.first_time_scanned = None
-            print(f'{len(self.scannable_games)} scanning_games')
+            print(f'{len(self.scannable_games)} scanning games')
         else:
             await self.click_scannable_games()
 
@@ -270,34 +275,21 @@ class WebCrawlerLight(WebCrawler):
                             market['throw_market'] = True
 
                         if self.check_markets(market):
-                            info_button = self.driver.buttons.get_info_button()
-                            if info_button:
-                                info_button.click()
-                                time.sleep(1)
-                                tournament_button = self.driver.buttons.get_tournament_button()
-                                if tournament_button:
-                                    tournament_button.click()
-                                    time.sleep(1)
-                                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                    self.scraper.extract_tournament_info(soup)
+                            if key not in self.only_wide_throw_games:
+                                await MatchAnalyzer(
+                                    info_dict=self.scraper.get_game_info(),
+                                    market=market,
+                                    excluded_games=self.excluded_games,
+                                    game_key=key,
+                                    tel=self.tel).search()
 
-                                    if self.check_team_ranks(self.scraper.get_game_info()):
-                                        await MatchAnalyzer(
-                                            info_dict=self.scraper.get_game_info(),
-                                            market=market,
-                                            excluded_games=self.excluded_games,
-                                            game_key=key,
-                                            tel=self.tel
-                                        ).search()
-
-                                    if market['throw_market'] and self.excluded_games[key]['throws']:
-                                        await MatchAnalyzer(
-                                            info_dict=self.scraper.get_game_info(),
-                                            market=market,
-                                            excluded_games=self.excluded_games,
-                                            game_key=key,
-                                            tel=self.tel
-                                        ).check_wide_throws()
+                            if market['throw_market'] and self.excluded_games[key]['throws']:
+                                await MatchAnalyzer(
+                                    info_dict=self.scraper.get_game_info(),
+                                    market=market,
+                                    excluded_games=self.excluded_games,
+                                    game_key=key,
+                                    tel=self.tel).check_wide_throws()
 
                     except NoSuchElementException:
                         # print('click_all_games.ERROR:', e)
@@ -320,22 +312,6 @@ class WebCrawlerLight(WebCrawler):
             if minutes < max_minute:
                 return True
 
-    # def check_team_ranks(self, data, percent=0.25):
-    #     total_teams = data.get("total_teams")
-    #     tournament_info = data.get("tournament_info", [])
-    #
-    #     if not total_teams or not tournament_info:
-    #         return
-    #
-    #     upper_rank_threshold = math.ceil(total_teams * percent)
-    #     bottom_ranks = {total_teams, total_teams - 1}
-    #
-    #     has_top_team = any(int(team["rank"]) <= upper_rank_threshold for team in tournament_info)
-    #     has_bottom_team = any(int(team["rank"]) in bottom_ranks for team in tournament_info)
-    #
-    #     if has_top_team and has_bottom_team:
-    #         return True
-
     def check_team_ranks(self, data, percent=0.25):
         total_teams = data.get("total_teams")
         tournament_info = data.get("tournament_info", [])
@@ -355,7 +331,7 @@ class WebCrawlerLight(WebCrawler):
         has_upper_rank_team = any(int(team["rank"]) <= upper_rank_threshold for team in tournament_info)
         has_lower_rank_team = any(int(team["rank"]) >= lower_rank_threshold for team in tournament_info)
 
-        if (has_top_team and has_bottom_team) or (has_upper_rank_team and has_lower_rank_team):
+        if (has_top_team and has_lower_rank_team) or (has_bottom_team and has_upper_rank_team):
             return True
 
     def collect_game_info(self, soup):

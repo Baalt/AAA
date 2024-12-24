@@ -32,8 +32,12 @@ class GameScraperLight:
         scoreboard_div = self.get_scoreboard_div(soup)
         if scoreboard_div:
             self.extract_match_time(scoreboard_div)
-            self.extract_team_names(scoreboard_div)
+            self.extract_live_team_names(scoreboard_div)
             self.extract_match_score(scoreboard_div)
+        else:
+            self.game_info['match_time'] = 'Line'
+            self.game_info['match_score'] = '0:0'
+            self.extract_line_team_names(soup)
 
     def get_scoreboard_div(self, soup):
         return soup.select_one('div[class*="scoreboard__table"]')
@@ -45,7 +49,7 @@ class GameScraperLight:
         except (AttributeError, IndexError):
             self.game_info['match_time'] = 'Match has not started'
 
-    def extract_team_names(self, scoreboard_div):
+    def extract_live_team_names(self, scoreboard_div):
         try:
             team1_name = scoreboard_div.select_one('div[class*="column__t1"]').get_text(strip=True)
             self.game_info['team1_name'] = team1_name
@@ -54,6 +58,21 @@ class GameScraperLight:
 
         try:
             team2_name = scoreboard_div.select_one('div[class*="column__t2"]').get_text(strip=True)
+            self.game_info['team2_name'] = team2_name
+        except (AttributeError, IndexError):
+            self.game_info['team2_name'] = 'team2_not_available'
+
+    def extract_line_team_names(self, soup):
+        try:
+            team1_name = soup.select_one(
+                'div[class*="scoreboard-compact__main__team"][class*="team1"]').get_text(strip=True)
+            self.game_info['team1_name'] = team1_name
+        except (AttributeError, IndexError):
+            self.game_info['team1_name'] = 'team1_not_available'
+
+        try:
+            team2_name = soup.select_one(
+                'div[class*="scoreboard-compact__main__team"][class*="team2"]').get_text(strip=True)
             self.game_info['team2_name'] = team2_name
         except (AttributeError, IndexError):
             self.game_info['team2_name'] = 'team2_not_available'

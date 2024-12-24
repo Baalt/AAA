@@ -27,6 +27,7 @@ class WebCrawler(FootballMenuHandler):
         self.first_time_scanned = True
         self.excluded_games = excluded_games
         self.scannable_games = []
+        self.only_wide_throw_games = []
         self.games_xpath = '//a[contains(@class, "filter-item-event-container")]'
 
     async def run_crawler(self):

@@ -12,3 +12,6 @@ class HandicapNotMatchSeqError(Exception):
 
 class ContinueError(Exception):
     pass
+
+class QuantityError(Exception):
+    pass
