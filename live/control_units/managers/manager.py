@@ -14,6 +14,7 @@ from utils.func import get_today_date
 from config_smrt import LIVE_SOURCE
 
 if __name__ == '__main__':
+    excluded_games = {}
     driver = LiveChromeDriver()
     try:
         line_data = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLineData.pkl')
@@ -30,7 +31,6 @@ if __name__ == '__main__':
         leagues_dct, smart_dict = {}, {}
     tel = TelegramBot(token=config.token, chat_id=config.chat_id)
     now = datetime.datetime.now()
-    excluded_games = {}
     while True:
         now_plus_delta = now + datetime.timedelta(minutes=7)
         try:

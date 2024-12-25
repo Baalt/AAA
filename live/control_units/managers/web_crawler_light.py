@@ -125,6 +125,7 @@ class WebCrawlerLight(WebCrawler):
                                         time.sleep(1)
                                         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                                         self.scraper.extract_tournament_info(soup)
+                                        self.scraper.show_game_info()
                                         if self.check_team_ranks(self.scraper.get_game_info()):
                                             try:
                                                 analyzer = MatchAnalyzer(
