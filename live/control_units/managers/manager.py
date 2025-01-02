@@ -12,9 +12,11 @@ from telega import config
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
 from config_smrt import LIVE_SOURCE
+from utils.excluded_data import get_excluded_data, save_or_update_excluded_data
 
-if __name__ == '__main__':
-    excluded_games = {}
+
+async def run_bot():
+    excluded_games = get_excluded_data()
     driver = LiveChromeDriver()
     try:
         line_data = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLineData.pkl')
@@ -23,7 +25,6 @@ if __name__ == '__main__':
 
     browser = BrowserPreparer(driver=driver)
     browser.open_page()
-    input('choose language')
     try:
         leagues_dct = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLeaguesData.pkl')
         smart_dict = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllGamesData.pkl')
@@ -38,7 +39,6 @@ if __name__ == '__main__':
             lv_smrt_dct = browser.run()
         except (TimeoutException, AttributeError):
             continue
-        # print(f'number of scanned smart games {len(lv_smrt_dct.keys())}')
         operator = WebCrawlerLight(driver=browser.get_driver(),
                                    smart_data=lv_smrt_dct,
                                    league_data=leagues_dct,
@@ -51,5 +51,6 @@ if __name__ == '__main__':
                 await tel.change_data_and_delete_messages(lv_smrt_data=lv_smrt_dct)
             except NetworkError as err:
                 print('change_data_and_delete_messages.ERROR: ', err)
+            save_or_update_excluded_data(excluded_games)
             now = datetime.datetime.now()
         driver.open_page(LIVE_SOURCE)

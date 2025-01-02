@@ -106,6 +106,8 @@ class GameScraperLight:
                 continue
         self.game_info['tournament_info'] = tournament_info
         self.game_info['total_teams'] = total_teams
+        if self.game_info['tournament_info'] and self.game_info['total_teams']:
+            return True
 
     def collect_stats(self, soup, match_stat, total_text, handicap_text=None):
         # Find all market-group-box elements and loop through each one
@@ -128,7 +130,6 @@ class GameScraperLight:
 
         if statistic_key_dict:
             self.game_info.setdefault(match_stat, {}).update({key: statistic_key_dict})
-
 
     def __extract_total_sets(self, info_box, statistic_key_dict, total_text='Total'):
         over_under, total, over, under = None, None, None, None

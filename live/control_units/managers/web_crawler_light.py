@@ -74,7 +74,7 @@ class WebCrawlerLight(WebCrawler):
                         try:
                             self.excluded_games[key]
                         except KeyError:
-                            dct = {'yellow_cards': '?',
+                            dct = {'yellow cards': '?',
                                    'fouls': '?',
                                    'fouls_line': True,
                                    'throws': True}
@@ -90,7 +90,7 @@ class WebCrawlerLight(WebCrawler):
                         self.collect_game_info(soup)
                         try:
                             if self.driver.buttons.is_statistic_button('Yellow cards') and self.excluded_games[key][
-                                'yellow_cards']:
+                                'yellow cards']:
                                 self.driver.buttons.get_statistic_button('Yellow cards').click()
                                 time.sleep(1)
                                 self.wait_for_elements()
@@ -124,44 +124,43 @@ class WebCrawlerLight(WebCrawler):
                                         tournament_button.click()
                                         time.sleep(1)
                                         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                        self.scraper.extract_tournament_info(soup)
-                                        self.scraper.show_game_info()
-                                        if self.check_team_ranks(self.scraper.get_game_info()):
-                                            try:
-                                                analyzer = MatchAnalyzer(
-                                                    info_dict=self.scraper.get_game_info(),
-                                                    market=market,
-                                                    excluded_games=self.excluded_games,
-                                                    game_key=key,
-                                                    tel=self.tel)
-                                            except QuantityError:
-                                                continue
-                                            await analyzer.search()
-                                            if self.check_scannable_game(market, key):
-                                                self.scannable_games.append(key)
-                                        else:
-                                            self.excluded_games[key]['yellow_cards'] = None
-                                            self.excluded_games[key]['fouls'] = None
+                                        if self.scraper.extract_tournament_info(soup):
+                                            if self.check_team_ranks(self.scraper.get_game_info()):
+                                                try:
+                                                    analyzer = MatchAnalyzer(
+                                                        info_dict=self.scraper.get_game_info(),
+                                                        market=market,
+                                                        excluded_games=self.excluded_games,
+                                                        game_key=key,
+                                                        tel=self.tel)
+                                                except QuantityError:
+                                                    continue
+                                                await analyzer.search()
+                                                if self.check_scannable_game(market, key):
+                                                    self.scannable_games.append(key)
 
-                                        if market['throw_market'] and self.excluded_games[key]['throws']:
-                                            try:
-                                                await MatchAnalyzer(
-                                                    info_dict=self.scraper.get_game_info(),
-                                                    market=market,
-                                                    excluded_games=self.excluded_games,
-                                                    game_key=key,
-                                                    tel=self.tel).check_wide_throws()
-                                            except QuantityError:
-                                                continue
-                                            if self.excluded_games[key]['throws'] and key not in self.scannable_games:
-                                                self.scannable_games.append(key)
-                                                self.only_wide_throw_games.append(key)
+                                            if market['throw_market'] and self.excluded_games[key]['throws']:
+                                                try:
+                                                    await MatchAnalyzer(
+                                                        info_dict=self.scraper.get_game_info(),
+                                                        market=market,
+                                                        excluded_games=self.excluded_games,
+                                                        game_key=key,
+                                                        tel=self.tel).check_wide_throws()
+                                                except QuantityError:
+                                                    continue
+                                                if self.excluded_games[key]['throws'] and key not in self.scannable_games:
+                                                    self.scannable_games.append(key)
+                                                    self.only_wide_throw_games.append(key)
 
                         except (NoSuchElementException, StaleElementReferenceException):
                             continue
+                        if key not in self.scannable_games:
+                            del self.excluded_games[key]
 
             self.first_time_scanned = None
             print(f'{len(self.scannable_games)} scanning games')
+            print(self.scannable_games) if self.scannable_games else ...
         else:
             await self.click_scannable_games()
 
@@ -252,7 +251,7 @@ class WebCrawlerLight(WebCrawler):
                     self.collect_game_info(soup)
                     try:
                         if self.driver.buttons.is_statistic_button('Yellow cards') and self.excluded_games[key][
-                            'yellow_cards']:
+                            'yellow cards']:
                             self.driver.buttons.get_statistic_button('Yellow cards').click()
                             time.sleep(1)
                             self.wait_for_elements()
@@ -277,20 +276,26 @@ class WebCrawlerLight(WebCrawler):
 
                         if self.check_markets(market):
                             if key not in self.only_wide_throw_games:
-                                await MatchAnalyzer(
-                                    info_dict=self.scraper.get_game_info(),
-                                    market=market,
-                                    excluded_games=self.excluded_games,
-                                    game_key=key,
-                                    tel=self.tel).search()
+                                try:
+                                    await MatchAnalyzer(
+                                        info_dict=self.scraper.get_game_info(),
+                                        market=market,
+                                        excluded_games=self.excluded_games,
+                                        game_key=key,
+                                        tel=self.tel).search()
+                                except QuantityError:
+                                    continue
 
                             if market['throw_market'] and self.excluded_games[key]['throws']:
-                                await MatchAnalyzer(
-                                    info_dict=self.scraper.get_game_info(),
-                                    market=market,
-                                    excluded_games=self.excluded_games,
-                                    game_key=key,
-                                    tel=self.tel).check_wide_throws()
+                                try:
+                                    await MatchAnalyzer(
+                                        info_dict=self.scraper.get_game_info(),
+                                        market=market,
+                                        excluded_games=self.excluded_games,
+                                        game_key=key,
+                                        tel=self.tel).check_wide_throws()
+                                except QuantityError:
+                                    continue
 
                     except NoSuchElementException:
                         # print('click_all_games.ERROR:', e)
@@ -301,17 +306,10 @@ class WebCrawlerLight(WebCrawler):
             return True
 
     def check_scannable_game(self, dct, key):
-        if (self.excluded_games[key]['yellow_cards'] and dct[
+        if (self.excluded_games[key]['yellow cards'] and dct[
             'yellow_market']) or (self.excluded_games[key]['fouls'] and dct[
             'foul_market']) or (self.excluded_games[key]['throws'] and dct['throw_market']):
             return True
-
-    def check_match_time(self, data: dict, max_minute=75):
-        match_time = data.get('match_time')
-        if match_time and ':' in match_time:
-            minutes = int(match_time.split(':')[0])
-            if minutes < max_minute:
-                return True
 
     def check_team_ranks(self, data, percent=0.25):
         total_teams = data.get("total_teams")
