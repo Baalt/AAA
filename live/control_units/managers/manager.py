@@ -12,11 +12,10 @@ from telega import config
 from utils.pickle_manager import PickleHandler
 from utils.func import get_today_date
 from config_smrt import LIVE_SOURCE
-from utils.excluded_data import get_excluded_data, save_or_update_excluded_data
 
 
 async def run_bot():
-    excluded_games = get_excluded_data()
+    excluded_games = {}
     driver = LiveChromeDriver()
     try:
         line_data = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLineData.pkl')
@@ -51,6 +50,5 @@ async def run_bot():
                 await tel.change_data_and_delete_messages(lv_smrt_data=lv_smrt_dct)
             except NetworkError as err:
                 print('change_data_and_delete_messages.ERROR: ', err)
-            save_or_update_excluded_data(excluded_games)
             now = datetime.datetime.now()
         driver.open_page(LIVE_SOURCE)

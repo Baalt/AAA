@@ -71,14 +71,12 @@ class WebCrawlerLight(WebCrawler):
                             time.sleep(1)
                         except (StaleElementReferenceException, ElementClickInterceptedException):
                             continue
-                        try:
-                            self.excluded_games[key]
-                        except KeyError:
-                            dct = {'yellow cards': '?',
-                                   'fouls': '?',
-                                   'fouls_line': True,
-                                   'throws': True}
-                            self.excluded_games[key] = dct
+
+                        if not key in self.excluded_games:
+                            self.excluded_games[key] = {'yellow cards': '?',
+                                                        'fouls': '?',
+                                                        'fouls_line': True,
+                                                        'throws': True}
 
                         market = {
                             'yellow_market': None,
@@ -149,7 +147,8 @@ class WebCrawlerLight(WebCrawler):
                                                         tel=self.tel).check_wide_throws()
                                                 except QuantityError:
                                                     continue
-                                                if self.excluded_games[key]['throws'] and key not in self.scannable_games:
+                                                if self.excluded_games[key][
+                                                    'throws'] and key not in self.scannable_games:
                                                     self.scannable_games.append(key)
                                                     self.only_wide_throw_games.append(key)
 
@@ -159,8 +158,7 @@ class WebCrawlerLight(WebCrawler):
                             del self.excluded_games[key]
 
             self.first_time_scanned = None
-            print(f'{len(self.scannable_games)} scanning games')
-            print(self.scannable_games) if self.scannable_games else ...
+            print(f'{len(self.scannable_games)} scanning games', self.scannable_games)
         else:
             await self.click_scannable_games()
 

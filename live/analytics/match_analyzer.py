@@ -85,19 +85,20 @@ class MatchAnalyzer:
                 self.excluded_games[self.game_key]['fouls_line'] = None
 
     async def analyze_throws(self):
-        score1, score2 = map(int, self.info_dict['match_score'].split(':'))
-        team1_rank = int(self.team1_info['rank'])
-        team2_rank = int(self.team2_info['rank'])
+        if ':' in self.match_score:
+            score1, score2 = map(int, self.match_score.split(':'))
+            team1_rank = int(self.team1_info['rank'])
+            team2_rank = int(self.team2_info['rank'])
 
-        if self.check_max_match_time(self.match_time, max_minute=81):
-            if team1_rank < team2_rank and score1 < score2:
-                await self._process_and_send_message(text='LIVE THROWS FAST')
+            if self.check_max_match_time(self.match_time, max_minute=81):
+                if team1_rank < team2_rank and score1 < score2:
+                    await self._process_and_send_message(text='LIVE THROWS FAST')
+                    self.excluded_games[self.game_key]['throws'] = None
+                elif team1_rank > team2_rank and score1 > score2:
+                    await self._process_and_send_message(text='LIVE THROWS FAST')
+                    self.excluded_games[self.game_key]['throws'] = None
+            else:
                 self.excluded_games[self.game_key]['throws'] = None
-            elif team1_rank > team2_rank and score1 > score2:
-                await self._process_and_send_message(text='LIVE THROWS FAST')
-                self.excluded_games[self.game_key]['throws'] = None
-        else:
-            self.excluded_games[self.game_key]['throws'] = None
 
     def set_values(self, key):
         if self.excluded_games[self.game_key].get(key) == '?':
@@ -153,31 +154,30 @@ class MatchAnalyzer:
         percentage = math.ceil(self.total_teams * 0.20)
         team1_rank = int(self.team1_info['rank'])
         team2_rank = int(self.team2_info['rank'])
-        score1, score2 = map(int, self.match_score.split(':'))
+        if ':' in self.match_score:
+            score1, score2 = map(int, self.match_score.split(':'))
 
-        if team1_rank <= percentage and team2_rank >= self.total_teams - percentage:
-            if score1 < score2:
-                await self._process_and_send_message(text='NORMAL THROW-INS?')
+            if team1_rank <= percentage and team2_rank >= self.total_teams - percentage:
+                if score1 < score2:
+                    await self._process_and_send_message(text='NORMAL THROW-INS?')
+                    self.excluded_games[self.game_key]['throws'] = None
+            elif team2_rank <= percentage and team1_rank >= self.total_teams - percentage:
+                if score1 > score2:
+                    await self._process_and_send_message(text='NORMAL THROW-INS?')
+                    self.excluded_games[self.game_key]['throws'] = None
+            elif team2_rank + 1 - team1_rank >= self.total_teams / 2:
+                if self.check_max_match_time(self.match_time, max_minute=81) and score1 < score2:
+                    await self._process_and_send_message(text='DANGER1 THROW-INS?')
+                    self.excluded_games[self.game_key]['throws'] = None
+            elif team1_rank + 1 - team2_rank >= self.total_teams / 2:
+                if self.check_max_match_time(self.match_time, max_minute=81) and score1 > score2:
+                    await self._process_and_send_message(text='DANGER2 THROW-INS?')
+                    self.excluded_games[self.game_key]['throws'] = None
+            else:
                 self.excluded_games[self.game_key]['throws'] = None
-        elif team2_rank <= percentage and team1_rank >= self.total_teams - percentage:
-            if score1 > score2:
-                await self._process_and_send_message(text='NORMAL THROW-INS?')
-                self.excluded_games[self.game_key]['throws'] = None
-        elif team2_rank + 1 - team1_rank >= self.total_teams / 2:
-            if self.check_max_match_time(self.match_time, max_minute=81) and score1 < score2:
-                await self._process_and_send_message(text='DANGER1 THROW-INS?')
-                self.excluded_games[self.game_key]['throws'] = None
-        elif team1_rank + 1 - team2_rank >= self.total_teams / 2:
-            if self.check_max_match_time(self.match_time, max_minute=81) and score1 > score2:
-                await self._process_and_send_message(text='DANGER2 THROW-INS?')
-                self.excluded_games[self.game_key]['throws'] = None
-        else:
-            self.excluded_games[self.game_key]['throws'] = None
 
     def check_quantity_games(self, quantity):
         if not self.team1_info or not self.team2_info:
-            print(self.team1_name, self.team2_name)
-            print(self.team_1_info, self.team2_info)
             raise QuantityError
         team1_games = int(self.team1_info['game_played'])
         team2_games = int(self.team2_info['game_played'])
