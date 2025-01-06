@@ -15,7 +15,7 @@ class LeagueScraper:
     def find_all_rows(soup):
         return soup.find_all('tr', class_=re.compile(r'^(odd|even)$'))
 
-    def from_soup(self, soup: BeautifulSoup, key='goals'):
+    def scrape_league_table(self, soup: BeautifulSoup, key='goals'):
         commands_data = self.find_all_rows(soup=soup)
         team_data_list = []
         for data in commands_data:
@@ -38,3 +38,20 @@ class LeagueScraper:
             }
             team_data_list.append(team_data)
         self.data.setdefault(key, team_data_list)
+
+
+    def scrape_ref_table(self, soup: BeautifulSoup, key: str):
+        ref_data_list = []
+        tbody = soup.find('tbody')
+        rows = tbody.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            if len(cols) > 10:
+                ref_data = {
+                    'team_position': cols[0].get_text(strip=True),
+                    'team_name': cols[1].get_text(strip=True),
+                    'games_played': cols[2].get_text(strip=True),
+                    'avg_overall_total': cols[10].get_text(strip=True)
+                }
+                ref_data_list.append(ref_data)
+        self.data.setdefault(key, ref_data_list)

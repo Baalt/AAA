@@ -30,9 +30,8 @@ class AllLeaguesCollector:
         self.driver.open_page(url=url)
         league_data_scraper = LeagueDataCollector(driver=self.driver)
         league_data_scraper.scrape_data()
-        league_data_scraper.get_data()
         # Add the league data to the existing data
-        self.data[league_key] = league_data_scraper.data
+        self.data[league_key] = league_data_scraper.get_data()
         # Save the updated data to the file
         pickle_handler = PickleHandler()
         pickle_handler.write_data(self.data, self.data_file_name)

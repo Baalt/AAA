@@ -22,7 +22,7 @@ if __name__ == '__main__':
     scraper.scrape_schedule(soup=soup)
     schedule_data = scraper.get_schedule_data()
 
-    collector = AllLeaguesCollector(driver=driver, schedule_data=scraper.get_schedule_data())
+    collector = AllLeaguesCollector(driver=driver, schedule_data=schedule_data)
     collector.run(address=SOURCE)
 
     all_league_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesData.pkl")

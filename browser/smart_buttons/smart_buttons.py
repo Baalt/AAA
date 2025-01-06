@@ -10,15 +10,29 @@ class SmartStatButtons:
         self.browser = None
 
     def get_smart_stats_buttons(self, selector="//div[@class='btn-group py-1 mr-2 stat-picker']//button"):
+        # Define the desired order of buttons
+        button_order = ['Голы', 'Угловые', 'ЖК', 'Офсайды', 'Фолы', 'Уд. в створ', 'Ауты']
+
         # Find all the button elements using XPath
         buttons = self.browser.find_elements(By.XPATH, selector)
+
         # Filter out buttons with specific texts
-        filtered_buttons = [button for button in buttons if
-                            button.text.strip() in ['Голы', 'ЖК', 'Фолы']]
-        # Sort the buttons so that 'ЖК' is always first and 'Фолы' is second
-        sorted_buttons = sorted(filtered_buttons, key=lambda button: button.text.strip())
-        # Return the sorted buttons list
+        filtered_buttons = [button for button in buttons if button.text.strip() in button_order]
+
+        # Sort the buttons based on the desired order
+        sorted_buttons = sorted(filtered_buttons, key=lambda btn: button_order.index(btn.text.strip()))
+
         return sorted_buttons
+
+    def get_fouls_button(self, selector="//div[@class='btn-group py-1 mr-2 stat-picker']//button"):
+        # Get all buttons using the existing method
+        buttons = self.get_smart_stats_buttons(selector)
+
+        # Iterate through buttons and find the one with the text 'Фолы'
+        for button in buttons:
+            if button.text.strip() == 'Фолы':
+                return button
+
 
     def get_other_button(self, selector="//button[contains(@class, 'dropdown-toggle')]"):
         button = self.browser.find_element(By.XPATH, selector)

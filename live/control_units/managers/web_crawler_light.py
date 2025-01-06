@@ -154,8 +154,8 @@ class WebCrawlerLight(WebCrawler):
 
                         except (NoSuchElementException, StaleElementReferenceException):
                             continue
-                        if key not in self.scannable_games:
-                            del self.excluded_games[key]
+                        # if key not in self.scannable_games:
+                        #     del self.excluded_games[key]
 
             self.first_time_scanned = None
             print(f'{len(self.scannable_games)} scanning games', self.scannable_games)
