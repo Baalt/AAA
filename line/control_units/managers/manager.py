@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 
 from browser.browser import SmartChromeDriver
+from line.analytics.league_strct_analysis import LeaguePerformanceAnalyzer
 from line.control_units.scrapers.schedule_scraper import SmartScheduleScraper
 from line.control_units.managers.leagues_collector import AllLeaguesCollector
-from line.control_units.managers.games_collector import AllGamesCollector
 from utils.pickle_manager import PickleHandler
 from config_smrt import LOGIN, PASSWORD, SOURCE
 
@@ -26,10 +26,7 @@ if __name__ == '__main__':
     collector.run(address=SOURCE)
 
     all_league_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesData.pkl")
-    collector = AllGamesCollector(driver=driver,
-                                  schedule_data=scraper.get_schedule_data(),
-                                  all_league_data=all_league_data)
-    await collector.run()
-    driver.close()
-    all_games_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllGamesData.pkl")
-    print('count of preparing game - ', len(all_games_data['lst']))
+    strct = LeaguePerformanceAnalyzer(all_league_data)
+    strct.analyze_leagues()
+    strct.save_results(schedule_data)
+

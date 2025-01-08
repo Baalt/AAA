@@ -115,11 +115,17 @@ class WebCrawlerLight(WebCrawler):
                             if self.check_markets(market):
                                 info_button = self.driver.buttons.get_info_button()
                                 if info_button:
-                                    info_button.click()
-                                    time.sleep(1)
+                                    try:
+                                        info_button.click()
+                                        time.sleep(1)
+                                    except ElementClickInterceptedException:
+                                        continue
                                     tournament_button = self.driver.buttons.get_tournament_button()
                                     if tournament_button:
-                                        tournament_button.click()
+                                        try:
+                                            tournament_button.click()
+                                        except ElementClickInterceptedException:
+                                            continue
                                         time.sleep(1)
                                         soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
                                         if self.scraper.extract_tournament_info(soup):

@@ -29,7 +29,7 @@ class LeagueDataCollector:
         return self.data
 
     def scrape_data(self) -> None:
-        # self.scrape_season()
+        self.scrape_season()
         self.scrape_referee()
 
     def scrape_referee(self):
