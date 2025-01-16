@@ -1,10 +1,13 @@
 from typing import Optional
 from bs4 import BeautifulSoup
 
+from utils.pickle_manager import PickleHandler
+
 
 class SmartScheduleScraper:
     def __init__(self, soup: Optional[BeautifulSoup] = None):
         self.schedule = {}
+        self.result = {}
         if soup:
             self.scrape_schedule(soup)
             self.scrape_date(soup)
@@ -30,7 +33,7 @@ class SmartScheduleScraper:
             # Собираем данные для match_url
             try:
                 match_url = \
-                row.find('td', attrs={'class': 'text-right align-middle upcoming-match-prematch'}).find('a')['href']
+                    row.find('td', attrs={'class': 'text-right align-middle upcoming-match-prematch'}).find('a')['href']
             except (AttributeError, TypeError):
                 pass
 
@@ -64,3 +67,19 @@ class SmartScheduleScraper:
         date_button = soup.find('button', attrs={'class': 'datepicker-day btn btn-sm btn-light active'})
         self.schedule['date'] = date_button.find('span', attrs={'class': 'date-short'}).get_text(
             strip=True) if date_button else None
+
+    def process_schedule(self):
+        for primary_key, inner_dict in self.schedule.items():
+            if 'data' not in self.result:
+                self.result['data'] = []
+            if primary_key == 'date':
+                continue
+
+            updated_dict = inner_dict.copy()
+            updated_dict['league'] = primary_key
+            self.result['data'].append(updated_dict)
+
+    def save_results(self):
+        file_name = f"data/{self.schedule['date']}_LiveSchedule.pkl"
+        pickle_handler = PickleHandler()
+        pickle_handler.write_data(self.result, file_name)

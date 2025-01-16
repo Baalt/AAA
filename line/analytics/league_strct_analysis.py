@@ -19,11 +19,12 @@ class LeaguePerformanceAnalyzer:
         return True
 
     def categorize_teams(self, stat_list, avg_key):
-        avg_values = [float(record.get(avg_key, 0)) for record in stat_list]
-
+        try:
+            avg_values = [float(record.get(avg_key, 0)) for record in stat_list]
+        except ValueError:
+            return
         if not avg_values:
-            return None
-
+            return
         avg_mean = sum(avg_values) / len(avg_values)
 
         categories = {
@@ -39,7 +40,11 @@ class LeaguePerformanceAnalyzer:
         for record in stat_list:
             avg_value = float(record.get(avg_key, 0))
             team_name = record.get('team_name', 'Unknown')
-            diff_percent = ((avg_value - avg_mean) / avg_mean) * 100
+            try:
+                diff_percent = ((avg_value - avg_mean) / avg_mean) * 100
+            except ZeroDivisionError:
+                print(f'(({avg_value} - {avg_mean}) / {avg_mean}) * 100')
+                continue
 
             if diff_percent >= 25:
                 categories['more_25'].append(team_name)
@@ -77,7 +82,7 @@ class LeaguePerformanceAnalyzer:
                     if categories is not None:
                         self.result[league_name]['position'] = categories
 
-                elif stat_key in ['ref_yellows', 'ref_fouls']:
+                elif stat_key in ['ref_yellow cards', 'ref_fouls']:
                     avg_key = 'avg_overall_total'
                     categories = self.categorize_teams(stat_list, avg_key)
                     if categories is not None:

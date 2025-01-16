@@ -109,5 +109,5 @@ class TeamsStatsVisualizer:
         ax.set_ylabel(stat_key)
         fig.tight_layout()
 
-        fig.savefig(f"graph/data/{season}_stat.png", dpi=300)
+        fig.savefig(f"graph/data/{stat_key}_stat.png", dpi=300)
         plt.close(fig)

@@ -30,14 +30,17 @@ class LeagueDataCollector:
 
     def scrape_data(self) -> None:
         self.scrape_season()
-        self.scrape_referee()
+        try:
+            self.scrape_referee()
+        except AttributeError:
+            pass
 
     def scrape_referee(self):
         if self.driver.buttons.check_and_press_referee_button():
             self.wait_for_elements(xpath='//div[@id="table_referee_wrapper"]')
             time.sleep(2)
             soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-            self.scraper.scrape_ref_table(soup, key='ref_yellows')
+            self.scraper.scrape_ref_table(soup, key='ref_yellow cards')
             self.driver.buttons.get_fouls_button().click()
             time.sleep(1)
             self.refresh_page()
