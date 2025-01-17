@@ -32,6 +32,9 @@ class GameStatAnalyzer:
         message_lst = []
         stat_viz_set = set()
 
+        position_up_25 = self.lg_strct[lg_key]['position']['more_25']
+        position_down_25 = self.lg_strct[lg_key]['position']['less_25']
+
         for stat in lg_strct:
             if stat not in ['ref_yellows', 'ref_fouls']:
                 more25 = self.lg_strct[lg_key][stat]['more_25']
@@ -88,20 +91,56 @@ class GameStatAnalyzer:
                     more = more25 + more15
                     less = less25 + less15
 
-                    if (team1_name in more and team2_name in less) or (team1_name in less and team2_name in more):
-                        message_lst.append(f'HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
-
                     if stat == 'throw-ins':
+                        if (team1_name in more and team1_name in position_up_25) and (
+                                team2_name in less and team2_name in position_down_25):
+                            message_lst.append(f'STRONG_HANDICAP_{stat}')
+                            stat_viz_set.add(stat)
+
+                        elif (team1_name in less and team1_name in position_down_25) and (
+                                team2_name in more and team2_name in position_up_25):
+                            message_lst.append(f'STRONG_HANDICAP_{stat}')
+                            stat_viz_set.add(stat)
+
+                        elif (team1_name in more and team2_name in less) or (team1_name in less and team2_name in more):
+                            message_lst.append(f'HANDICAP_{stat}')
+                            stat_viz_set.add(stat)
+
                         if team1_name in more and team2_name in more:
                             message_lst.append(f'TOTAL_OVER_{stat}')
                             stat_viz_set.add(stat)
 
-                        if team1_name in less and team2_name in less:
+                        if (team1_name in position_up_25 and team1_name in less and team2_name in position_down_25):
+                            message_lst.append(f'POSITION_TOTAL_UNDER_{stat}')
+                            stat_viz_set.add(stat)
+
+                        elif (team2_name in position_up_25 and team2_name in less and team1_name in position_down_25):
+                            message_lst.append(f'POSITION_TOTAL_UNDER_{stat}')
+                            stat_viz_set.add(stat)
+
+                        elif team1_name in less and team2_name in less:
                             message_lst.append(f'TOTAL_UNDER_{stat}')
                             stat_viz_set.add(stat)
 
+                        if team1_name in more:
+                            message_lst.append(f'IND_1_OVER_{stat}')
+                            stat_viz_set.add(stat)
+                        elif team1_name in less:
+                            message_lst.append(f'IND_1_UNDER_{stat}')
+                            stat_viz_set.add(stat)
+
+                        if team2_name in more:
+                            message_lst.append(f'IND_2_OVER_{stat}')
+                            stat_viz_set.add(stat)
+                        elif team2_name in less:
+                            message_lst.append(f'IND_2_UNDER_{stat}')
+                            stat_viz_set.add(stat)
+
                     elif stat == 'fouls':
+                        if (team1_name in more and team2_name in less) or (team1_name in less and team2_name in more):
+                            message_lst.append(f'HANDICAP_{stat}')
+                            stat_viz_set.add(stat)
+
                         if ref_name:
                             ref_stat = 'ref_' + stat
                             try:
@@ -116,9 +155,6 @@ class GameStatAnalyzer:
                             ref_more = ref_more25 + ref_more15_25
                             ref_less5 = ref_less25 + ref_less15_25 + ref_less5_15
                             ref_avg = ref_less5 + ref_avg5_5
-
-                            position_up_25 = self.lg_strct[lg_key][stat]['more_25']
-                            position_down_25 = self.lg_strct[lg_key][stat]['more_25']
 
                             less5 = self.lg_strct[lg_key][stat]['less_5-15']
                             avg5_5 = self.lg_strct[lg_key][stat]['avg_5-5']
@@ -141,6 +177,21 @@ class GameStatAnalyzer:
                                     team2_name in position_up_25 and team2_name in avg) and ref_name in ref_avg:
                                 message_lst.append(f'POSITION_TOTAL_UNDER_{stat}')
                                 stat_viz_set.add(stat)
+
+                            if team1_name in more and ref_name in ref_more:
+                                message_lst.append(f'IND_1_OVER_{stat}')
+                                stat_viz_set.add(stat)
+                            elif team1_name in less and ref_name in ref_less5:
+                                message_lst.append(f'IND_1_UNDER_{stat}')
+                                stat_viz_set.add(stat)
+
+                            if team2_name in more and ref_name in ref_more:
+                                message_lst.append(f'IND_2_OVER_{stat}')
+                                stat_viz_set.add(stat)
+                            elif team2_name in less and ref_name in ref_less5:
+                                message_lst.append(f'IND_2_UNDER_{stat}')
+                                stat_viz_set.add(stat)
+
 
                 elif stat == 'yellow cards':
                     if (team1_name in more25 and team2_name in less25) or (
@@ -177,9 +228,6 @@ class GameStatAnalyzer:
                         avg5_5 = self.lg_strct[lg_key][stat]['avg_5-5']
                         less = less25 + less15 + less5
                         avg = less + avg5_5
-
-                        position_up_25 = self.lg_strct[lg_key][stat]['more_25']
-                        position_down_25 = self.lg_strct[lg_key][stat]['more_25']
 
                         if team1_name in more25 and team2_name in more25 and ref_name in ref_more:
                             message_lst.append(f'STRONG_TOTAL_OVER_{stat}')
