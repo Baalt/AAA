@@ -55,9 +55,13 @@ class LeagueDataCollector:
         self.scraper.scrape_league_table(soup=soup, key='goals')
         idx = 1
         for button in self.driver.buttons.get_smart_stats_buttons()[1:]:
-            button.click()
+            if idx == 1:
+                button.click()
+                time.sleep(4)
+                button.click()
+            else:
+                button.click()
             time.sleep(1)
-            button.click()
             self.refresh_page()
             self.wait_for_elements()
             time.sleep(3)

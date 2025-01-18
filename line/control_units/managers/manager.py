@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 
 from browser.browser import SmartChromeDriver
 from line.analytics.league_strct_analysis import LeaguePerformanceAnalyzer
-from line.analytics.game_analysis import GameStatAnalyzer
+from line.analytics.game_analysis import GameStatAnalyzer, LiveDataPreparer
 from line.control_units.scrapers.schedule_scraper import SmartScheduleScraper
 from line.control_units.managers.leagues_collector import AllLeaguesCollector
 from utils.pickle_manager import PickleHandler
@@ -38,3 +38,7 @@ if __name__ == '__main__':
 
     analyzer = GameStatAnalyzer(lv_schedule, strct_data, all_league_data)
     await analyzer.run()
+
+    live = LiveDataPreparer(lv_schedule, strct_data, all_league_data)
+    live.run()
+    PickleHandler().write_data(live.data, f"data/{schedule_data['date']}_AllLineData.pkl")
