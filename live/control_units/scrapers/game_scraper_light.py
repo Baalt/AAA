@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from pprint import pprint
 
+from utils.stat_switcher import live_stat_dct
+
 
 class GameScraperLight:
     keys = {
@@ -86,6 +88,18 @@ class GameScraperLight:
             self.game_info['match_score'] = score_str
         except (AttributeError, IndexError):
             self.game_info['match_score'] = 'Scores not available'
+
+    def scrape_stats(self, soup: BeautifulSoup):
+        stat_set = set()
+        for button in soup.select('span[class*="button"]'):
+            button_text = button.get_text(strip=True)
+            if button_text in live_stat_dct:
+                stat_set.add(live_stat_dct[button_text])
+
+        if not stat_set:
+            stat_set.add('corners')
+
+        self.game_info['stat_set'] = stat_set
 
     def extract_tournament_info(self, soup):
         rows = soup.select('div[class*="row"][class*="active"]')

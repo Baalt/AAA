@@ -33,12 +33,12 @@ if __name__ == '__main__':
     strct.analyze_leagues()
     strct.save_results(schedule_data)
 
-    lv_schedule = PickleHandler().read_data(f"data/{schedule_data['date']}_LiveSchedule.pkl")
+    lv_schedule = PickleHandler().read_data(f"data/{schedule_data['date']}_Schedule.pkl")
     strct_data = PickleHandler().read_data(f"data/{schedule_data['date']}_AllLeaguesStructure.pkl")
-
-    analyzer = GameStatAnalyzer(lv_schedule, strct_data, all_league_data)
-    await analyzer.run()
 
     live = LiveDataPreparer(lv_schedule, strct_data, all_league_data)
     live.run()
     PickleHandler().write_data(live.data, f"data/{schedule_data['date']}_AllLineData.pkl")
+
+    analyzer = GameStatAnalyzer(lv_schedule, strct_data, all_league_data)
+    await analyzer.run()

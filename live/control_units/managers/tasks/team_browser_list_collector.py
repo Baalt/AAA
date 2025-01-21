@@ -19,7 +19,7 @@ class MatchCollector:
                 if live_key in self.matches:
                     continue
                 live_home_name, live_away_name = self._split_command_names(command_names=live_key)
-                for smart_data in smart_dict['lst']:
+                for smart_data in smart_dict['games']:
                     smart_home_name, smart_away_name = smart_data['team1_name'], smart_data['team2_name']
                     match = self.filter.compare_teams(
                         live_team_1=live_home_name,
@@ -28,9 +28,7 @@ class MatchCollector:
                         smart_team_2=smart_away_name
                     )
                     if match:
-                        url = 'https://www.fon.bet' + live_value
                         match_data = {
-                            'url': url,
                             'live_team_1': live_home_name,
                             'live_team_2': live_away_name,
                             'smart_data': smart_data

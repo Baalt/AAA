@@ -10,6 +10,18 @@ stats_dict = {
     'Удары': 'shots',
 }
 
+live_stat_dct = {
+    'Corners': 'corners',
+    'Yellow cards': 'yellow cards',
+    'Fouls': 'fouls',
+    'Shots on goal': 'shots on goal',
+    'Offsides': 'offsides',
+    'Throw-ins': 'throw-ins',
+    'Goal kicks': 'goal kicks',
+    'Shots': 'shots',
+
+}
+
 exclude_list = [
     'union',
     'united',
@@ -40,10 +52,10 @@ ordered_file_list = [
     "graph/data/current_season_points.png",
     "graph/data/yellow cards_stat.png",
     "graph/data/fouls_stat.png",
+    "graph/data/goal kicks_stat.png",
     "graph/data/corners_stat.png",
     "graph/data/shots on goal_stat.png",
     "graph/data/offsides_stat.png",
     "graph/data/throw-ins_stat.png",
-    "graph/data/goal kicks_stat.png",
     "graph/data/shots_stat.png",
 ]

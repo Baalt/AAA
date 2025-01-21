@@ -18,7 +18,7 @@ class GameStatAnalyzer:
     async def run(self):
         flag = True
         for lg_dct in self.lv_schedule['data']:
-            # if lg_dct['league'] == 'Israel: Premier League':
+            # if lg_dct['league'] == '':
             #     flag = True
             if flag:
                 for game in lg_dct['match_data']:
@@ -284,6 +284,7 @@ class GameStatAnalyzer:
             self.__plot_graphs(team1_name, team2_name, lg_key, stat_viz_set)
             matching_files = get_matching_files(ordered_file_list)
             await self.tel.send_message_with_files(message, *matching_files)
+            time.sleep(3)
 
     def __plot_graphs(self, team1_name, team2_name, lg_key, stat_set):
         delete_files_in_folder(folder_path='graph/data')
@@ -421,10 +422,10 @@ class LiveDataPreparer(GameStatAnalyzer):
                             stat_viz_set.add(stat)
 
                         if team2_name in more and ref_name in ref_more:
-                            message_lst.append(f'IND_2_OVER_{stat}')
+                            message_lst.append(f'IND2_OVER_{stat}')
                             stat_viz_set.add(stat)
                         elif team2_name in less and ref_name in ref_less:
-                            message_lst.append(f'IND_2_UNDER_{stat}')
+                            message_lst.append(f'IND2_UNDER_{stat}')
                             stat_viz_set.add(stat)
 
                 else:
@@ -443,15 +444,14 @@ class LiveDataPreparer(GameStatAnalyzer):
                         stat_viz_set.add(stat)
 
                     if team2_name in more:
-                        message_lst.append(f'IND_2_OVER_{stat}')
+                        message_lst.append(f'IND2_OVER_{stat}')
                         stat_viz_set.add(stat)
                     elif team2_name in less:
-                        message_lst.append(f'IND_2_UNDER_{stat}')
+                        message_lst.append(f'IND2_UNDER_{stat}')
                         stat_viz_set.add(stat)
 
                 if message_lst:
                     result[stat] = "\n".join(message_lst)
-                else:
-                    result[stat] = None
 
+        result['stat_set'] = stat_viz_set
         self.data['games'].append(result)

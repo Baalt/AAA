@@ -40,10 +40,8 @@ class AllLeaguesCollector:
         self.load_data_from_file()
         # flag = False
         for league_key, league_data in self.schedule_data.items():
-            if 'International: Club Friendlies' in league_key:
+            if 'International: Club Friendlies' in league_key or "Women's" in league_key:
                 continue
-            # if "India: Women's League" in league_key:
-            #     flag = True
             if league_key != 'date':
                 url = address + league_data['league_url']
                 self.scrape_league_data(league_key, url)

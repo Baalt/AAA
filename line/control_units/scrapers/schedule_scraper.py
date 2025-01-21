@@ -80,6 +80,6 @@ class SmartScheduleScraper:
             self.result['data'].append(updated_dict)
 
     def save_results(self):
-        file_name = f"data/{self.schedule['date']}_LiveSchedule.pkl"
+        file_name = f"data/{self.schedule['date']}_Schedule.pkl"
         pickle_handler = PickleHandler()
         pickle_handler.write_data(self.result, file_name)

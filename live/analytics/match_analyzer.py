@@ -7,11 +7,135 @@ from live.analytics.game_info import GameInfo, Info
 from telega.telegram_bot import TelegramBot
 from utils.error import QuantityError
 from utils.pickle_manager import PickleHandler
-from utils.func import get_today_date
-from utils.stat_switcher import stats_dict
+from utils.func import get_today_date, delete_files_in_folder, get_matching_files
+from utils.stat_switcher import stats_dict, ordered_file_list
+from utils.error import ContinueError
 
 from graph.match_stats_viz import MatchStatsVisualizer
 from graph.teams_stats_viz import TeamsStatsVisualizer
+
+
+class GameAnalyzer:
+    def __init__(self, live_info, smart_data, lg_data, excluded_games, game_key, tel):
+        self.live_info = live_info
+        self.smart_data = smart_data['smart_data']
+        self.lg_data = lg_data
+        self.excluded_games = excluded_games
+        self.game_key = game_key
+        self.tel = tel
+        self.score = live_info['match_score']
+        self.match_time = live_info['match_time']
+        self.stat_set = self.smart_data['stat_set'] & live_info['stat_set']
+        self.attack_stat = ['corners', 'shots on goal', 'offsides', 'throw-ins']
+        self.defence_stat = ['yellow cards', 'fouls', 'goal kicks']
+
+    async def search(self):
+        if self.stat_set:
+            if self.excluded_games[self.game_key]['score']:
+                await self.search_by_score()
+            if self.excluded_games[self.game_key]['45:00']:
+                await self.search_by_1st_time()
+        else:
+            raise ContinueError
+
+    async def search_by_score(self):
+        if ':' in self.score and ':' in self.match_time and self.check_max_match_time(self.match_time, max_minute=75):
+            score1, score2 = map(int, self.score.split(':'))
+            pos1 = self.smart_data['team1_pos']
+            message_lst = []
+            stat_viz_set = set()
+            if pos1 == 'over' and score1 < score2:
+                for stat in self.stat_set:
+                    value_lst = self.smart_data[stat].split('\n')
+                    for mes in value_lst:
+                        if stat in self.attack_stat:
+                            if 'HANDICAP1' in mes or 'IND1_OVER' in mes or 'IND2_UNDER' in mes:
+                                message_lst.append(mes)
+                                stat_viz_set.add(stat)
+                        elif stat in self.defence_stat:
+                            if 'HANDICAP2' in mes or 'IND2_OVER' in mes:
+                                message_lst.append(mes)
+                                stat_viz_set.add(stat)
+
+
+            elif pos1 == 'under' and score1 > score2:
+                for stat in self.stat_set:
+                    value_lst = self.smart_data[stat].split('\n')
+                    for mes in value_lst:
+                        if stat in self.attack_stat:
+                            if 'HANDICAP2' in mes or 'IND2_OVER' in mes or 'IND1_UNDER' in mes:
+                                message_lst.append(mes)
+                                stat_viz_set.add(stat)
+                        elif stat in self.defence_stat:
+                            if 'HANDICAP1' in mes or 'IND1_OVER' in mes:
+                                message_lst.append(mes)
+                                stat_viz_set.add(stat)
+
+            if message_lst and stat_viz_set:
+                await self.message_builder(message_lst, stat_viz_set, 'score')
+
+    async def search_by_1st_time(self):
+        if ':' in self.match_time and self.match_time == '45:00':
+            message_lst = []
+            for stat in self.stat_set:
+                message_lst.append(self.smart_data[stat])
+
+            if message_lst:
+                await self.message_builder(message_lst, self.stat_set, '45:00')
+
+        if ':' in self.match_time and self.check_min_match_time(self.match_time):
+            self.excluded_games[self.game_key]['45:00'] = None
+
+    def check_max_match_time(self, time: str, max_minute=75):
+        if time and ':' in time:
+            minutes = int(time.split(':')[0])
+            if minutes < max_minute:
+                return True
+
+    def check_min_match_time(self, time, min_minute=60):
+        if time and ':' in time:
+            minutes = int(time.split(':')[0])
+            if minutes > min_minute:
+                return True
+
+    async def message_builder(self, message_lst, stat_viz_set, excl_key):
+        message = self.display_results("\n".join(message_lst))
+        print(message)
+        self.__plot_graphs(stat_viz_set)
+        matching_files = get_matching_files(ordered_file_list)
+        await self.tel.send_message_with_files(message, *matching_files)
+        time.sleep(3)
+        self.excluded_games[self.game_key][excl_key] = None
+
+    def __plot_graphs(self, stat_set):
+        delete_files_in_folder(folder_path='graph/data')
+        current_viz = TeamsStatsVisualizer(
+            data=self.lg_data[self.smart_data['league']],
+            team_name_1=self.smart_data['team1_name'],
+            team_name_2=self.smart_data['team2_name'])
+        current_viz.plot_points(
+            data_lst=self.lg_data[self.smart_data['league']]['goals'],
+            season='current_season')
+        for stat in stat_set:
+            current_viz.plot_team_stats(stat_key=stat,
+                                        season='current_season',
+                                        sort_by='avg_individual_team')
+        time.sleep(3)
+
+    def display_results(self, message):
+        return f'''
+########## LIVE ##########
+L_League: {self.live_info['league']}
+S_League: {self.smart_data['league']}
+LV Teams: {self.game_key}
+ST Teams: {self.smart_data['team1_name']} - {self.smart_data['team2_name']}
+TEAM POSITION: {self.smart_data['team1_pos']} - {self.smart_data['team2_pos']}
+
+                      TIME: {self.match_time}
+                  SCORE: {self.score}
+
+{message}
+'''
 
 
 class MatchAnalyzer:
