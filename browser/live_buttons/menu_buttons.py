@@ -47,3 +47,4 @@ class FootballMenuButtons:
     #         selector='//span[@class="filter-component-expander--fx9FJ _dropDownMode--KDf2N filter-item-competition__expander--qq1th"]'):
     #     buttons = self.browser.find_elements(By.XPATH, selector)
     #     return buttons
+# '//span[contains(@class, "filter-component-expander") and (contains(@class, "filter-item-competition") or contains(@class, "filter-item-geo-category")) and not(contains(@class, "expanded"))]')'

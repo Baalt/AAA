@@ -38,10 +38,12 @@ class AllLeaguesCollector:
 
     def run(self, address):
         self.load_data_from_file()
-        # flag = False
+        flag = True
         for league_key, league_data in self.schedule_data.items():
-            if 'International: Club Friendlies' in league_key or "Women's" in league_key:
+            if 'International: Club Friendlies' in league_key or "Women" in league_key:
                 continue
-            if league_key != 'date':
+            # if 'Nicaragua: Primera Division' in league_key:
+            #     flag = True
+            if league_key != 'date' and flag:
                 url = address + league_data['league_url']
                 self.scrape_league_data(league_key, url)

@@ -33,7 +33,8 @@ class MatchCollector:
                             'live_team_2': live_away_name,
                             'smart_data': smart_data
                         }
-                        self.matches[live_key] = match_data
+                        if live_key not in self.matches:
+                            self.matches[live_key] = match_data
 
     def _split_command_names(self, command_names: str, commands_separator=' — ') -> Tuple[str, str]:
         try:

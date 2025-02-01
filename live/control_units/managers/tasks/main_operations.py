@@ -50,17 +50,9 @@ class FootballMenuHandler:
         single_button_counter = 0  # Initialize the counter
 
         while True:
-            buttons = self.browser.buttons.get_all_leagues_buttons()
+            buttons = self.try_get_buttons()
             if not buttons:
-                self.scroll_page_down()
-                time.sleep(2)
-                buttons = self.browser.buttons.get_all_leagues_buttons()
-                if not buttons:
-                    self.scroll_page_down()
-                    time.sleep(2)
-                    buttons = self.browser.buttons.get_all_leagues_buttons()
-                    if not buttons:
-                        break
+                break
 
             # Check the number of buttons found
             if len(buttons) == 1:
@@ -101,6 +93,15 @@ class FootballMenuHandler:
             href = pair.get('href')
             if name not in self.commands_dict and self.is_valid_name(name=name):
                 self.commands_dict[name] = href
+
+    def try_get_buttons(self, max_attempts=3, delay=2):
+        for _ in range(max_attempts):
+            buttons = self.browser.buttons.get_all_leagues_buttons()
+            if buttons:
+                return buttons
+            self.scroll_page_down()
+            time.sleep(delay)
+        return None
 
     def is_valid_name(self, name):
         return all(x not in name for x in ['(', '-pro']) and re.search('U\d\d', name) is None

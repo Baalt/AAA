@@ -40,20 +40,20 @@ class GameStatAnalyzer:
         position_down_25 = self.lg_strct[lg_key]['position']['less_25']
 
         for stat in lg_strct:
-            if stat not in ['ref_yellow cards', 'ref_fouls', 'position']:
+            if stat not in ['ref_yellow cards', 'ref_fouls', 'position', 'corners', 'offsides', 'shots']:
                 more25 = self.lg_strct[lg_key][stat]['more_25']
                 more15 = self.lg_strct[lg_key][stat]['more_15-25']
                 less25 = self.lg_strct[lg_key][stat]['less_25']
                 less15 = self.lg_strct[lg_key][stat]['less_15-25']
 
                 if stat not in ['goals', 'yellow cards', 'fouls', 'throw-ins']:
-                    if team1_name in more25 and team2_name in more25:
-                        message_lst.append(f'STRONG_TOTAL_OVER_{stat}')
-                        stat_viz_set.add(stat)
-                    elif (team1_name in more25 and team2_name in more15) or (
-                            team1_name in more15 and team2_name in more25):
-                        message_lst.append(f'NORMAL_TOTAL_OVER_{stat}')
-                        stat_viz_set.add(stat)
+                    # if team1_name in more25 and team2_name in more25:
+                    #     message_lst.append(f'STRONG_TOTAL_OVER_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif (team1_name in more25 and team2_name in more15) or (
+                    #         team1_name in more15 and team2_name in more25):
+                    #     message_lst.append(f'NORMAL_TOTAL_OVER_{stat}')
+                    #     stat_viz_set.add(stat)
 
                     if team1_name in less25 and team2_name in less25:
                         message_lst.append(f'STRONG_TOTAL_UNDER_{stat}')
@@ -64,32 +64,32 @@ class GameStatAnalyzer:
                         message_lst.append(f'NORMAL_TOTAL_UNDER_{stat}')
                         stat_viz_set.add(stat)
 
-                    if (team1_name in more25 and team2_name in less25) or (
-                            team1_name in less25 and team2_name in more25):
-                        message_lst.append(f'STRONG_HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
-                    elif (team1_name in more25 and team2_name in less15) or (
-                            team1_name in more15 and team2_name in less25):
-                        message_lst.append(f'NORMAL_HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
-                    elif (team1_name in less25 and team2_name in more15) or (
-                            team1_name in less15 and team2_name in more25):
-                        message_lst.append(f'NORMAL_HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
-
-                    if team1_name in more25:
-                        message_lst.append(f'IND_1_OVER_{stat}')
-                        stat_viz_set.add(stat)
-                    elif team1_name in less25:
-                        message_lst.append(f'IND_1_UNDER_{stat}')
-                        stat_viz_set.add(stat)
-
-                    if team2_name in more25:
-                        message_lst.append(f'IND_2_OVER_{stat}')
-                        stat_viz_set.add(stat)
-                    elif team2_name in less25:
-                        message_lst.append(f'IND_2_UNDER_{stat}')
-                        stat_viz_set.add(stat)
+                    # if (team1_name in more25 and team2_name in less25) or (
+                    #         team1_name in less25 and team2_name in more25):
+                    #     message_lst.append(f'STRONG_HANDICAP_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif (team1_name in more25 and team2_name in less15) or (
+                    #         team1_name in more15 and team2_name in less25):
+                    #     message_lst.append(f'NORMAL_HANDICAP_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif (team1_name in less25 and team2_name in more15) or (
+                    #         team1_name in less15 and team2_name in more25):
+                    #     message_lst.append(f'NORMAL_HANDICAP_{stat}')
+                    #     stat_viz_set.add(stat)
+                    #
+                    # if team1_name in more25:
+                    #     message_lst.append(f'IND_1_OVER_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif team1_name in less25:
+                    #     message_lst.append(f'IND_1_UNDER_{stat}')
+                    #     stat_viz_set.add(stat)
+                    #
+                    # if team2_name in more25:
+                    #     message_lst.append(f'IND_2_OVER_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif team2_name in less25:
+                    #     message_lst.append(f'IND_2_UNDER_{stat}')
+                    #     stat_viz_set.add(stat)
 
                 elif stat in ['throw-ins', 'fouls']:
                     more = more25 + more15
@@ -164,9 +164,9 @@ class GameStatAnalyzer:
                             avg5_5 = self.lg_strct[lg_key][stat]['avg_5-5']
                             avg = less25 + less15 + less5 + avg5_5
 
-                            if team1_name in more and team2_name in more and ref_name in ref_more:
-                                message_lst.append(f'TOTAL_OVER_{stat}')
-                                stat_viz_set.add(stat)
+                            # if team1_name in more and team2_name in more and ref_name in ref_more:
+                            #     message_lst.append(f'TOTAL_OVER_{stat}')
+                            #     stat_viz_set.add(stat)
 
                             if team1_name in less and team2_name in less and ref_name in ref_less5:
                                 message_lst.append(f'TOTAL_UNDER_{stat}')
@@ -182,34 +182,34 @@ class GameStatAnalyzer:
                                 message_lst.append(f'POSITION_TOTAL_UNDER_{stat}')
                                 stat_viz_set.add(stat)
 
-                            if team1_name in more and ref_name in ref_more:
-                                message_lst.append(f'IND_1_OVER_{stat}')
-                                stat_viz_set.add(stat)
-                            elif team1_name in less and ref_name in ref_less5:
+                            # if team1_name in more and ref_name in ref_more:
+                            #     message_lst.append(f'IND_1_OVER_{stat}')
+                            #     stat_viz_set.add(stat)
+                            if team1_name in less and ref_name in ref_less5:
                                 message_lst.append(f'IND_1_UNDER_{stat}')
                                 stat_viz_set.add(stat)
 
-                            if team2_name in more and ref_name in ref_more:
-                                message_lst.append(f'IND_2_OVER_{stat}')
-                                stat_viz_set.add(stat)
-                            elif team2_name in less and ref_name in ref_less5:
+                            # if team2_name in more and ref_name in ref_more:
+                            #     message_lst.append(f'IND_2_OVER_{stat}')
+                            #     stat_viz_set.add(stat)
+                            if team2_name in less and ref_name in ref_less5:
                                 message_lst.append(f'IND_2_UNDER_{stat}')
                                 stat_viz_set.add(stat)
 
 
                 elif stat == 'yellow cards':
-                    if (team1_name in more25 and team2_name in less25) or (
-                            team1_name in less25 and team2_name in more25):
-                        message_lst.append(f'STRONG_HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
-                    elif (team1_name in more25 and team2_name in less15) or (
-                            team1_name in more15 and team2_name in less25):
-                        message_lst.append(f'NORMAL_HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
-                    elif (team1_name in less25 and team2_name in more15) or (
-                            team1_name in less15 and team2_name in more25):
-                        message_lst.append(f'NORMAL_HANDICAP_{stat}')
-                        stat_viz_set.add(stat)
+                    # if (team1_name in more25 and team2_name in less25) or (
+                    #         team1_name in less25 and team2_name in more25):
+                    #     message_lst.append(f'STRONG_HANDICAP_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif (team1_name in more25 and team2_name in less15) or (
+                    #         team1_name in more15 and team2_name in less25):
+                    #     message_lst.append(f'NORMAL_HANDICAP_{stat}')
+                    #     stat_viz_set.add(stat)
+                    # elif (team1_name in less25 and team2_name in more15) or (
+                    #         team1_name in less15 and team2_name in more25):
+                    #     message_lst.append(f'NORMAL_HANDICAP_{stat}')
+                    #     stat_viz_set.add(stat)
 
                     if ref_name:
                         ref_stat = 'ref_' + stat
@@ -233,13 +233,13 @@ class GameStatAnalyzer:
                         less = less25 + less15 + less5
                         avg = less + avg5_5
 
-                        if team1_name in more25 and team2_name in more25 and ref_name in ref_more:
-                            message_lst.append(f'STRONG_TOTAL_OVER_{stat}')
-                            stat_viz_set.add(stat)
-                        elif (team1_name in more25 and team2_name in more15 and ref_name in ref_more25) or (
-                                team1_name in more15 and team2_name in more25 and ref_name in ref_more25):
-                            message_lst.append(f'NORMAL_TOTAL_OVER_{stat}')
-                            stat_viz_set.add(stat)
+                        # if team1_name in more25 and team2_name in more25 and ref_name in ref_more:
+                        #     message_lst.append(f'STRONG_TOTAL_OVER_{stat}')
+                        #     stat_viz_set.add(stat)
+                        # elif (team1_name in more25 and team2_name in more15 and ref_name in ref_more25) or (
+                        #         team1_name in more15 and team2_name in more25 and ref_name in ref_more25):
+                        #     message_lst.append(f'NORMAL_TOTAL_OVER_{stat}')
+                        #     stat_viz_set.add(stat)
 
                         if team1_name in less25 and team2_name in less25 and ref_name in ref_avg:
                             message_lst.append(f'STRONG_TOTAL_UNDER_{stat}')
@@ -264,17 +264,17 @@ class GameStatAnalyzer:
                             message_lst.append(f'POSITION_TOTAL_UNDER_{stat}')
                             stat_viz_set.add(stat)
 
-                        if team1_name in more25 and ref_name in ref_more:
-                            message_lst.append(f'IND_1_OVER_{stat}')
-                            stat_viz_set.add(stat)
-                        elif team1_name in less25 and ref_name in ref_less15:
+                        # if team1_name in more25 and ref_name in ref_more:
+                        #     message_lst.append(f'IND_1_OVER_{stat}')
+                        #     stat_viz_set.add(stat)
+                        if team1_name in less25 and ref_name in ref_less15:
                             message_lst.append(f'IND_1_UNDER_{stat}')
                             stat_viz_set.add(stat)
 
-                        if team2_name in more25 and ref_name in ref_more:
-                            message_lst.append(f'IND_2_OVER_{stat}')
-                            stat_viz_set.add(stat)
-                        elif team2_name in less25 and ref_name in ref_less15:
+                        # if team2_name in more25 and ref_name in ref_more:
+                        #     message_lst.append(f'IND_2_OVER_{stat}')
+                        #     stat_viz_set.add(stat)
+                        if team2_name in less25 and ref_name in ref_less15:
                             message_lst.append(f'IND_2_UNDER_{stat}')
                             stat_viz_set.add(stat)
 
@@ -371,7 +371,10 @@ class LiveDataPreparer(GameStatAnalyzer):
         except KeyError:
             return
         result = {}
-        self.find_position(team1_name, team2_name, lg_key, result)
+        try:
+            self.find_position(team1_name, team2_name, lg_key, result)
+        except KeyError:
+            return
         stat_viz_set = set()
 
         for stat in lg_strct:
@@ -452,6 +455,7 @@ class LiveDataPreparer(GameStatAnalyzer):
 
                 if message_lst:
                     result[stat] = "\n".join(message_lst)
+                    stat_viz_set.add('throw-ins')
 
         result['stat_set'] = stat_viz_set
         self.data['games'].append(result)

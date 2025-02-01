@@ -44,43 +44,57 @@ class GameAnalyzer:
             pos1 = self.smart_data['team1_pos']
             message_lst = []
             stat_viz_set = set()
+            if pos1 == 'equal':
+                self.excluded_games[self.game_key]['score'] = None
+                return
             if pos1 == 'over' and score1 < score2:
                 for stat in self.stat_set:
-                    value_lst = self.smart_data[stat].split('\n')
+                    try:
+                        value_lst = self.smart_data[stat].split('\n')
+                    except KeyError:
+                        continue
                     for mes in value_lst:
                         if stat in self.attack_stat:
-                            if 'HANDICAP1' in mes or 'IND1_OVER' in mes or 'IND2_UNDER' in mes:
+                            if 'HANDICAP1' in mes or 'IND2_UNDER' in mes:
                                 message_lst.append(mes)
                                 stat_viz_set.add(stat)
                         elif stat in self.defence_stat:
-                            if 'HANDICAP2' in mes or 'IND2_OVER' in mes:
+                            if 'HANDICAP2' in mes:
                                 message_lst.append(mes)
                                 stat_viz_set.add(stat)
 
 
             elif pos1 == 'under' and score1 > score2:
                 for stat in self.stat_set:
-                    value_lst = self.smart_data[stat].split('\n')
+                    try:
+                        value_lst = self.smart_data[stat].split('\n')
+                    except KeyError:
+                        continue
                     for mes in value_lst:
                         if stat in self.attack_stat:
-                            if 'HANDICAP2' in mes or 'IND2_OVER' in mes or 'IND1_UNDER' in mes:
+                            if 'HANDICAP2' in mes or 'IND1_UNDER' in mes:
                                 message_lst.append(mes)
                                 stat_viz_set.add(stat)
                         elif stat in self.defence_stat:
-                            if 'HANDICAP1' in mes or 'IND1_OVER' in mes:
+                            if 'HANDICAP1' in mes:
                                 message_lst.append(mes)
                                 stat_viz_set.add(stat)
 
             if message_lst and stat_viz_set:
+                # stat_viz_set.add('throw-ins')
                 await self.message_builder(message_lst, stat_viz_set, 'score')
 
     async def search_by_1st_time(self):
         if ':' in self.match_time and self.match_time == '45:00':
             message_lst = []
             for stat in self.stat_set:
-                message_lst.append(self.smart_data[stat])
+                try:
+                    message_lst.append(self.smart_data[stat])
+                except KeyError:
+                    continue
 
             if message_lst:
+                self.stat_set.add('throw-ins')
                 await self.message_builder(message_lst, self.stat_set, '45:00')
 
         if ':' in self.match_time and self.check_min_match_time(self.match_time):
@@ -104,7 +118,6 @@ class GameAnalyzer:
         self.__plot_graphs(stat_viz_set)
         matching_files = get_matching_files(ordered_file_list)
         await self.tel.send_message_with_files(message, *matching_files)
-        time.sleep(3)
         self.excluded_games[self.game_key][excl_key] = None
 
     def __plot_graphs(self, stat_set):
@@ -127,7 +140,8 @@ class GameAnalyzer:
 ########## LIVE ##########
 L_League: {self.live_info['league']}
 S_League: {self.smart_data['league']}
-LV Teams: {self.game_key}
+LV  Keys: {self.game_key}
+LV Teams: {self.live_info['team1_name']} - {self.live_info['team2_name']}
 ST Teams: {self.smart_data['team1_name']} - {self.smart_data['team2_name']}
 TEAM POSITION: {self.smart_data['team1_pos']} - {self.smart_data['team2_pos']}
 
