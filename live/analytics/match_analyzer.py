@@ -44,41 +44,58 @@ class GameAnalyzer:
             pos1 = self.smart_data['team1_pos']
             message_lst = []
             stat_viz_set = set()
+
             if pos1 == 'equal':
                 self.excluded_games[self.game_key]['score'] = None
-                return
-            if pos1 == 'over' and score1 < score2:
+
+            if (pos1 == 'over' and score1 < score2) or (pos1 == 'under' and score1 > score2):
                 for stat in self.stat_set:
                     try:
-                        value_lst = self.smart_data[stat].split('\n')
+                        message_lst.append(self.smart_data[stat])
                     except KeyError:
                         continue
-                    for mes in value_lst:
-                        if stat in self.attack_stat:
-                            if 'HANDICAP1' in mes or 'IND2_UNDER' in mes:
-                                message_lst.append(mes)
-                                stat_viz_set.add(stat)
-                        elif stat in self.defence_stat:
-                            if 'HANDICAP2' in mes:
-                                message_lst.append(mes)
-                                stat_viz_set.add(stat)
+
+                if message_lst:
+                    await self.message_builder(message_lst, self.stat_set, 'score')
 
 
-            elif pos1 == 'under' and score1 > score2:
-                for stat in self.stat_set:
-                    try:
-                        value_lst = self.smart_data[stat].split('\n')
-                    except KeyError:
-                        continue
-                    for mes in value_lst:
-                        if stat in self.attack_stat:
-                            if 'HANDICAP2' in mes or 'IND1_UNDER' in mes:
-                                message_lst.append(mes)
-                                stat_viz_set.add(stat)
-                        elif stat in self.defence_stat:
-                            if 'HANDICAP1' in mes:
-                                message_lst.append(mes)
-                                stat_viz_set.add(stat)
+
+
+            # if pos1 == 'equal':
+            #     self.excluded_games[self.game_key]['score'] = None
+            #     return
+            # if pos1 == 'over' and score1 < score2:
+            #     for stat in self.stat_set:
+            #         try:
+            #             value_lst = self.smart_data[stat].split('\n')
+            #         except KeyError:
+            #             continue
+            #         for mes in value_lst:
+            #             if stat in self.attack_stat:
+            #                 if 'HANDICAP1' in mes or 'IND2_UNDER' in mes:
+            #                     message_lst.append(mes)
+            #                     stat_viz_set.add(stat)
+            #             elif stat in self.defence_stat:
+            #                 if 'HANDICAP2' in mes or 'IND2_OVER' in mes:
+            #                     message_lst.append(mes)
+            #                     stat_viz_set.add(stat)
+            #
+            #
+            # elif pos1 == 'under' and score1 > score2:
+            #     for stat in self.stat_set:
+            #         try:
+            #             value_lst = self.smart_data[stat].split('\n')
+            #         except KeyError:
+            #             continue
+            #         for mes in value_lst:
+            #             if stat in self.attack_stat:
+            #                 if 'HANDICAP2' in mes or 'IND1_UNDER' in mes:
+            #                     message_lst.append(mes)
+            #                     stat_viz_set.add(stat)
+            #             elif stat in self.defence_stat:
+            #                 if 'HANDICAP1' in mes or 'IND1_OVER' in mes:
+            #                     message_lst.append(mes)
+            #                     stat_viz_set.add(stat)
 
             if message_lst and stat_viz_set:
                 # stat_viz_set.add('throw-ins')
@@ -94,7 +111,7 @@ class GameAnalyzer:
                     continue
 
             if message_lst:
-                self.stat_set.add('throw-ins')
+                # self.stat_set.add('throw-ins')
                 await self.message_builder(message_lst, self.stat_set, '45:00')
 
         if ':' in self.match_time and self.check_min_match_time(self.match_time):

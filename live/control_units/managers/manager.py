@@ -16,8 +16,11 @@ from config_smrt import LIVE_SOURCE
 async def run_bot():
     excluded_games = {}
     driver = LiveChromeDriver()
-    line_data = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLineData.pkl')
-    leagues_dct = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLeaguesData.pkl')
+    try:
+        line_data = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLineData.pkl')
+        leagues_dct = PickleHandler().read_data(path_to_file=f'data/{get_today_date()}_AllLeaguesData.pkl')
+    except FileNotFoundError:
+        line_data, leagues_dct = {}, {}
     tel = TelegramBot(token=config.token, chat_id=config.chat_id)
     browser = BrowserPreparer(driver=driver)
     browser.open_page()

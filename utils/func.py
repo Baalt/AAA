@@ -5,7 +5,11 @@ from datetime import datetime, timedelta
 
 
 def get_today_date() -> str:
-    today = datetime.today()
+    now = datetime.now()
+    if now.hour < 1:
+        today = now - timedelta(days=1)
+    else:
+        today = now
     return today.strftime("%d.%m")
 
 

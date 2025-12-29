@@ -36,8 +36,11 @@ class GameStatAnalyzer:
         message_lst = []
         stat_viz_set = set()
 
-        position_up_25 = self.lg_strct[lg_key]['position']['more_25']
-        position_down_25 = self.lg_strct[lg_key]['position']['less_25']
+        try:
+            position_up_25 = self.lg_strct[lg_key]['position']['more_25']
+            position_down_25 = self.lg_strct[lg_key]['position']['less_25']
+        except KeyError:
+            return
 
         for stat in lg_strct:
             if stat not in ['ref_yellow cards', 'ref_fouls', 'position', 'corners', 'offsides', 'shots']:

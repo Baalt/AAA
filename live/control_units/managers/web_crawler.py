@@ -1,4 +1,5 @@
 import time
+from pprint import pprint
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -81,46 +82,42 @@ class WebCrawler(FootballMenuHandler):
                             "arguments[0].scrollIntoView({block: 'center'});", button)
                     except (StaleElementReferenceException, ElementClickInterceptedException):
                         continue
-                    if key in self.smart_data:
-                        time.sleep(1)
+                    # if key in self.smart_data:
+                    try:
+                        stats_button = self.driver.buttons.get_stats_button()
+                    except NoSuchElementException:
+                        continue
+                    if stats_button:
                         try:
-                            key = button.text
-                        except StaleElementReferenceException:
+                            stats_button.click()
+                            time.sleep(1)
+                        except (StaleElementReferenceException, ElementClickInterceptedException):
                             continue
-                        if key in self.smart_data:
-                            try:
-                                stats_button = self.driver.buttons.get_stats_button()
-                            except NoSuchElementException:
-                                continue
-                            if stats_button:
-                                try:
-                                    stats_button.click()
-                                    time.sleep(1)
-                                except (StaleElementReferenceException, ElementClickInterceptedException):
-                                    continue
 
-                                if not key in self.excluded_games:
-                                    self.excluded_games[key] = {'45:00': True,
-                                                                'score': True}
-                                if self.excluded_games[key]['45:00'] or self.excluded_games[key]['score']:
-                                    time.sleep(1)
-                                    self.scraper = GameScraperLight()
-                                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                    self.collect_game_info(soup)
-
-                                    try:
-                                        await GameAnalyzer(
-                                            live_info=self.scraper.get_game_info(),
-                                            smart_data=self.smart_data[key],
-                                            lg_data=self.league_data,
-                                            excluded_games=self.excluded_games,
-                                            game_key=key,
-                                            tel=self.tel).search()
-                                    except ContinueError:
-                                        continue
-
-                                    if self.excluded_games[key]['45:00'] or self.excluded_games[key]['score']:
-                                        self.scannable_games.append(key)
+                            # if not key in self.excluded_games:
+                            #     self.excluded_games[key] = {'45:00': True,
+                            #                                 'score': True}
+                            # if self.excluded_games[key]['45:00'] or self.excluded_games[key]['score']:
+                            #     time.sleep(1)
+                        self.scraper = GameScraperLight()
+                        soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                        self.collect_game_info(soup)
+                        pprint(self.scraper.get_game_info())
+                                # live_info = self.scraper.get_game_info()
+                                # if live_info['team1_name'] in key:
+                                #     try:
+                                #         await GameAnalyzer(
+                                #             live_info=live_info,
+                                #             smart_data=self.smart_data[key],
+                                #             lg_data=self.league_data,
+                                #             excluded_games=self.excluded_games,
+                                #             game_key=key,
+                                #             tel=self.tel).search()
+                                #     except ContinueError:
+                                #         continue
+                                #
+                                #     if self.excluded_games[key]['45:00'] or self.excluded_games[key]['score']:
+                                #         self.scannable_games.append(key)
 
             self.first_time_scanned = None
             print(f'{len(self.scannable_games)} scanning games', self.scannable_games)
@@ -193,37 +190,34 @@ class WebCrawler(FootballMenuHandler):
                         continue
                 except (StaleElementReferenceException, ElementClickInterceptedException):
                     continue
-                if key in self.smart_data:
-                    time.sleep(1)
+                # if key in self.smart_data:
+                try:
+                    stats_button = self.driver.buttons.get_stats_button()
+                except NoSuchElementException:
+                    continue
+                if stats_button:
                     try:
-                        key = button.text
-                    except StaleElementReferenceException:
+                        stats_button.click()
+                        time.sleep(1)
+                    except (StaleElementReferenceException, ElementClickInterceptedException):
                         continue
-                    if key in self.smart_data:
-                        try:
-                            stats_button = self.driver.buttons.get_stats_button()
-                        except NoSuchElementException:
-                            continue
-                        if stats_button:
-                            try:
-                                stats_button.click()
-                                time.sleep(1)
-                            except (StaleElementReferenceException, ElementClickInterceptedException):
-                                continue
-                            if self.excluded_games[key]['45:00'] or self.excluded_games[key]['score']:
-                                self.scraper = GameScraperLight()
-                                soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
-                                self.collect_game_info(soup)
-                                try:
-                                    await GameAnalyzer(
-                                        live_info=self.scraper.get_game_info(),
-                                        smart_data=self.smart_data[key],
-                                        lg_data=self.league_data,
-                                        excluded_games=self.excluded_games,
-                                        game_key=key,
-                                        tel=self.tel).search()
-                                except ContinueError:
-                                    continue
+                        # if self.excluded_games[key]['45:00'] or self.excluded_games[key]['score']:
+                    self.scraper = GameScraperLight()
+                    soup = BeautifulSoup(self.driver.get_page_html(), 'lxml')
+                    self.collect_game_info(soup)
+                    pprint(self.scraper.get_game_info())
+                            # live_info = self.scraper.get_game_info()
+                            # if live_info['team1_name'] in key:
+                            #     try:
+                            #         await GameAnalyzer(
+                            #             live_info=live_info,
+                            #             smart_data=self.smart_data[key],
+                            #             lg_data=self.league_data,
+                            #             excluded_games=self.excluded_games,
+                            #             game_key=key,
+                            #             tel=self.tel).search()
+                            #     except ContinueError:
+                            #         continue
 
     def collect_game_info(self, soup):
         try:

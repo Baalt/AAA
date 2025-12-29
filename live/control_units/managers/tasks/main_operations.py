@@ -94,7 +94,7 @@ class FootballMenuHandler:
             if name not in self.commands_dict and self.is_valid_name(name=name):
                 self.commands_dict[name] = href
 
-    def try_get_buttons(self, max_attempts=3, delay=2):
+    def try_get_buttons(self, max_attempts=3, delay=1):
         for _ in range(max_attempts):
             buttons = self.browser.buttons.get_all_leagues_buttons()
             if buttons:
