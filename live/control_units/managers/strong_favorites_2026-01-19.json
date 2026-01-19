@@ -1,0 +1,248 @@
+{
+    "Кайрат Алматы — Брюгге": {
+        "team1": "underdog 5.10",
+        "team2": "leader 1.55",
+        "status": true,
+        "status_goal": true
+    },
+    "Буде/Глимт — Манчестер Сити": {
+        "team1": "underdog 6.70",
+        "team2": "leader 1.35",
+        "status": true,
+        "status_goal": true
+    },
+    "Реал Мадрид — Монако": {
+        "team1": "leader 1.30",
+        "team2": "underdog 8.50",
+        "status": true,
+        "status_goal": true
+    },
+    "Вильярреал — Аякс": {
+        "team1": "leader 1.52",
+        "team2": "underdog 5.80",
+        "status": true,
+        "status_goal": true
+    },
+    "ИМТ Нови Белград — Динамо Махачкала": {
+        "team1": "underdog 6.40",
+        "team2": "leader 1.45",
+        "status": true,
+        "status_goal": true
+    },
+    "НК Радомлье — Хартберг": {
+        "team1": "underdog 5.40",
+        "team2": "leader 1.40",
+        "status": true,
+        "status_goal": true
+    },
+    "Универсидад Сентраль Венесуэла — Баркисимето": {
+        "team1": "leader 1.38",
+        "team2": "underdog 7.30",
+        "status": true,
+        "status_goal": true
+    },
+    "Де Трефферс — НЕК Неймеген": {
+        "team1": "underdog 6.00",
+        "team2": "leader 1.43",
+        "status": true,
+        "status_goal": true
+    },
+    "Шеффилд Уэнсдей — Бирмингем Сити": {
+        "team1": "underdog 5.90",
+        "team2": "leader 1.53",
+        "status": true,
+        "status_goal": true
+    },
+    "Коньяспор — Эюпспор": {
+        "team1": "leader 1.50",
+        "team2": "underdog 6.20",
+        "status": true,
+        "status_goal": true
+    },
+    "Бешикташ — Кайсериспор": {
+        "team1": "leader 1.37",
+        "team2": "underdog 7.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Аль-Шабаб Эр-Рияд — Аль-Наджма": {
+        "team1": "leader 1.50",
+        "team2": "underdog 5.70",
+        "status": true,
+        "status_goal": true
+    },
+    "Омония Арадипу — Эносис Паралимни": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.40",
+        "status": true,
+        "status_goal": true
+    },
+    "Аль-Талаба — Аль-Мина": {
+        "team1": "leader 1.40",
+        "team2": "underdog 8.50",
+        "status": true,
+        "status_goal": true
+    },
+    "Келантан Дарул Нейм — Селангор": {
+        "team1": "underdog 6.70",
+        "team2": "leader 1.25",
+        "status": true,
+        "status_goal": true
+    },
+    "Варри Вулфз — Кацина Юнайтед": {
+        "team1": "leader 1.55",
+        "team2": "underdog 5.90",
+        "status": true,
+        "status_goal": true
+    },
+    "Шабаб Аль-Ахли Дубай — Дибба Аль-Фуджайра": {
+        "team1": "leader 1.19",
+        "team2": "underdog 12.50",
+        "status": true,
+        "status_goal": true
+    },
+    "Мамелоди Сандаунз — Орбит Колледж": {
+        "team1": "leader 1.18",
+        "team2": "underdog 16.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Кайзер Чифс — Голден Эрроуз": {
+        "team1": "leader 1.50",
+        "team2": "underdog 7.20",
+        "status": true,
+        "status_goal": true
+    },
+    "Эстудиантес Ла-Плата — Итусаинго": {
+        "team1": "leader 1.25",
+        "team2": "underdog 9.50",
+        "status": true,
+        "status_goal": true
+    },
+    "Саутенд Юнайтед — Истли": {
+        "team1": "leader 1.35",
+        "team2": "underdog 7.40",
+        "status": true,
+        "status_goal": true
+    },
+    "Хартлпул Юнайтед — Гейтсхед": {
+        "team1": "leader 1.50",
+        "team2": "underdog 4.80",
+        "status": true,
+        "status_goal": true
+    },
+    "Саут-Шилдс — Саутпорт": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.70",
+        "status": true,
+        "status_goal": true
+    },
+    "Эвели — Уэллинг Юнайтед": {
+        "team1": "leader 1.53",
+        "team2": "underdog 4.50",
+        "status": true,
+        "status_goal": true
+    },
+    "Реал Бедфорд — Бромсгроув Спортинг": {
+        "team1": "leader 1.40",
+        "team2": "underdog 5.90",
+        "status": true,
+        "status_goal": true
+    },
+    "Фрам Рейкьявик — ИР Рейкьявик": {
+        "team1": "leader 1.27",
+        "team2": "underdog 6.70",
+        "status": true,
+        "status_goal": true
+    },
+    "Фьолнир — Викингур Рейкьявик": {
+        "team1": "underdog 10.50",
+        "team2": "leader 1.11",
+        "status": true,
+        "status_goal": true
+    },
+    "Игдир Беледиеспор — Сакарьяспор": {
+        "team1": "leader 1.50",
+        "team2": "underdog 4.90",
+        "status": true,
+        "status_goal": true
+    },
+    "Ист Файф — Инвернесс": {
+        "team1": "underdog 5.80",
+        "team2": "leader 1.47",
+        "status": true,
+        "status_goal": true
+    },
+    "Голден Гейт — Ноджом Маср": {
+        "team1": "leader 1.48",
+        "team2": "underdog 6.30",
+        "status": true,
+        "status_goal": true
+    },
+    "Каскада — Тамеа": {
+        "team1": "leader 1.33",
+        "team2": "underdog 9.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Сохаг — Эль-Кусия": {
+        "team1": "leader 1.53",
+        "team2": "underdog 5.40",
+        "status": true,
+        "status_goal": true
+    },
+    "Аль-Джолан — Масафи Аль-Джануб": {
+        "team1": "leader 1.55",
+        "team2": "underdog 5.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Кендал Торнадо — Персипал Бабель Юнайтед": {
+        "team1": "leader 1.18",
+        "team2": "underdog 12.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Аль-Кувейт — Аль-Наср Эль-Фарвания": {
+        "team1": "leader 1.13",
+        "team2": "underdog 14.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Аль-Араби Кувейт — Аль-Фехахил": {
+        "team1": "leader 1.30",
+        "team2": "underdog 8.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Аль-Араби Доха — Аль-Садд": {
+        "team1": "leader 1.43",
+        "team2": "underdog 4.60",
+        "status": true,
+        "status_goal": true
+    },
+    "Крисиума — Конкордия Санта Катарина": {
+        "team1": "leader 1.30",
+        "team2": "underdog 10.50",
+        "status": true,
+        "status_goal": true
+    },
+    "Шелаху — Аурора Гватемала": {
+        "team1": "leader 1.47",
+        "team2": "underdog 6.00",
+        "status": true,
+        "status_goal": true
+    },
+    "Эредиано — Гуадалупе": {
+        "team1": "leader 1.35",
+        "team2": "underdog 8.00",
+        "status": true,
+        "status_goal": true
+    },
+    "УА Сакатекас — Симарронес Сонора": {
+        "team1": "underdog 6.40",
+        "team2": "leader 1.40",
+        "status": true,
+        "status_goal": true
+    }
+}

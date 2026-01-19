@@ -48,13 +48,15 @@ class FootballParser:
                 entry = {
                     'team1': f"leader {odd_home_str}",
                     'team2': f"underdog {odd_away_str}",
-                    'status': True
+                    'status': True,
+                    'status_goal': True
                 }
             elif odd_away < 1.56:
                 entry = {
                     'team1': f"underdog {odd_home_str}",
                     'team2': f"leader {odd_away_str}",
-                    'status': True
+                    'status': True,
+                    'status_goal': True
                 }
 
             if entry:
@@ -141,14 +143,15 @@ class FootballParser:
         # print("Парсинг и возврат скролла завершены!")
 
     def _clean_matches(self):
-        """Удаляет матчи с '(' в названии и заглушку 'Home — Away'"""
+        """Удаляет матчи с '(' в названии, заглушку 'Home — Away' и юношеские (U19, U18 и т.д.)"""
         keys_to_remove = [
             key for key in self.match_dct
-            if '(' in key or key in ['Home — Away', 'Хозяева — Гости']
+            if '(' in key
+               or key in ['Home — Away', 'Хозяева — Гости']
+               or re.search(r'U\d{2}', key)
         ]
         for key in keys_to_remove:
             del self.match_dct[key]
-        # print(f"Очистка завершена. Удалено {len(keys_to_remove)} записей. Осталось: {len(self.match_dct)}")
 
     def get_matches(self) -> Dict[str, Dict[str, str]]:
         return self.match_dct
@@ -165,7 +168,7 @@ class LiveFootballParser:
         # Возврат наверх в конце
         if self.container:
             self.driver.driver.execute_script("arguments[0].scrollTop = 0;", self.container)
-            time.sleep(3)
+            time.sleep(5)
             # print("Live: Скролл возвращён наверх")
 
     def _get_soup(self) -> BeautifulSoup:
