@@ -4,6 +4,7 @@ import json
 import glob
 import time
 from datetime import date
+from pprint import pprint
 
 from browser.browser import LiveChromeDriver
 from live.control_units.scrapers.live_scraper import FootballParser, LiveFootballParser
@@ -58,13 +59,16 @@ async def run_bot():
     while True:
         manager = LiveFootballParser(driver, strong_favorites)
         checker = MatchChecker(strong_favorites, manager.get_live_matches(), tel)
-        matches_count = await checker.check_matches()
+        matches_count, matched_matches = await checker.check_matches()
 
         if matches_count != last_matches_count:
             if matches_count == 0:
                 print("Совпадений матчей не найдено.")
+                time.sleep(30)
             else:
                 print(f"Совпадений: {matches_count}")
+                pprint(matched_matches)
+
             last_matches_count = matches_count
 
 

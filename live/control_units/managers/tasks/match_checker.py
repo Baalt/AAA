@@ -10,8 +10,8 @@ class LosingFavoriteMessage:
         self.match_name = match_name
         self.time = live_data['time']
         self.score = live_data['score']
-        self.team1_label = fav_data['team1']  # например: "leader 1.25"
-        self.team2_label = fav_data['team2']  # например: "underdog 11.00"
+        self.team1_label = fav_data['team1'] # например: "leader 1.25"
+        self.team2_label = fav_data['team2'] # например: "underdog 11.00"
         self.goals_team1 = goals_team1
         self.goals_team2 = goals_team2
 
@@ -36,12 +36,14 @@ class MatchChecker:
 
     async def check_matches(self):
         self.matches_found = 0
+        matched_list = []
 
         for match_name, live_data in self.live_matches.items():
             if match_name not in self.strong_favorites:
                 continue
             # print(match_name, self.strong_favorites[match_name])
             self.matches_found += 1
+            matched_list.append(match_name)
             fav_data = self.strong_favorites[match_name]
 
             # Определяем, кто фаворит
@@ -64,11 +66,11 @@ class MatchChecker:
             underdog_goals = goals_team2 if favorite_is_team1 else goals_team1
 
             favorite_losing = favorite_goals < underdog_goals
-            favorite_losing_by_two = (underdog_goals - favorite_goals == 2)
+            # favorite_losing_by_two = (underdog_goals - favorite_goals == 2)
             favorite_winning_or_draw = favorite_goals >= underdog_goals
 
             current_status = fav_data.get('status', True)
-            current_goal_status = fav_data.get('status_goal', True)
+            # current_goal_status = fav_data.get('status_goal', True)
 
             if favorite_losing and current_status:
                 # Только что фаворит начал проигрывать — отправляем сигнал
@@ -91,35 +93,35 @@ class MatchChecker:
                 # Выключаем статус — сохраняется в оригинальном словаре!
 
 
-            if favorite_losing_by_two and current_goal_status:
-                # Фаворит проигрывает ровно на 2 гола — отправляем сигнал
-                msg_builder = LosingFavoriteMessage(
-                    match_name=match_name,
-                    live_data=live_data,
-                    fav_data=fav_data,
-                    goals_team1=goals_team1,
-                    goals_team2=goals_team2
-                )
-                message = msg_builder.format()
-                self.play_loud_alert_mac(count=3, volume=25)
-                print(message)
-                print("-" * 40)
-                fav_data['status_goal'] = False
-                try:
-                    await self.telegram.send_message_with_files(message)
-                except telegram.error.NetworkError:
-                    print('Ошибка отправки сообщения в telegram')
+            # if favorite_losing_by_two and current_goal_status:
+            # # Фаворит проигрывает ровно на 2 гола — отправляем сигнал
+            # msg_builder = LosingFavoriteMessage(
+            # match_name=match_name,
+            # live_data=live_data,
+            # fav_data=fav_data,
+            # goals_team1=goals_team1,
+            # goals_team2=goals_team2
+            # )
+            # message = msg_builder.format()
+            # self.play_loud_alert_mac(count=3, volume=25)
+            # print(message)
+            # print("-" * 40)
+            # fav_data['status_goal'] = False
+            # try:
+            # await self.telegram.send_message_with_files(message)
+            # except telegram.error.NetworkError:
+            # print('Ошибка отправки сообщения в telegram')
 
             if favorite_winning_or_draw and not current_status:
                 # Фаворит восстановился — снова активируем на будущее
                 fav_data['status'] = True
 
-            if not favorite_losing_by_two and not current_goal_status:
-                # Разница больше не 2 — сброс статуса для возможного будущего сигнала
-                fav_data['status_goal'] = True
+            # if not favorite_losing_by_two and not current_goal_status:
+            # # Разница больше не 2 — сброс статуса для возможного будущего сигнала
+            # fav_data['status_goal'] = True
 
         # Итог
-        return self.matches_found
+        return self.matches_found, matched_list
 
 
     def play_loud_alert_mac(self, count=8, volume=1):

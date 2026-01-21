@@ -48,15 +48,13 @@ class FootballParser:
                 entry = {
                     'team1': f"leader {odd_home_str}",
                     'team2': f"underdog {odd_away_str}",
-                    'status': True,
-                    'status_goal': True
+                    'status': True
                 }
             elif odd_away < 1.56:
                 entry = {
                     'team1': f"underdog {odd_home_str}",
                     'team2': f"leader {odd_away_str}",
-                    'status': True,
-                    'status_goal': True
+                    'status': True
                 }
 
             if entry:
@@ -97,7 +95,7 @@ class FootballParser:
                 "return arguments[0].scrollHeight", self.container
             )
 
-            # print(f"   scrollTop: {current_top} / scrollHeight: {total_height} (видимая высота: {visible_height})")
+            # print(f" scrollTop: {current_top} / scrollHeight: {total_height} (видимая высота: {visible_height})")
 
             # Скроллим вниз ровно на один видимый экран
             self.driver.driver.execute_script(
@@ -110,9 +108,9 @@ class FootballParser:
             # Парсим новые матчи
             added = self._parse_matches()
             events_now = len(self.driver.driver.find_elements(By.CSS_SELECTOR, ".sport-base-event--W4qkO"))
-            # print(f"   Добавлено новых матчей: {added}")
-            # print(f"   Всего видимых событий на экране: {events_now}")
-            # print(f"   Всего в словаре: {len(self.match_dct)}")
+            # print(f" Добавлено новых матчей: {added}")
+            # print(f" Всего видимых событий на экране: {events_now}")
+            # print(f" Всего в словаре: {len(self.match_dct)}")
 
             # Проверка на конец списка
             new_top = self.driver.driver.execute_script(
@@ -176,32 +174,74 @@ class LiveFootballParser:
 
     def _parse_live_matches(self):
         soup = self._get_soup()
-        event_wraps = soup.find_all('div', class_=re.compile(r'^sport-base-event-wrap'))
+        all_wraps = soup.find_all('div', class_=re.compile(r'^sport-base-event-wrap'))
+
+        stats_keywords = {'угловые', 'жёлтые карты', 'фолы', 'удары в створ', 'офсайды', 'вброс аутов',
+                          'удары от ворот'}
 
         updated = 0
-        for wrap in event_wraps:
+        i = 0
+        while i < len(all_wraps):
+            wrap = all_wraps[i]
             name_tag = wrap.find('a', class_=re.compile(r'sport-event__name'))
             if not name_tag:
+                i += 1
                 continue
             match_name = name_tag.get_text(strip=True)
             if not match_name:
+                i += 1
                 continue
 
-            # Время матча (класс обычно event-block-current-time__value или содержащий event-block-current-time)
+            # Время матча
             time_span = wrap.find('span', class_=re.compile(r'event-block-current-time__time--'))
             current_time = time_span.get_text(strip=True) if time_span else "N/A"
 
-            # Счёт (класс обычно event-block-score__value или содержащий event-block-score)
+            # Счёт
             score_span = wrap.find('span', class_=re.compile(r'event-block-score'))
             current_score = score_span.get_text(strip=True) if score_span else "?:?"
 
-            if match_name not in self.live_matches:
-                updated += 1
+            # Проверка на наличие статистики в текущем wrap или в следующих до следующего матча
+            has_stats = False
 
-            self.live_matches[match_name] = {
-                "time": current_time,
-                "score": current_score
-            }
+            # Проверить текущий wrap
+            texts = wrap.find_all('div', class_=re.compile(r'^table-component-text'))
+            for text_div in texts:
+                text = text_div.get_text(strip=True).lower()
+                if text in stats_keywords:
+                    has_stats = True
+                    break
+
+            if not has_stats:
+                # Проверить следующие wraps до следующего основного матча
+                j = i + 1
+                while j < len(all_wraps):
+                    next_wrap = all_wraps[j]
+                    next_name_tag = next_wrap.find('a', class_=re.compile(r'sport-event__name'))
+                    if next_name_tag:
+                        # Следующий основной матч, стоп
+                        break
+
+                    next_texts = next_wrap.find_all('div', class_=re.compile(r'^table-component-text'))
+                    for text_div in next_texts:
+                        text = text_div.get_text(strip=True).lower()
+                        if text in stats_keywords:
+                            has_stats = True
+                            break
+                    if has_stats:
+                        break
+                    j += 1
+
+            if has_stats:
+                if match_name not in self.live_matches:
+                    updated += 1
+
+                self.live_matches[match_name] = {
+                    "time": current_time,
+                    "score": current_score
+                }
+
+            # Перейти к следующему потенциальному матчу (пропустить подрынки)
+            i = j if 'j' in locals() else i + 1
 
         return updated
 
@@ -248,7 +288,7 @@ class LiveFootballParser:
 
             current_top = self.driver.driver.execute_script("return arguments[0].scrollTop", self.container)
             # total_height = self.driver.driver.execute_script("return arguments[0].scrollHeight", self.container)
-            # print(f"   scrollTop: {current_top} / scrollHeight: {total_height}")
+            # print(f" scrollTop: {current_top} / scrollHeight: {total_height}")
 
             # Скролл на один экран
             self.driver.driver.execute_script(
@@ -258,13 +298,13 @@ class LiveFootballParser:
             time.sleep(2)
 
             updated = self._parse_live_matches()
-            # print(f"   Обновлено/добавлено: {updated}")
-            # print(f"   Всего live-матчей: {len(self.live_matches)}")
+            # print(f" Обновлено/добавлено: {updated}")
+            # print(f" Всего live-матчей: {len(self.live_matches)}")
 
             # Печать словаря
             # print("\nТекущие live-матчи:")
             # for name, data in self.live_matches.items():
-            #     print(f"   {name} | Время: {data['time']} | Счёт: {data['score']}")
+            # print(f" {name} | Время: {data['time']} | Счёт: {data['score']}")
 
             # Конец списка
             new_top = self.driver.driver.execute_script("return arguments[0].scrollTop", self.container)
