@@ -1,0 +1,837 @@
+{
+    "Реал Сосьедад — Овьедо": {
+        "team1": "leader 1.50",
+        "team2": "underdog 7.80",
+        "status": true
+    },
+    "Атлетико Мадрид — Эспаньол": {
+        "team1": "leader 1.50",
+        "team2": "underdog 7.10",
+        "status": true
+    },
+    "Барселона — Леванте": {
+        "team1": "leader 1.10",
+        "team2": "underdog 21.00",
+        "status": true
+    },
+    "Бавария — Айнтрахт Франкфурт": {
+        "team1": "leader 1.13",
+        "team2": "underdog 15.00",
+        "status": true
+    },
+    "Лечче — Интер Милан": {
+        "team1": "underdog 7.40",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Милан — Парма": {
+        "team1": "leader 1.32",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "Рома — Кремонезе": {
+        "team1": "leader 1.35",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "ПСЖ — Мец": {
+        "team1": "leader 1.13",
+        "team2": "underdog 17.00",
+        "status": true
+    },
+    "Челси — Бернли": {
+        "team1": "leader 1.22",
+        "team2": "underdog 11.50",
+        "status": true
+    },
+    "Манчестер Сити — Ньюкасл": {
+        "team1": "leader 1.54",
+        "team2": "underdog 5.54",
+        "status": true
+    },
+    "Морейренше — Спортинг Лиссабон": {
+        "team1": "underdog 10.00",
+        "team2": "leader 1.30",
+        "status": true
+    },
+    "Бенфика — АВС": {
+        "team1": "leader 1.08",
+        "team2": "underdog 26.00",
+        "status": true
+    },
+    "Порту — Риу Аве": {
+        "team1": "leader 1.10",
+        "team2": "underdog 22.00",
+        "status": true
+    },
+    "Сочи — Барс": {
+        "team1": "leader 1.50",
+        "team2": "underdog 6.60",
+        "status": true
+    },
+    "ПСВ — Херенвен": {
+        "team1": "leader 1.35",
+        "team2": "underdog 7.30",
+        "status": true
+    },
+    "Твенте — Гронинген": {
+        "team1": "leader 1.52",
+        "team2": "underdog 5.60",
+        "status": true
+    },
+    "Фейеноорд — Телстар": {
+        "team1": "leader 1.25",
+        "team2": "underdog 10.50",
+        "status": true
+    },
+    "Мидлсбро — Оксфорд Юнайтед": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.90",
+        "status": true
+    },
+    "Шеффилд Юнайтед — Шеффилд Уэнсдей": {
+        "team1": "leader 1.15",
+        "team2": "underdog 17.00",
+        "status": true
+    },
+    "Ганновер 96 — Динамо Дрезден": {
+        "team1": "leader 1.50",
+        "team2": "underdog 5.80",
+        "status": true
+    },
+    "Венеция — Пескара": {
+        "team1": "leader 1.32",
+        "team2": "underdog 7.90",
+        "status": true
+    },
+    "Реймс — Амьен": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.10",
+        "status": true
+    },
+    "Коньяспор — Галатасарай": {
+        "team1": "underdog 6.30",
+        "team2": "leader 1.45",
+        "status": true
+    },
+    "Брюгге — Левен": {
+        "team1": "leader 1.37",
+        "team2": "underdog 7.30",
+        "status": true
+    },
+    "Унион Сент-Жиллуаз — Антверпен": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.60",
+        "status": true
+    },
+    "Генк — Стандард": {
+        "team1": "leader 1.50",
+        "team2": "underdog 6.40",
+        "status": true
+    },
+    "Аль-Наср Эр-Рияд — Аль-Хазм": {
+        "team1": "leader 1.10",
+        "team2": "underdog 15.00",
+        "status": true
+    },
+    "Аль-Хиляль Эр-Рияд — Аль-Иттихад Джидда": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.50",
+        "status": true
+    },
+    "Олимпиакос Пирей — Панаитоликос": {
+        "team1": "leader 1.11",
+        "team2": "underdog 23.00",
+        "status": true
+    },
+    "Лариса — ПАОК": {
+        "team1": "underdog 10.00",
+        "team2": "leader 1.32",
+        "status": true
+    },
+    "АЕК Афины — Левадиакос": {
+        "team1": "leader 1.45",
+        "team2": "underdog 7.30",
+        "status": true
+    },
+    "Сабах Баку — Кяпаз": {
+        "team1": "leader 1.33",
+        "team2": "underdog 8.00",
+        "status": true
+    },
+    "Локомотив Пловдив — Спартак Варна": {
+        "team1": "leader 1.47",
+        "team2": "underdog 7.60",
+        "status": true
+    },
+    "ЦСКА София — Славия София": {
+        "team1": "leader 1.35",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "Сараево — Посушье": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.50",
+        "status": true
+    },
+    "Зриньски Мостар — Широки Бриег": {
+        "team1": "leader 1.30",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "Силькеборг — Мидтьюлланн": {
+        "team1": "underdog 5.30",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Маккаби Тель-Авив — Ашдод": {
+        "team1": "leader 1.27",
+        "team2": "underdog 9.00",
+        "status": true
+    },
+    "Хапоэль Беэр-Шева — Хапоэль Хайфа": {
+        "team1": "leader 1.20",
+        "team2": "underdog 10.50",
+        "status": true
+    },
+    "Аполлон Лимасол — Этникос Ахнас": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.20",
+        "status": true
+    },
+    "Пафос — Анортосис Фамагуста": {
+        "team1": "leader 1.43",
+        "team2": "underdog 6.50",
+        "status": true
+    },
+    "Жальгирис Вильнюс — Джюгас Тельшяй": {
+        "team1": "leader 1.42",
+        "team2": "underdog 6.30",
+        "status": true
+    },
+    "Сан-Диего — Монреаль": {
+        "team1": "leader 1.45",
+        "team2": "underdog 6.10",
+        "status": true
+    },
+    "Ракув Ченстохова — Б-Б Термалица": {
+        "team1": "leader 1.50",
+        "team2": "underdog 5.80",
+        "status": true
+    },
+    "Униря Слобозия — Университатя Крайова": {
+        "team1": "underdog 7.60",
+        "team2": "leader 1.45",
+        "status": true
+    },
+    "Црвена Звезда — Партизан Белград": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.80",
+        "status": true
+    },
+    "ДАК 1904 Дунайска-Стреда — Скалица": {
+        "team1": "leader 1.42",
+        "team2": "underdog 6.70",
+        "status": true
+    },
+    "Марибор — Браво": {
+        "team1": "leader 1.53",
+        "team2": "underdog 5.20",
+        "status": true
+    },
+    "Славия Прага — Слован Либерец": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.40",
+        "status": true
+    },
+    "Ливингстон — Рейнджерс": {
+        "team1": "underdog 8.50",
+        "team2": "leader 1.35",
+        "status": true
+    },
+    "Селтик — Хиберниан": {
+        "team1": "leader 1.43",
+        "team2": "underdog 6.40",
+        "status": true
+    },
+    "Винтертур — Тун": {
+        "team1": "underdog 5.70",
+        "team2": "leader 1.48",
+        "status": true
+    },
+    "Мьельбю — Кальмар ФФ": {
+        "team1": "leader 1.40",
+        "team2": "underdog 6.90",
+        "status": true
+    },
+    "Гетеборг — Эстерсунд": {
+        "team1": "leader 1.16",
+        "team2": "underdog 12.50",
+        "status": true
+    },
+    "Юргорден — Фалькенберг": {
+        "team1": "leader 1.25",
+        "team2": "underdog 9.00",
+        "status": true
+    },
+    "Эстер ИФ — Эребру": {
+        "team1": "leader 1.53",
+        "team2": "underdog 4.70",
+        "status": true
+    },
+    "Норрчепинг — Сандвикен": {
+        "team1": "leader 1.38",
+        "team2": "underdog 6.40",
+        "status": true
+    },
+    "Сириус — Сундсвалль": {
+        "team1": "leader 1.25",
+        "team2": "underdog 8.50",
+        "status": true
+    },
+    "АИК — Вестерос": {
+        "team1": "leader 1.53",
+        "team2": "underdog 5.20",
+        "status": true
+    },
+    "Хеккен — Оддевольд": {
+        "team1": "leader 1.18",
+        "team2": "underdog 11.00",
+        "status": true
+    },
+    "Дегерфорс — Треллеборг": {
+        "team1": "leader 1.14",
+        "team2": "underdog 15.00",
+        "status": true
+    },
+    "Эльфсборг — Хельсингборг": {
+        "team1": "leader 1.38",
+        "team2": "underdog 6.30",
+        "status": true
+    },
+    "Мальме — Варберг": {
+        "team1": "leader 1.20",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "ИФ Карлстад — Хальмстад": {
+        "team1": "underdog 4.30",
+        "team2": "leader 1.53",
+        "status": true
+    },
+    "Рода Керкраде — Маастрихт": {
+        "team1": "leader 1.33",
+        "team2": "underdog 6.50",
+        "status": true
+    },
+    "Ист Бенгал — СК Дели": {
+        "team1": "leader 1.25",
+        "team2": "underdog 10.50",
+        "status": true
+    },
+    "Персиб Бандунг — Персита Тангеранг": {
+        "team1": "leader 1.25",
+        "team2": "underdog 11.50",
+        "status": true
+    },
+    "Аль-Шорта Багдад — Дияла": {
+        "team1": "leader 1.50",
+        "team2": "underdog 7.00",
+        "status": true
+    },
+    "Аль-Карма — Нафт Майсан": {
+        "team1": "leader 1.52",
+        "team2": "underdog 6.70",
+        "status": true
+    },
+    "Мелака Юнайтед — Теренггану": {
+        "team1": "underdog 5.90",
+        "team2": "leader 1.43",
+        "status": true
+    },
+    "Келантан Дарул Нейм — ПДРМ": {
+        "team1": "leader 1.48",
+        "team2": "underdog 5.70",
+        "status": true
+    },
+    "Олимпик Дшера — Видад Касабланка": {
+        "team1": "underdog 6.60",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Унион Туарга — ФАР Рабат": {
+        "team1": "underdog 6.20",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Аль-Васл Дубай — Аль-Батаех": {
+        "team1": "leader 1.45",
+        "team2": "underdog 6.00",
+        "status": true
+    },
+    "Банияс — Аль-Айн Абу-Даби": {
+        "team1": "underdog 5.30",
+        "team2": "leader 1.43",
+        "status": true
+    },
+    "Янг Лайонс — Альбирекс Ниигата": {
+        "team1": "underdog 12.00",
+        "team2": "leader 1.17",
+        "status": true
+    },
+    "Бурирам Юнайтед — Сукхотхай": {
+        "team1": "leader 1.13",
+        "team2": "underdog 17.00",
+        "status": true
+    },
+    "Порт Бангкок — Накхонратчасима": {
+        "team1": "leader 1.22",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "Бангкок Юнайтед — Муангтонг Юнайтед": {
+        "team1": "leader 1.35",
+        "team2": "underdog 7.50",
+        "status": true
+    },
+    "Эсперанс Тунис — Стад Тунизьен": {
+        "team1": "leader 1.45",
+        "team2": "underdog 7.00",
+        "status": true
+    },
+    "Орландо Пайретс — Касрич Старз": {
+        "team1": "leader 1.16",
+        "team2": "underdog 22.00",
+        "status": true
+    },
+    "Атлетико Насьональ — Альянса Вальедупар": {
+        "team1": "leader 1.33",
+        "team2": "underdog 9.00",
+        "status": true
+    },
+    "Тигрес Монтеррей — Пачука": {
+        "team1": "leader 1.45",
+        "team2": "underdog 6.40",
+        "status": true
+    },
+    "Тихуана — Масатлан": {
+        "team1": "leader 1.42",
+        "team2": "underdog 7.30",
+        "status": true
+    },
+    "Альянса Лима — Спорт Бойз": {
+        "team1": "leader 1.30",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "Сьенсьяно — Альянса Атлетико": {
+        "team1": "leader 1.30",
+        "team2": "underdog 8.50",
+        "status": true
+    },
+    "Атлетико Грау — Хуан Пабло 2": {
+        "team1": "leader 1.48",
+        "team2": "underdog 6.40",
+        "status": true
+    },
+    "Атлетико Прогресо — Насьональ Монтевидео": {
+        "team1": "underdog 6.60",
+        "team2": "leader 1.45",
+        "status": true
+    },
+    "Барселона Гуаякиль — Текнико Университарио": {
+        "team1": "leader 1.42",
+        "team2": "underdog 7.90",
+        "status": true
+    },
+    "Болтон Уондерерс — Блэкпул": {
+        "team1": "leader 1.50",
+        "team2": "underdog 5.90",
+        "status": true
+    },
+    "Рочдейл — Уокинг": {
+        "team1": "leader 1.33",
+        "team2": "underdog 8.00",
+        "status": true
+    },
+    "Карлайл Юнайтед — Йовил Таун": {
+        "team1": "leader 1.52",
+        "team2": "underdog 5.10",
+        "status": true
+    },
+    "Йорк Сити — Галифакс Таун": {
+        "team1": "leader 1.28",
+        "team2": "underdog 7.50",
+        "status": true
+    },
+    "Киддерминстер — Саутпорт": {
+        "team1": "leader 1.53",
+        "team2": "underdog 5.70",
+        "status": true
+    },
+    "Уэртинг — Слау Таун": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.30",
+        "status": true
+    },
+    "Эвели — Поттерс Бар Таун": {
+        "team1": "leader 1.30",
+        "team2": "underdog 7.40",
+        "status": true
+    },
+    "Фолкстоун Инвикта — Хэштег Юнайтед": {
+        "team1": "leader 1.48",
+        "team2": "underdog 4.50",
+        "status": true
+    },
+    "Чатем Таун — Уэллинг Юнайтед": {
+        "team1": "leader 1.35",
+        "team2": "underdog 6.40",
+        "status": true
+    },
+    "Лафборо Юниверсити — Ансти Номэдс": {
+        "team1": "underdog 5.10",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Беерсхот-Вилрейк — РВДМ Брюссель": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.30",
+        "status": true
+    },
+    "Хасселт — Тинен": {
+        "team1": "leader 1.37",
+        "team2": "underdog 6.50",
+        "status": true
+    },
+    "Вашаш — Карцаги": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.30",
+        "status": true
+    },
+    "Будапешт Гонвед — Айка": {
+        "team1": "leader 1.37",
+        "team2": "underdog 7.30",
+        "status": true
+    },
+    "Дуйсбург — Швайнфурт 05": {
+        "team1": "leader 1.35",
+        "team2": "underdog 6.20",
+        "status": true
+    },
+    "Сабадель — Атлетико Санлукеньо": {
+        "team1": "leader 1.30",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "Террасса — Кастельон 2": {
+        "team1": "leader 1.42",
+        "team2": "underdog 5.10",
+        "status": true
+    },
+    "Сан-Себастьян Рейес — Кинтанар-дель-Рей": {
+        "team1": "leader 1.30",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "Лас-Пальмас 2 — Райо Вальекано 2": {
+        "team1": "leader 1.40",
+        "team2": "underdog 6.50",
+        "status": true
+    },
+    "Агилас — Малага 2": {
+        "team1": "leader 1.30",
+        "team2": "underdog 10.50",
+        "status": true
+    },
+    "Брешиа — Аурора Про Патрия 1919": {
+        "team1": "leader 1.30",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "Катания — Джульяно": {
+        "team1": "leader 1.30",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "Альтамура — Беневенто": {
+        "team1": "underdog 6.60",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Кротоне — Фоджа": {
+        "team1": "leader 1.42",
+        "team2": "underdog 7.10",
+        "status": true
+    },
+    "Валюр Рейкьявик — Афтурелдинг": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.50",
+        "status": true
+    },
+    "Хоек — РКАВ Волендам": {
+        "team1": "leader 1.48",
+        "team2": "underdog 5.00",
+        "status": true
+    },
+    "Де Трефферс — Эйсселмервогелс": {
+        "team1": "leader 1.47",
+        "team2": "underdog 5.00",
+        "status": true
+    },
+    "Паредиш — Санжуаненсе": {
+        "team1": "leader 1.48",
+        "team2": "underdog 5.90",
+        "status": true
+    },
+    "Политехника Яссы — Сату-Маре": {
+        "team1": "leader 1.53",
+        "team2": "underdog 5.80",
+        "status": true
+    },
+    "КС Динамо Бухарест — Сепси Сфынту-Георге": {
+        "team1": "underdog 7.70",
+        "team2": "leader 1.38",
+        "status": true
+    },
+    "Пеннаросса — Фольгоре/Фальчано": {
+        "team1": "underdog 7.20",
+        "team2": "leader 1.33",
+        "status": true
+    },
+    "Ла Фьорита — Либертас": {
+        "team1": "leader 1.30",
+        "team2": "underdog 8.00",
+        "status": true
+    },
+    "Харлэнд-Вульф Велдерс — Инститьют": {
+        "team1": "leader 1.27",
+        "team2": "underdog 8.50",
+        "status": true
+    },
+    "Арма Сити — Ньюингтон": {
+        "team1": "underdog 18.00",
+        "team2": "leader 1.10",
+        "status": true
+    },
+    "Эрзурумспор ББ — Серик Беледиеспор": {
+        "team1": "leader 1.12",
+        "team2": "underdog 16.00",
+        "status": true
+    },
+    "Бандырмаспор — Хатайспор": {
+        "team1": "leader 1.08",
+        "team2": "underdog 16.00",
+        "status": true
+    },
+    "Чорум Беледиеспор — Умраниеспор": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.50",
+        "status": true
+    },
+    "Бодрумспор — Маниса": {
+        "team1": "leader 1.53",
+        "team2": "underdog 4.90",
+        "status": true
+    },
+    "Кумбран Селтик — Абериствит Таун": {
+        "team1": "underdog 6.80",
+        "team2": "leader 1.35",
+        "status": true
+    },
+    "ХИК Хельсинки — Турун Паллосеура": {
+        "team1": "leader 1.15",
+        "team2": "underdog 12.50",
+        "status": true
+    },
+    "Цибалия — Ярун Загреб": {
+        "team1": "leader 1.48",
+        "team2": "underdog 6.80",
+        "status": true
+    },
+    "Кринс — Лугано 2": {
+        "team1": "leader 1.30",
+        "team2": "underdog 6.90",
+        "status": true
+    },
+    "Веве Спортс — Бавои": {
+        "team1": "underdog 6.30",
+        "team2": "leader 1.37",
+        "status": true
+    },
+    "Инвернесс — Стенхаусмюир": {
+        "team1": "leader 1.50",
+        "team2": "underdog 5.90",
+        "status": true
+    },
+    "Ист-Килбрайд — Дамбартон": {
+        "team1": "leader 1.50",
+        "team2": "underdog 4.90",
+        "status": true
+    },
+    "Ротес — Наирн Каунти": {
+        "team1": "underdog 11.50",
+        "team2": "leader 1.28",
+        "status": true
+    },
+    "Стерлинг Юниверсити — Бонниригг Роуз": {
+        "team1": "underdog 5.30",
+        "team2": "leader 1.42",
+        "status": true
+    },
+    "Сидней Юнайтед — Вестерн Сидней Уондерерс 2": {
+        "team1": "leader 1.40",
+        "team2": "underdog 5.60",
+        "status": true
+    },
+    "Робина Сити — Ипсвич Сити": {
+        "team1": "leader 1.40",
+        "team2": "underdog 5.10",
+        "status": true
+    },
+    "Брисбен Страйкерс — Норт Стар": {
+        "team1": "leader 1.42",
+        "team2": "underdog 4.90",
+        "status": true
+    },
+    "Чарльзтаун Аззурри — Адамстаун Роузбад": {
+        "team1": "leader 1.45",
+        "team2": "underdog 5.20",
+        "status": true
+    },
+    "Аль-Райян — Аль-Ахли Доха": {
+        "team1": "leader 1.42",
+        "team2": "underdog 5.40",
+        "status": true
+    },
+    "Аль-Вакра — Аль-Садд": {
+        "team1": "underdog 4.40",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Маджд — Эмирейтс": {
+        "team1": "underdog 7.50",
+        "team2": "leader 1.32",
+        "status": true
+    },
+    "Дубай Сити — Юнайтед ОАЭ": {
+        "team1": "underdog 7.50",
+        "team2": "leader 1.30",
+        "status": true
+    },
+    "Аль-Джазира Аль-Хамра — Дибба Аль-Хисн": {
+        "team1": "underdog 5.80",
+        "team2": "leader 1.45",
+        "status": true
+    },
+    "Зизве Юнайтед — Янг Бафана": {
+        "team1": "leader 1.22",
+        "team2": "underdog 12.50",
+        "status": true
+    },
+    "Лерума Юнайтед — Янг Пайретс": {
+        "team1": "underdog 10.50",
+        "team2": "leader 1.25",
+        "status": true
+    },
+    "Омия Ардия — Фукусима Юнайтед": {
+        "team1": "leader 1.25",
+        "team2": "underdog 9.00",
+        "status": true
+    },
+    "Токусима Вортис — Каталлер Тояма": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.00",
+        "status": true
+    },
+    "Каматамарэ Сануки — Альбирекс Ниигата": {
+        "team1": "underdog 5.90",
+        "team2": "leader 1.50",
+        "status": true
+    },
+    "Итуано — Сертанзинью": {
+        "team1": "leader 1.53",
+        "team2": "underdog 5.80",
+        "status": true
+    },
+    "Палмейрас СП — Капивариано": {
+        "team1": "leader 1.13",
+        "team2": "underdog 16.00",
+        "status": true
+    },
+    "Гама — АРУК": {
+        "team1": "leader 1.10",
+        "team2": "underdog 19.00",
+        "status": true
+    },
+    "Интернасьонал РС — Ипиранга Эрешин": {
+        "team1": "leader 1.30",
+        "team2": "underdog 10.50",
+        "status": true
+    },
+    "Кашиас — Сан Луис Ижуи": {
+        "team1": "leader 1.50",
+        "team2": "underdog 5.80",
+        "status": true
+    },
+    "Итабаяна — Фалькон": {
+        "team1": "leader 1.40",
+        "team2": "underdog 7.60",
+        "status": true
+    },
+    "Позу-Алегри — Крузейро": {
+        "team1": "underdog 9.50",
+        "team2": "leader 1.42",
+        "status": true
+    },
+    "Реал Эспана — Лобос УПНФМ": {
+        "team1": "leader 1.48",
+        "team2": "underdog 6.20",
+        "status": true
+    },
+    "Реал Картахена — Леонес": {
+        "team1": "leader 1.22",
+        "team2": "underdog 10.50",
+        "status": true
+    },
+    "Атланте — Алебрихес Оахака": {
+        "team1": "leader 1.35",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "Тапатиос — Хабалис Мирасол": {
+        "team1": "leader 1.12",
+        "team2": "underdog 13.00",
+        "status": true
+    },
+    "Пласа Амадор — Эррера": {
+        "team1": "leader 1.25",
+        "team2": "underdog 10.00",
+        "status": true
+    },
+    "Луис Анхель Фирпо — Эркулес": {
+        "team1": "leader 1.37",
+        "team2": "underdog 6.20",
+        "status": true
+    },
+    "Дефенс Форс — Морвант Каледония Юнайтед": {
+        "team1": "leader 1.19",
+        "team2": "underdog 9.50",
+        "status": true
+    },
+    "Полис ТТ — Пойнт-Фортин": {
+        "team1": "leader 1.23",
+        "team2": "underdog 9.00",
+        "status": true
+    },
+    "Шахтер Донецк — Карпаты Львов": {
+        "team1": "leader 1.20",
+        "team2": "underdog 12.00",
+        "status": true
+    },
+    "Лайф Сиануквиль — Нагаворлд": {
+        "team1": "underdog 5.70",
+        "team2": "leader 1.42",
+        "status": true
+    }
+}
